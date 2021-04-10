@@ -1,0 +1,5 @@
+<div id="menu" fxLayout="column">
+    <div fxLayout="row" class="menuItem" *ngFor="let item of menuItems">
+            <a [routerLink]="'../'+item.routerLink" routerLinkActive = "active" class="menuButton"> {{ item.title }} </a> 
+    </div>
+</div>

@@ -1,0 +1,11 @@
+<div fxLayout="column" fxFlexFill>
+  <div id="headerContainer" fxLayout="row" class = "bordered"> Header </div>
+  <div id="contentRowContainer" fxLayout="row">
+    <div id="navBarContainer" fxFlex=15 class = "bordered">
+      <app-nav-bar></app-nav-bar>  
+    </div>
+    <div id="contentContainer" fxFlex=70 class = "bordered">
+      <router-outlet></router-outlet>
+    </div>
+    <div id="socialMediaContainer" fxFlex=15 class = "bordered"> Social media </div>
+</div>

@@ -1,0 +1,32 @@
+.menuButton{
+    text-align: center;
+    margin : auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 2px;
+    padding-top: 2px;
+    width: 100%;
+    height: 100%;
+    border: 1px solid black;
+    border-radius: 3px;
+}
+.menuButton:hover {
+    background-color: lightcoral;
+}
+
+.active {
+    background-color: darkslategrey;
+}
+a:link, a:visited, a:hover, a:active {
+    color: turquoise;
+    text-decoration: none;
+}
+#menu {
+    height : 100%;
+}
+
+.menuItem {
+    height : 7%;
+    margin-bottom: 3%;
+}
