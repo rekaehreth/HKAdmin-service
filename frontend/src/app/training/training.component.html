@@ -1,1 +1,12 @@
-<p>training works!</p>
+<!-- <p>training works!</p> -->
+<div >
+    <mat-selection-list #availableTrainings>
+        <mat-list-option *ngFor="let training of trainings">
+            <h3 class="trainingLocation"> {{training.location.name}} </h3>
+            <p class="trainingTime" >{{formatFullDate( training.startTime )}} - {{formatHourDate( training.endTime )}}</p>
+        </mat-list-option>
+    </mat-selection-list>
+</div> 
+<p>
+    Options selected: {{availableTrainings.selectedOptions.selected.length}}
+</p>

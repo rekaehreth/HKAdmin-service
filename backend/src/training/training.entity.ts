@@ -2,6 +2,7 @@ import { Location } from "src/location/location.entity";
 import { User } from "src/user/user.entity";
 import { Coach } from "src/coach/coach.entity";
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Group } from "src/group/group.entity";
 
 @Entity()
 export class Training 
@@ -16,6 +17,9 @@ export class Training
     @ManyToMany( () => Coach, coach => coach.userId)
     @JoinTable()
     coaches : Coach[];
+    @ManyToMany( () => Group, group => group.id)
+    @JoinTable()
+    groups : Group[];
     @Column()
     startTime : Date;
     @Column()

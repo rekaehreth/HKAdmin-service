@@ -1,6 +1,7 @@
+import { Payment } from "src/finance/payment.entity";
 import { Group } from "src/group/group.entity";
 import { Training } from "src/training/training.entity";
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 
 @Entity()
@@ -26,4 +27,6 @@ export class User
     groups : Group[];
     @Column( { nullable : true } )
     birth_date : Date;
+    @OneToMany( () => Payment, payment => payment.id )
+    payments : Payment[];
 }

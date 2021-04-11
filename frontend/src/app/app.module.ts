@@ -16,6 +16,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { SettingsComponent } from './settings/settings.component';
 import { LandingpageComponent } from './landingpage/landingpage.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import {MatListModule} from '@angular/material/list';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     MatGridListModule,
     MatButtonModule,
     FlexLayoutModule,
-
+    MatListModule,
+    
   ],
   providers: [],
   bootstrap: [AppComponent]

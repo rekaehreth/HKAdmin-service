@@ -125,16 +125,18 @@ export class UserService
             const userToBeAdded = await this.userRepository.findOne( userId, { relations: ["trainings"] } );
             if( userToBeAdded.roles.match(/.*coach.*/) || !forceTrainee )
             {
-                trainingToAddTo.coaches.push( await this.coachRepository.findOne( userToBeAdded.id ) );
+                const coachToBeAdded = await this.coachRepository.findOne( userToBeAdded.id );
+                trainingToAddTo.coaches.push( coachToBeAdded );
+                coachToBeAdded.trainings.push( trainingToAddTo );
+                await this.coachRepository.save( coachToBeAdded );
             }
             else
             {
                 trainingToAddTo.attendees.push( userToBeAdded );
                 userToBeAdded.trainings.push( trainingToAddTo );
-
-                this.trainingRepository.save( trainingToAddTo );
                 this.userRepository.save( userToBeAdded );
             }
+            await this.trainingRepository.save( trainingToAddTo );
             return {success : true};
         }
         catch( error )
@@ -148,17 +150,25 @@ export class UserService
         {
             const trainingToRemoveFrom = await this.groupRepository.findOne( trainingId );
             const userToRemove = await this.userRepository.findOne( userId ); // , { relations: ["groups"] }
-            // remove Réka as a trainee, but Réka is a coach as well
             if( userToRemove.roles.match(/.*coach.*/) || !forceTrainee )
             {
-                let coachIndex = trainingToRemoveFrom.coaches.indexOf( await this.coachRepository.findOne( userToRemove.id ) );
+                let coachToRemove = await this.coachRepository.findOne( userToRemove.id );
+                let coachIndex = trainingToRemoveFrom.coaches.indexOf( coachToRemove );
+                trainingToRemoveFrom.coaches.splice(coachIndex);
+                let trainingIndex = coachToRemove.groups.indexOf( trainingToRemoveFrom );
+                coachToRemove.groups.splice( trainingIndex );
+                await this.coachRepository.save( coachToRemove );
                 trainingToRemoveFrom.coaches.splice(coachIndex);
             }
             else 
             {
                 let userIndex = trainingToRemoveFrom.members.indexOf( userToRemove );
                 trainingToRemoveFrom.members.splice( userIndex );
+                let trainingIndex = userToRemove.groups.indexOf( trainingToRemoveFrom );
+                userToRemove.groups.splice( trainingIndex );
+                await this.userRepository.save( userToRemove );
             }
+            await this.trainingRepository.save( trainingToRemoveFrom );
             return {success : true};
         }
         catch( error )

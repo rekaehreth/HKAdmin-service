@@ -1,21 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { Location } from 'src/location/location.entity';
-import { DeleteResult, getRepository } from 'typeorm';
+import { Connection, DeleteResult, getRepository, Repository } from 'typeorm';
 import { Training } from './training.entity';
 
 @Injectable()
 export class TrainingService 
 {
+    trainingRepository: Repository<Training>;
+    locationRepository: Repository<Location>;
+
+    constructor( connection:Connection ) {
+        this.trainingRepository = connection.getRepository( Training );
+        this.locationRepository = connection.getRepository( Location );
+    }
     public async getAll() : Promise<Training[]>
     {
-        const trainingRepository = getRepository(Training);
-        return await trainingRepository.find( { relations: ["location", "attendees", "coaches"] } );
+        return await this.trainingRepository.find( { relations: ["location", "attendees", "coaches"] } );
     }
 
     public async getById( id : number ) : Promise<Training>
     {
-        const trainingRepository = getRepository(Training);
-        return await trainingRepository.findOne( id, { relations: ["location", "attendees", "coaches"] } );
+        return await this.trainingRepository.findOne( id, { relations: ["location", "attendees", "coaches"] } );
     }
 
     public async create(locationId : number, rawTrainingData : {
@@ -25,17 +30,15 @@ export class TrainingService
     {
         const newTraining = new Training();
         Object.keys(rawTrainingData).forEach( (key) => { newTraining[key] = rawTrainingData[key] });
-        const site = await getRepository(Location).findOne(locationId);
+        const site = await this.locationRepository.findOne(locationId);
         newTraining.location = site;
-        const trainingRepository = getRepository(Training);
         newTraining.status = "planned";
-        return await trainingRepository.save(newTraining);
+        return await this.trainingRepository.save(newTraining);
     }
 
     public async delete ( id : number ) : Promise<DeleteResult>
     {
-        const trainingRepository = getRepository(Training);
-        return await trainingRepository.delete(id);
+        return await this.trainingRepository.delete(id);
     }
 
     public async modify (locationId : number, rawTrainingData : {
@@ -44,11 +47,10 @@ export class TrainingService
         endTime : Date,
     } ) : Promise<Training>
     {
-        const trainingRepository = getRepository(Training);
-        const modifiedTraining = await trainingRepository.findOne( rawTrainingData.id );
+        const modifiedTraining = await this.trainingRepository.findOne( rawTrainingData.id );
         Object.keys(rawTrainingData).forEach( (key) => { modifiedTraining[key] = rawTrainingData[key] });
-        const site = await getRepository(Location).findOne(locationId);
+        const site = await this.locationRepository.findOne(locationId);
         modifiedTraining.location = site;
-        return await trainingRepository.save(modifiedTraining); 
+        return await this.trainingRepository.save(modifiedTraining); 
     }
 }

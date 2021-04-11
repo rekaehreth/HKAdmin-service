@@ -1,20 +1,29 @@
 import { Injectable } from '@nestjs/common';
+import { Connection, DeleteResult, getRepository, Repository } from 'typeorm';
 import { User } from 'src/user/user.entity';
-import { DeleteResult, getRepository } from 'typeorm';
 import { Coach } from './coach.entity';
+import { Location } from 'src/location/location.entity';
 
 @Injectable()
 export class CoachService 
 {
+    userRepository: Repository<User>;
+    coachRepository: Repository<Coach>;
+    locationRepository: Repository<Location>;
+
+    constructor( connection:Connection ) {
+        this.userRepository = connection.getRepository(User);
+        this.coachRepository = connection.getRepository( Coach );
+        this.locationRepository = connection.getRepository( Location );
+    }
+    
     public async getAll() : Promise<Coach[]>
     {
-        const coachRepository = getRepository( Coach );
-        return await coachRepository.find();
+        return await this.coachRepository.find();
     }
     public async getById( id : number ) : Promise<Coach> 
     {
-        const coachRepository = getRepository( Coach );
-        return await coachRepository.findOne( id );
+        return await this.coachRepository.findOne( id );
     }
     public async create( userId : number, rawCoachData : {
         wage : number,
@@ -22,31 +31,23 @@ export class CoachService
     {
         const newCoach = new Coach();
         Object.keys(rawCoachData).forEach( ( key ) => { newCoach[key] = rawCoachData[key] });
-        const coachRepository = getRepository( Coach );
-
-        const userRepository = getRepository( User );
-        const user = userRepository.findOne( userId );
+        const user = this.userRepository.findOne( userId );
         (await user).roles += "coach, "; 
 
-        return await coachRepository.save( newCoach );
+        return await this.coachRepository.save( newCoach );
     }
     public async delete ( id : number ) : Promise<DeleteResult>
     {
-        const coachRepository = getRepository( Coach );
-
-        const userRepository = getRepository( User );
-        const user = userRepository.findOne( id );
+        const user = this.userRepository.findOne( id );
         (await user).roles.replace('coach, ', '');
-
-        return await coachRepository.delete( id );
+        return await this.coachRepository.delete( id );
     }
     public async modify ( userId : number, rawCoachData : {
         wage : number,
     }) : Promise<Coach>
     {
-        const coachRepository = getRepository( Coach ); 
-        const modifiedCoach = await coachRepository.findOne( userId );
+        const modifiedCoach = await this.coachRepository.findOne( userId );
         Object.keys( rawCoachData ).forEach( (key) => { modifiedCoach[key] = rawCoachData[key] });
-        return await coachRepository.save( modifiedCoach );
+        return await this.coachRepository.save( modifiedCoach );
     }
 }
