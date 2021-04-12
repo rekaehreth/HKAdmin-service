@@ -15,7 +15,7 @@ export class User
     @Column()
     name : string;
     @Column( { nullable : true } )
-    roles : string;
+    roles : string; // trainee | ciach | guardian | guest | admin
     @Column()
     email : string;
     @Column()
@@ -29,4 +29,6 @@ export class User
     birth_date : Date;
     @OneToMany( () => Payment, payment => payment.id )
     payments : Payment[];
+    // @OneToMany( () => Child, child => child.id )
+    // children : Child[];
 }

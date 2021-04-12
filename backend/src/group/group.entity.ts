@@ -13,7 +13,7 @@ export class Group
     @ManyToMany( () => User, user => user.groups )
     @JoinTable()
     members : User[];
-    @ManyToMany( () => Coach, coach => coach.userId )
+    @ManyToMany( () => Coach, coach => coach.id )
     @JoinTable()
     coaches : Coach[];
     @ManyToMany( () => Training, training => training.id )

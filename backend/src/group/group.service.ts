@@ -10,17 +10,11 @@ export class GroupService
     groupRepository: Repository<Group>;
     locationRepository: Repository<Location>;
     trainingRepository: Repository<Training>;
-    // coachRepository: Repository<Coach>;
-    // paymentRepository: Repository<Payment>;
-    // userRepository: Repository<User>;
 
     constructor( connection:Connection ) {
         this.groupRepository = connection.getRepository( Group );
         this.locationRepository = connection.getRepository( Location );
         this.trainingRepository = connection.getRepository( Training );
-        // this.userRepository = connection.getRepository(User);
-        // this.coachRepository = connection.getRepository( Coach );
-        // this.paymentRepository = connection.getRepository( Payment );
     }
     public async getAll() : Promise<Group[]>
     {
@@ -49,35 +43,5 @@ export class GroupService
         const modifiedGroup = await this.groupRepository.findOne( groupId );
         Object.keys( rawGroupData ).forEach( (key) => { modifiedGroup[key] = rawGroupData[key] });
         return await this.groupRepository.save( modifiedGroup );
-    }
-    public async addGroupToTraining ( groupId, trainingId ) : Promise<Group>
-    {
-        const groupToAdd = await this.groupRepository.findOne( groupId, { relations: ["members", "coaches", "trainings"] } );
-        const trainingToAddTo = await this.trainingRepository.findOne( trainingId, { relations: ["attendees", "coaches", "groups"] } );
-
-        groupToAdd.trainings.push( trainingToAddTo );
-        trainingToAddTo.groups.push( groupToAdd );
-
-        this.groupRepository.save( groupToAdd );
-        this.trainingRepository.save( trainingToAddTo );
-
-        return groupToAdd;
-    }
-    public async removeGroupFromTraining( groupId, trainingId ) : Promise<Group>
-    {
-        const groupToRemove = await this.groupRepository.findOne( groupId, { relations: ["members", "coaches", "trainings"] } );
-        const trainingToRemoveFrom = await this.trainingRepository.findOne( trainingId, { relations: ["attendees", "coaches", "groups"] } );
-
-        const groupIndex = trainingToRemoveFrom.groups.indexOf( groupToRemove );
-        const trainingIndex = groupToRemove.trainings.indexOf( trainingToRemoveFrom );
-
-        groupToRemove.trainings.splice( trainingIndex );
-        trainingToRemoveFrom.groups.splice( groupIndex );
-
-        this.groupRepository.save( groupToRemove );
-        this.trainingRepository.save( trainingToRemoveFrom );
-
-        return groupToRemove;
-
     }
 }

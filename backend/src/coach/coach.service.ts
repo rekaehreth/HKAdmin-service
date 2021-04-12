@@ -31,9 +31,9 @@ export class CoachService
     {
         const newCoach = new Coach();
         Object.keys(rawCoachData).forEach( ( key ) => { newCoach[key] = rawCoachData[key] });
-        const user = this.userRepository.findOne( userId );
-        (await user).roles += "coach, "; 
-
+        const user = await this.userRepository.findOne( userId );
+        user.roles += "coach, "; 
+        newCoach.user = user;
         return await this.coachRepository.save( newCoach );
     }
     public async delete ( id : number ) : Promise<DeleteResult>

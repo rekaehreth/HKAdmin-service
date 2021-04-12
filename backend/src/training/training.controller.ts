@@ -57,4 +57,28 @@ export class TrainingController
     {
         return await this.service.modify(requestBody.locationId, requestBody.rawTrainingData);
     }
+
+    @Post('/addGroup')
+    async addGroupToTraining(
+        @Body()
+        requestBody : {
+            groupId : number,
+            trainingId : number,
+        }
+    ) : Promise<Training>
+    {
+        return await this.service.addGroupToTraining(requestBody.groupId, requestBody.trainingId);
+    }
+
+    @Post('/removeGroup')
+    async rmoveGroupFromTraining(
+        @Body()
+        requestBody : {
+            groupId : number,
+            trainingId : number,
+        }
+    ) : Promise<Training>
+    {
+        return await this.service.removeGroupFromTraining(requestBody.groupId, requestBody.trainingId);
+    }
 }

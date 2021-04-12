@@ -179,7 +179,7 @@ export class UserService
     public async listAvailableTrainings( userId : number ) : Promise<[Training, boolean][]>
     {
         let availableTrainings : [ Training, boolean ][]; // boolean is true if user has already signed up for that training
-        let user = await this.userRepository.findOne( userId, { relations: ["groups"] } );
+        let user = await this.userRepository.findOne( userId, { relations: ["groups", "trainings"] } );
         user.groups.forEach( group => { 
             group.trainings.forEach( training => {
                 if ( user.trainings.includes( training ) ) { availableTrainings.push( [ training, true ] ) }
