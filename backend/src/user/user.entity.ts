@@ -15,7 +15,7 @@ export class User
     @Column()
     name : string;
     @Column( { nullable : true } )
-    roles : string; // trainee | ciach | guardian | guest | admin
+    roles : string; // trainee | coach | guardian | guest | admin
     @Column()
     email : string;
     @Column()

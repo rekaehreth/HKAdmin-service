@@ -1,14 +1,15 @@
 import { Group } from "src/group/group.entity";
 import { Training } from "src/training/training.entity";
 import { User } from "src/user/user.entity";
-import { Column, Entity, ManyToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Coach 
 {
     @PrimaryGeneratedColumn()
     id : number; 
-    @OneToOne( () => User, user => user.id )
+    @OneToOne( () => User )
+    @JoinColumn()
     user : User;
     @ManyToMany( () => Group, group => group.id )
     groups : Group[];

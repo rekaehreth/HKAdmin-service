@@ -43,13 +43,13 @@ export class CoachController
     async modify(
         @Body()
         requestBody : {
-            userId : number,
+            coachId : number,
             rawCoachData : { 
                 wage : number
             }
         }
     ) : Promise<Coach>
     {
-        return await this.service.modify(requestBody.userId, requestBody.rawCoachData)
+        return await this.service.modify(requestBody.coachId, requestBody.rawCoachData)
     }
 }

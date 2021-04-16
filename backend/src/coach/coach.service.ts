@@ -19,11 +19,11 @@ export class CoachService
     
     public async getAll() : Promise<Coach[]>
     {
-        return await this.coachRepository.find();
+        return await this.coachRepository.find( { relations : ["user"] } );
     }
     public async getById( id : number ) : Promise<Coach> 
     {
-        return await this.coachRepository.findOne( id );
+        return await this.coachRepository.findOne( id, { relations : ["user"] } );
     }
     public async create( userId : number, rawCoachData : {
         wage : number,
@@ -32,21 +32,21 @@ export class CoachService
         const newCoach = new Coach();
         Object.keys(rawCoachData).forEach( ( key ) => { newCoach[key] = rawCoachData[key] });
         const user = await this.userRepository.findOne( userId );
-        user.roles += "coach, "; 
+        user.roles += "coach "; 
         newCoach.user = user;
         return await this.coachRepository.save( newCoach );
     }
     public async delete ( id : number ) : Promise<DeleteResult>
     {
-        const user = this.userRepository.findOne( id );
-        (await user).roles.replace('coach, ', '');
-        return await this.coachRepository.delete( id );
+        const coach = await this.coachRepository.findOne( id, {relations: ["user"] } );
+        coach.user.roles.replace('coach ', '');
+        return await this.coachRepository.delete( coach );
     }
-    public async modify ( userId : number, rawCoachData : {
+    public async modify ( coachId : number, rawCoachData : {
         wage : number,
     }) : Promise<Coach>
     {
-        const modifiedCoach = await this.coachRepository.findOne( userId );
+        const modifiedCoach = await this.coachRepository.findOne( coachId, { relations : ["user"] } );
         Object.keys( rawCoachData ).forEach( (key) => { modifiedCoach[key] = rawCoachData[key] });
         return await this.coachRepository.save( modifiedCoach );
     }

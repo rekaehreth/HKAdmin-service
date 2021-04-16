@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { FinanceComponent } from './finance/finance.component';
 import { LandingpageComponent } from './landingpage/landingpage.component';
 import { ProfileComponent } from './profile/profile.component';
+import { RegistrationComponent } from './registration/registration.component';
 import { SettingsComponent } from './settings/settings.component';
 import { TrainingComponent } from './training/training.component';
 
@@ -11,6 +12,7 @@ const routes: Routes = [
   { path : 'finance', component : FinanceComponent }, 
   { path : 'profile', component : ProfileComponent },
   { path : 'settings', component : SettingsComponent },
+  { path : 'registration', component : RegistrationComponent },
   { path : '', pathMatch : "full", component : LandingpageComponent },
 ];
 
