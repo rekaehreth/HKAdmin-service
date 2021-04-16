@@ -22,12 +22,12 @@ export class User
     username : string;
     @Column( { nullable : true } )
     password : string;
-    @ManyToMany( () => Group, group => group.id)
+    @ManyToMany( () => Group, group => group.members)
     @JoinTable()
     groups : Group[];
     @Column( { nullable : true } )
     birth_date : Date;
-    @OneToMany( () => Payment, payment => payment.id )
+    @OneToMany( () => Payment, payment => payment.user )
     payments : Payment[];
     // @OneToMany( () => Child, child => child.id )
     // children : Child[];

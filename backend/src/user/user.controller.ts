@@ -129,11 +129,11 @@ export class UserController
         @Body()
         requestBody : {
             userId : number, 
-            groupId : number, 
+            trainingId : number, 
         }
     ) : Promise<{success : boolean, error ?: any}>
     {
-        return await this.service.addToTraining( requestBody.userId, requestBody.groupId );
+        return await this.service.addToTraining( requestBody.userId, requestBody.trainingId );
     }
 
     @Post('/addTraineeToTraining')

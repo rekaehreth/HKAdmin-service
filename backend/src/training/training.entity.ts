@@ -14,10 +14,10 @@ export class Training
     @ManyToMany( () => User, user => user.trainings )
     @JoinTable()
     attendees : User[];
-    @ManyToMany( () => Coach, coach => coach.id)
+    @ManyToMany( () => Coach, coach => coach.trainings)
     @JoinTable()
     coaches : Coach[];
-    @ManyToMany( () => Group, group => group.id)
+    @ManyToMany( () => Group, group => group.trainings)
     @JoinTable()
     groups : Group[];
     @Column()

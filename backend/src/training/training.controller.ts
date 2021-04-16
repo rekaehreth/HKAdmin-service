@@ -29,6 +29,7 @@ export class TrainingController
             rawTrainingData : {
                 startTime : Date,
                 endTime : Date,
+                status : string, // Planned | Fixed | Past
             } 
         }
     ) : Promise<Training>
@@ -51,6 +52,7 @@ export class TrainingController
                 id: number,
                 startTime : Date,
                 endTime : Date,
+                status : string, // Planned | Fixed | Past
             } 
         }
     ) : Promise<Training>

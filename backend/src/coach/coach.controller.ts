@@ -34,7 +34,7 @@ export class CoachController
     {
         return await this.service.create(requestBody.userId, requestBody.rawCoachData);
     }
-    @Delete('/id')
+    @Delete('/:id')
     async delete ( @Param('id') id : number ) : Promise<DeleteResult>
     {
         return await this.service.delete(id);

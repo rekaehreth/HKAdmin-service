@@ -66,7 +66,7 @@ export class UserService
             const userToBeAdded = await this.userRepository.findOne( userId, { relations: ["groups"] } );
             if( userToBeAdded.roles.match(/.*coach.*/) || !forceTrainee )
             {
-                const coachToBeAdded = await this.coachRepository.findOne( userId )
+                const coachToBeAdded = await this.coachRepository.findOne( {user: userToBeAdded}, { relations: ["groups"] } );
                 groupToAddTo.coaches.push( coachToBeAdded );
                 coachToBeAdded.groups.push( groupToAddTo );
                 await this.coachRepository.save( coachToBeAdded )
@@ -93,7 +93,7 @@ export class UserService
             const userToRemove = await this.userRepository.findOne( userId, { relations: ["groups"] } );
             if( userToRemove.roles.match(/.*coach.*/) || !forceTrainee )
             {
-                let coachToRemove = await this.coachRepository.findOne( userToRemove.id );
+                let coachToRemove = await this.coachRepository.findOne( {user: userToRemove}, { relations: ["groups"] } );
                 let coachIndex = groupToRemoveFrom.coaches.indexOf( coachToRemove );
                 groupToRemoveFrom.coaches.splice(coachIndex);
                 let groupIndex = coachToRemove.groups.indexOf( groupToRemoveFrom );
@@ -125,7 +125,7 @@ export class UserService
             const userToBeAdded = await this.userRepository.findOne( userId, { relations: ["trainings"] } );
             if( userToBeAdded.roles.match(/.*coach.*/) || !forceTrainee )
             {
-                const coachToBeAdded = await this.coachRepository.findOne( userToBeAdded.id );
+                const coachToBeAdded = await this.coachRepository.findOne( {user: userToBeAdded}, { relations: ["trainings"] } );
                 trainingToAddTo.coaches.push( coachToBeAdded );
                 coachToBeAdded.trainings.push( trainingToAddTo );
                 await this.coachRepository.save( coachToBeAdded );
@@ -148,23 +148,23 @@ export class UserService
     {
         try
         {
-            const trainingToRemoveFrom = await this.groupRepository.findOne( trainingId );
+            const trainingToRemoveFrom = await this.trainingRepository.findOne( trainingId, { relations : ["coaches", "attendees"] } );
             const userToRemove = await this.userRepository.findOne( userId ); // , { relations: ["groups"] }
             if( userToRemove.roles.match(/.*coach.*/) || !forceTrainee )
             {
-                let coachToRemove = await this.coachRepository.findOne( userToRemove.id );
+                let coachToRemove = await this.coachRepository.findOne( {user: userToRemove}, { relations: ["trainings"] } );
                 let coachIndex = trainingToRemoveFrom.coaches.indexOf( coachToRemove );
                 trainingToRemoveFrom.coaches.splice(coachIndex);
-                let trainingIndex = coachToRemove.groups.indexOf( trainingToRemoveFrom );
-                coachToRemove.groups.splice( trainingIndex );
+                let trainingIndex = coachToRemove.trainings.indexOf( trainingToRemoveFrom );
+                coachToRemove.trainings.splice( trainingIndex );
                 await this.coachRepository.save( coachToRemove );
                 trainingToRemoveFrom.coaches.splice(coachIndex);
             }
             else 
             {
-                let userIndex = trainingToRemoveFrom.members.indexOf( userToRemove );
-                trainingToRemoveFrom.members.splice( userIndex );
-                let trainingIndex = userToRemove.groups.indexOf( trainingToRemoveFrom );
+                let userIndex = trainingToRemoveFrom.attendees.indexOf( userToRemove );
+                trainingToRemoveFrom.attendees.splice( userIndex );
+                let trainingIndex = userToRemove.trainings.indexOf( trainingToRemoveFrom );
                 userToRemove.groups.splice( trainingIndex );
                 await this.userRepository.save( userToRemove );
             }

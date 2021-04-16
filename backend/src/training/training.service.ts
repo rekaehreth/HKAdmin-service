@@ -3,6 +3,7 @@ import { Group } from 'src/group/group.entity';
 import { Location } from 'src/location/location.entity';
 import { Connection, DeleteResult, Repository } from 'typeorm';
 import { Training } from './training.entity';
+import {parse, stringify} from 'flatted';
 
 @Injectable()
 export class TrainingService 
@@ -18,7 +19,7 @@ export class TrainingService
     }
     public async getAll() : Promise<Training[]>
     {
-        return await this.trainingRepository.find( { relations: ["location", "attendees", "coaches"] } );
+        return await this.trainingRepository.find( { relations: ["location", "attendees", "coaches", "groups"] } );
     }
 
     public async getById( id : number ) : Promise<Training>
@@ -29,12 +30,16 @@ export class TrainingService
     public async create(locationId : number, rawTrainingData : {
         startTime : Date,
         endTime : Date,
+        status : string, // Planned | Fixed | Past
     } ) : Promise<Training>
     {
         const newTraining = new Training();
         Object.keys(rawTrainingData).forEach( (key) => { newTraining[key] = rawTrainingData[key] });
-        const site = await this.locationRepository.findOne(locationId);
-        newTraining.location = site;
+        if( locationId != 0)
+        {
+            const site = await this.locationRepository.findOne(locationId);
+            newTraining.location = site;
+        }
         newTraining.status = "planned";
         return await this.trainingRepository.save(newTraining);
     }
@@ -44,23 +49,27 @@ export class TrainingService
         return await this.trainingRepository.delete(id);
     }
 
-    public async modify (locationId : number, rawTrainingData : {
+    public async modify ( locationId : number, rawTrainingData : {
         id: number, 
         startTime : Date,
         endTime : Date,
+        status : string, // Planned | Fixed | Past
     } ) : Promise<Training>
     {
         const modifiedTraining = await this.trainingRepository.findOne( rawTrainingData.id );
         Object.keys(rawTrainingData).forEach( (key) => { modifiedTraining[key] = rawTrainingData[key] });
-        const site = await this.locationRepository.findOne(locationId);
-        modifiedTraining.location = site;
+        if(locationId != 0)
+        {
+            const site = await this.locationRepository.findOne(locationId);
+            modifiedTraining.location = site;
+        }
         return await this.trainingRepository.save(modifiedTraining); 
     }
     public async addGroupToTraining ( groupId, trainingId ) : Promise<Training>
     {
         const groupToAdd = await this.groupRepository.findOne( groupId, { relations: ["members", "coaches", "trainings"] } );
         const trainingToAddTo = await this.trainingRepository.findOne( trainingId, { relations: ["attendees", "coaches", "groups"] } );
-
+        
         groupToAdd.trainings.push( trainingToAddTo );
         trainingToAddTo.groups.push( groupToAdd );
 

@@ -14,9 +14,9 @@ export class Payment
     status : string; // Paid | Pending
     @Column()
     description : string; // E.g. Edzés, Gyakorló Jégcsarnok 2021.04.18. 9:00
-    @Column()
+    @Column( { nullable: true })
     notes : string; // E.g. Credentials of deleted user
-    @ManyToOne( () => User, user => user.id )
+    @ManyToOne( () => User, user => user.payments )
     @JoinTable()
     user : User; 
 }

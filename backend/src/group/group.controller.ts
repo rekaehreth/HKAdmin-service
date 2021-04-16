@@ -30,7 +30,7 @@ export class GroupController
     {
         return await this.service.create(rawGroupData);
     }
-    @Delete('/id')
+    @Delete('/:id')
     async delete ( @Param('id') id : number ) : Promise<DeleteResult>
     {
         return await this.service.delete(id);

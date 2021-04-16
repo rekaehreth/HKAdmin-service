@@ -52,7 +52,7 @@ export class FinanceService {
         notes : string
     } ) : Promise<Payment>
     {
-        const modifiedPayment = await this.paymentRepository.findOne( paymentId );
+        const modifiedPayment = await this.paymentRepository.findOne( paymentId, { relations: ["user"] } );
         Object.keys(rawPaymentData).forEach( (key) => { modifiedPayment[key] = rawPaymentData[key] });
         if ( userId > 0 )
         {
