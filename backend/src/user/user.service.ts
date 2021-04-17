@@ -163,8 +163,8 @@ export class UserService {
         }
         return availableTrainings;
     }
-    public async login(username: string, rawpassword: string): Promise<boolean> {
-        let user = await this.userRepository.findOne({ username });
+    public async login(email: string, rawpassword: string): Promise<boolean> {
+        let user = await this.userRepository.findOne({ email });
         if (!user) {
             return false;
         }

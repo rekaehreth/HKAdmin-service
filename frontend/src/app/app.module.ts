@@ -13,6 +13,8 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatButtonModule } from '@angular/material/button';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatListModule } from '@angular/material/list';
+import { MatDialogModule } from '@angular/material/dialog';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { LocationComponent } from './location/location.component';
@@ -23,7 +25,6 @@ import { FinanceComponent } from './finance/finance.component';
 import { ProfileComponent } from './profile/profile.component';
 import { SettingsComponent } from './settings/settings.component';
 import { LandingpageComponent } from './landingpage/landingpage.component';
-
 
 @NgModule({
   declarations: [
@@ -52,9 +53,15 @@ import { LandingpageComponent } from './landingpage/landingpage.component';
     MatInputModule,
     MatCheckboxModule,
     MatIconModule,
+    MatDialogModule,
+    FormsModule,
+    ReactiveFormsModule,
     
   ],
-  providers: [],
+  providers: [
+    RegistrationComponent,
+    
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

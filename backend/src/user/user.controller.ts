@@ -72,12 +72,12 @@ export class UserController
     async login( 
         @Body()
         requestBody : {
-            username : string, 
+            email : string, 
             password : string,
         }
     ) : Promise<boolean>
     {
-        return this.service.login( requestBody.username, requestBody.password );
+        return this.service.login( requestBody.email, requestBody.password );
     }
 
     @Post('/addCoachToGroup')

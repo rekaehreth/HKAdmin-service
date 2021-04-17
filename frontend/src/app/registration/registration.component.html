@@ -1,31 +1,32 @@
-<div class="login-page">
-    <mat-card class="mat-elevation-z12">
+
+    <mat-card>
       <mat-card-title style="text-align:center;">SignIn/SignUp</mat-card-title>
-      <mat-tab-group mat-stretch-tabs class="example-stretched-tabs">
+      <mat-tab-group>
         <mat-tab label="Sign In">
             <mat-card-content>
               <form action="">
                 <mat-form-field>
-                  <input matInput placeholder="Email" required name="email" ngModel > 
-                  <!-- #email="ngModel"  -->
-                    <!-- <mat-error *ngIf="email.invalid">
-                        Email is required
-                    </mat-error> -->
+                  <input matInput placeholder="Email" name="email" [formControl] = "emailControl" >
+                    <mat-error *ngIf="emailControl.errors && emailControl.errors.email">
+                        Email is invalid
+                    </mat-error>
+                    <mat-error *ngIf="emailControl.errors && emailControl.errors.required">
+                      Email is required
+                  </mat-error>
                   <mat-icon matSuffix>email</mat-icon>
                 </mat-form-field>
                 <mat-form-field>
-                  <input matInput placeholder="Password" type="password" required minlength="6" name="password" ngModel >
-                  <!-- #password="ngModel" -->
-                    <!-- <mat-error *ngIf="password.errors && password.errors.required">
+                  <input matInput placeholder="Password" type="password" name="password" [formControl]= "passwordControl" >
+                    <mat-error *ngIf="passwordControl.errors && passwordControl.errors.required">
                       Password is required
-                    </mat-error> -->
-                    <!-- <mat-error *ngIf="password.errors && password.errors.minlength">
+                    </mat-error>
+                    <mat-error *ngIf="passwordControl.errors && passwordControl.errors.minlength">
                       Password must be of length 6
-                    </mat-error> -->
+                    </mat-error>
                   <mat-icon matSuffix>lock</mat-icon>
                 </mat-form-field>
                 <!-- <mat-checkbox>Remember Me!</mat-checkbox> -->
-                <button mat-raised-button color="primary" class="login-button">
+                <button mat-raised-button color="primary" class="login-button" (click) = "signIn()">
                   Sign In
                 </button>
                 <!-- <button mat-raised-button class="login-button">
@@ -88,5 +89,3 @@
         </mat-tab>
       </mat-tab-group>
     </mat-card>
-  </div>
-  
