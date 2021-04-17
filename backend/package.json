@@ -27,6 +27,7 @@
     "@nestjs/typeorm": "^7.1.5",
     "@types/bcrypt": "^3.0.0",
     "bcrypt": "^5.0.1",
+    "lodash": "^4.17.21",
     "mysql": "^2.18.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",

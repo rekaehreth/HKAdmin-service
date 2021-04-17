@@ -3,6 +3,7 @@ import { Training } from 'src/training/training.entity';
 import { DeleteResult } from 'typeorm';
 import { User } from './user.entity';
 import { UserService } from './user.service';
+import { omit } from 'lodash';
 
 @Controller('user')
 export class UserController 
@@ -14,12 +15,14 @@ export class UserController
     
     @Get()
     async getAll() : Promise<User[]> {
-        return await this.service.getAll();
+        const allUsers = await this.service.getAll();
+        return allUsers.map( user => omit(user, "password"));
     }
 
     @Get('/:id')
     async getById( @Param('id') id : number ) : Promise<User> {
-        return await this.service.getById(id);
+        const user = await this.service.getById(id);
+        return omit(user, "password");
     }
 
     @Post('/new')
@@ -35,8 +38,8 @@ export class UserController
         } 
     ) : Promise<User>
     {
-        // console.log(JSON.stringify(rawData));
-        return await this.service.create(rawUserData);
+        const newUser = await this.service.create(rawUserData);
+        return omit(newUser, "password");
     }
 
     @Delete('/:id')
@@ -61,7 +64,8 @@ export class UserController
         }
     ) : Promise<User>
     {
-        return await this.service.modify(requestBody.userId, requestBody.rawUserData);
+        const modUser = await this.service.modify(requestBody.userId, requestBody.rawUserData);
+        return omit(modUser, "password");
     }
 
     @Post('/login')

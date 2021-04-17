@@ -67,31 +67,19 @@ export class TrainingService
     }
     public async addGroupToTraining ( groupId, trainingId ) : Promise<Training>
     {
-        const groupToAdd = await this.groupRepository.findOne( groupId, { relations: ["members", "coaches", "trainings"] } );
+        const groupToAdd = await this.groupRepository.findOne(groupId);  
         const trainingToAddTo = await this.trainingRepository.findOne( trainingId, { relations: ["attendees", "coaches", "groups"] } );
-        
-        groupToAdd.trainings.push( trainingToAddTo );
         trainingToAddTo.groups.push( groupToAdd );
-
-        this.groupRepository.save( groupToAdd );
         this.trainingRepository.save( trainingToAddTo );
-
         return trainingToAddTo;
     }
     public async removeGroupFromTraining( groupId, trainingId ) : Promise<Training>
     {
-        const groupToRemove = await this.groupRepository.findOne( groupId, { relations: ["members", "coaches", "trainings"] } );
+        const groupToRemove = await this.groupRepository.findOne( groupId);
         const trainingToRemoveFrom = await this.trainingRepository.findOne( trainingId, { relations: ["attendees", "coaches", "groups"] } );
-
         const groupIndex = trainingToRemoveFrom.groups.indexOf( groupToRemove );
-        const trainingIndex = groupToRemove.trainings.indexOf( trainingToRemoveFrom );
-
-        groupToRemove.trainings.splice( trainingIndex );
         trainingToRemoveFrom.groups.splice( groupIndex );
-
-        this.groupRepository.save( groupToRemove );
         this.trainingRepository.save( trainingToRemoveFrom );
-
         return trainingToRemoveFrom;
     }
 }
