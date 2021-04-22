@@ -26,10 +26,6 @@ export class NavBarComponent implements OnInit {
       title : "Settings",
       routerLink : '/settings',
     },
-    {
-      title : "Login",
-      routerLink : '/registration',
-    },
   ];
   ngOnInit(): void {
     

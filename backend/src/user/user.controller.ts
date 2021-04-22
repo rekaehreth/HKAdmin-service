@@ -75,7 +75,7 @@ export class UserController
             email : string, 
             password : string,
         }
-    ) : Promise<boolean>
+    ) : Promise<{ success : boolean, token ?: string, userId?: number, userRoles?: string}>
     {
         return this.service.login( requestBody.email, requestBody.password );
     }

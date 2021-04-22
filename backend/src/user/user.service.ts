@@ -5,6 +5,7 @@ import { Training } from 'src/training/training.entity';
 import { Connection, DeleteResult, Repository } from 'typeorm';
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {
@@ -13,7 +14,10 @@ export class UserService {
     coachRepository: Repository<Coach>;
     trainingRepository: Repository<Training>;
 
-    constructor(connection: Connection) {
+    constructor(
+        connection: Connection, 
+        private jwtService : JwtService 
+    ) {
         this.userRepository = connection.getRepository(User);
         this.groupRepository = connection.getRepository(Group);
         this.coachRepository = connection.getRepository(Coach);
@@ -163,11 +167,21 @@ export class UserService {
         }
         return availableTrainings;
     }
-    public async login(email: string, rawpassword: string): Promise<boolean> {
+    public async login(email: string, rawpassword: string): Promise<{ success : boolean, token ?: string, userId?: number, userRoles?: string}> {
+        let failResult = {success : false };
         let user = await this.userRepository.findOne({ email });
         if (!user) {
-            return false;
+            return failResult;
         }
-        return bcrypt.compareSync(rawpassword, user.password);
+        const pwdCorrect = bcrypt.compareSync(rawpassword, user.password);
+        if( pwdCorrect ) {
+            return { 
+                success: true, 
+                token: this.jwtService.sign({ id: user.id, roles: user.roles }), 
+                userId: user.id, 
+                userRoles: user.roles
+            }
+        }
+        return failResult;
     }
 }

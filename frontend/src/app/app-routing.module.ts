@@ -12,7 +12,6 @@ const routes: Routes = [
   { path : 'finance', component : FinanceComponent }, 
   { path : 'profile', component : ProfileComponent },
   { path : 'settings', component : SettingsComponent },
-  { path : 'registration', component : RegistrationComponent },
   { path : '', pathMatch : "full", component : LandingpageComponent },
 ];
 

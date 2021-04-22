@@ -1,16 +1,22 @@
 <div fxLayout="column" fxFlexFill>
-  <div id="headerContainer" fxLayout="row" class = "bordered"> 
-    <img>  
-  </div>
-  <div id="contentRowContainer" fxLayout="row">
-    <div id="navBarContainer" fxFlex=15 class = "bordered">
-      <app-nav-bar></app-nav-bar>  
+    <div id="headerContainer" fxLayout="row" class="bordered">
+        <img>
     </div>
-    <div id="contentContainer" fxFlex=70 class = "bordered">
-      <router-outlet></router-outlet>
+    <div id="contentRowContainer" fxLayout="row">
+        <div id="navBarContainer" fxFlex=15 class="bordered">
+            <app-nav-bar></app-nav-bar>
+        </div>
+        <div id="contentContainer" fxFlex=70 class="bordered">
+            <router-outlet></router-outlet>
+        </div>
+        <div id="socialMediaContainer" fxFlex=15 class="bordered">
+            <button *ngIf="isUserLoggedIn" mat-raised-button (click)="openLoginDialog()">
+                Login / Register
+            </button>
+            <button *ngIf="!isUserLoggedIn" mat-raised-button (click)="logOut()">
+                Log out
+            </button>
+            <br />
+            Social media
+        </div>
     </div>
-    <div id="socialMediaContainer" fxFlex=15 class = "bordered"> 
-      <button mat-raised-button (click)="openLoginDialog()"> Login / Register </button>
-      Social media 
-    </div>
-</div>
