@@ -1,12 +1,8 @@
-<!-- <p>training works!</p> -->
-<div >
-    <mat-selection-list #availableTrainings>
-        <mat-list-option *ngFor="let training of trainings">
-            <h3 class="trainingLocation"> {{training.location.name}} </h3>
-            <p class="trainingTime" >{{formatFullDate( training.startTime )}} - {{formatHourDate( training.endTime )}}</p>
-        </mat-list-option>
-    </mat-selection-list>
-</div> 
-<p>
-    Options selected: {{availableTrainings.selectedOptions.selected.length}}
-</p>
+<div fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutGap="32px" fxLayoutAlign="flex-start">
+    <ng-container fxFlex="0 1 calc(33.3% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32 px)" fxFlex.lt-sm="100%">
+        <app-training-card *ngFor="let training of trainings" [trainingData]="training" class="trainingCard">
+            
+        </app-training-card>
+
+    </ng-container>
+</div>

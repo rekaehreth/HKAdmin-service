@@ -25,6 +25,9 @@ import { FinanceComponent } from './finance/finance.component';
 import { ProfileComponent } from './profile/profile.component';
 import { SettingsComponent } from './settings/settings.component';
 import { LandingpageComponent } from './landingpage/landingpage.component';
+import { TrainingCardComponent } from './training/training-card/training-card.component';
+import { GroupComponent } from './group/group.component';
+import { UserComponent } from './user/user.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +40,9 @@ import { LandingpageComponent } from './landingpage/landingpage.component';
     SettingsComponent,
     LandingpageComponent,
     RegistrationComponent,
+    TrainingCardComponent,
+    GroupComponent,
+    UserComponent,
   ],
   imports: [
     BrowserModule,
