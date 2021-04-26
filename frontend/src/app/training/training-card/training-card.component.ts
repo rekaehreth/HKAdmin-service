@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { RawTraining } from 'src/app/types';
 import { formatFullDate, formatHourDate } from 'src/app/utils';
 
@@ -9,7 +9,7 @@ import { formatFullDate, formatHourDate } from 'src/app/utils';
 })
 export class TrainingCardComponent implements OnInit {
     @Input()
-    trainingData!: RawTraining; 
+    trainingData!: RawTraining;
     trainingText: string = "";
 
     formatFullDate = formatFullDate;
@@ -19,6 +19,8 @@ export class TrainingCardComponent implements OnInit {
 
     ngOnInit(): void {
         this.trainingText = JSON.stringify(this.trainingData);
+        
     }
+
 
 }

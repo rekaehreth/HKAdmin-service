@@ -10,13 +10,30 @@
             <router-outlet></router-outlet>
         </div>
         <div id="socialMediaContainer" fxFlex=15 class="bordered">
-            <button *ngIf="isUserLoggedIn" mat-raised-button (click)="openLoginDialog()">
+            <button class="loginButton" *ngIf="isUserLoggedIn" mat-raised-button (click)="openLoginDialog()">
                 Login / Register
             </button>
-            <button *ngIf="!isUserLoggedIn" mat-raised-button (click)="logOut()">
+            <button class="loginButton" *ngIf="!isUserLoggedIn" mat-raised-button (click)="logOut()">
                 Log out
             </button>
             <br />
             Social media
+            <div id="hka-logo">
+                <a href="http://www.hoffmannakademia.hu/">
+                    <img src="../assets/cropped-hka-logo.png" width="40%" height="40%" >
+                </a>
+            </div>
+            <div>
+                <a href="https://www.instagram.com/hoffmann.akademia/">
+                    <img src="../assets/instagram_mini.png" width="10%" height="0%" >
+                </a>
+                <a href="https://www.facebook.com/hoffmannakademia">
+                    <img src="../assets/facebook_mini.png" width="10%" height="10%" >
+                </a>
+                <a href="https://www.youtube.com/channel/UCicLYoQFtJB_onWi0zJPTdQ">
+                    <img src="../assets/youtube_mini.png" width="10%" height="10%" >
+                </a>
+            </div>
         </div>
     </div>
+</div>

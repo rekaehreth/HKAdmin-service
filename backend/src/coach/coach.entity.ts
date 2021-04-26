@@ -12,7 +12,7 @@ export class Coach
     @JoinColumn()
     user : User;
     @ManyToMany( () => Group, group => group.coaches )
-    @JoinTable()
+    @JoinTable({name: "coach_trainings_training"})
     groups : Group[];
     @ManyToMany( () => Training, training => training.coaches )
     trainings : Training[];

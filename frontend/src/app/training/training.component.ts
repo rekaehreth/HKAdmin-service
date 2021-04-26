@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { format } from 'date-fns';
 import { RawTraining } from '../types';
 
@@ -10,9 +10,10 @@ import { RawTraining } from '../types';
 })
 
 export class TrainingComponent implements OnInit {
-
-    constructor(private http: HttpClient) { }
+    colNum: number = 5;
     trainings: any[] = [];
+    
+    constructor(private http: HttpClient) { }
     ngOnInit(): void {
         this.loadTrainings();
     }
@@ -30,5 +31,11 @@ export class TrainingComponent implements OnInit {
     }
     formatHourDate(date: Date): string {
         return format(new Date(date), "HH:mm");
+    }
+    setColNum(): boolean {
+            const screenWidth = window.innerWidth;
+            this.colNum = screenWidth / 360 >= 1 ? screenWidth / 360 : 1;
+
+            return true;
     }
 }

@@ -10,7 +10,6 @@ export class User
     @PrimaryGeneratedColumn()
     id : number;
     @ManyToMany( () => Training, training => training.attendees )
-    @JoinTable()
     trainings : Training[];
     @Column()
     name : string;

@@ -1,8 +1,16 @@
-<div fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutGap="32px" fxLayoutAlign="flex-start">
+<!-- <div fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutGap="32px" fxLayoutAlign="flex-start">
     <ng-container fxFlex="0 1 calc(33.3% - 32px)" fxFlex.lt-md="0 1 calc(50% - 32 px)" fxFlex.lt-sm="100%">
         <app-training-card *ngFor="let training of trainings" [trainingData]="training" class="trainingCard">
             
         </app-training-card>
-
     </ng-container>
+</div> -->
+<div [fxShow]="setColNum()"> 
+    <mat-grid-list [cols]="colNum" >
+        <mat-grid-tile *ngFor="let training of trainings" >
+            <app-training-card [trainingData]="training" class="trainingCard">
+            </app-training-card>
+        </mat-grid-tile>
+    </mat-grid-list>
 </div>
+

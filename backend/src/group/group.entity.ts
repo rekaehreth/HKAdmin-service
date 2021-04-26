@@ -11,12 +11,9 @@ export class Group
     @Column()
     name : string;
     @ManyToMany( () => User, user => user.groups )
-    @JoinTable()
     members : User[];
     @ManyToMany( () => Coach, coach => coach.groups )
     coaches : Coach[];
     @ManyToMany( () => Training, training => training.groups )
-    @JoinTable()
     trainings : Training[];
-
 }
