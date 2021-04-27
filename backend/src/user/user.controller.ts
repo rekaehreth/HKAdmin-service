@@ -36,7 +36,7 @@ export class UserController
             password : string,
             birth_date : Date,
         } 
-    ) : Promise<User>
+    ) : Promise<{success: boolean, user: User }>
     {
         const newUser = await this.service.create(rawUserData);
         return omit(newUser, "password");

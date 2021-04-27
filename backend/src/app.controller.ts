@@ -12,6 +12,6 @@ export class AppController {
 
   @Get("/test")
   getTest(): string {
-    return "Boop";
+    return "Danger shiny goes boing and whoosh!";
   }
 }

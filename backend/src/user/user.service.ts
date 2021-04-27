@@ -51,10 +51,14 @@ export class UserService {
         username: string,
         password: string,
         birth_date: Date,
-    }): Promise<User> {
-        const modifiedUser = await this.userRepository.findOne(userId);
-        Object.keys(rawUserData).forEach((key) => { modifiedUser[key] = (key === "password") ? bcrypt.hashSync(rawUserData[key], 10) : rawUserData[key]; });
-        return await this.userRepository.save(modifiedUser);
+    }): Promise<{success: boolean, user: User }> {
+        if ( !await this.userRepository.findOne(rawUserData.email) ){
+            const modifiedUser = await this.userRepository.findOne(userId);
+            Object.keys(rawUserData).forEach((key) => { modifiedUser[key] = (key === "password") ? bcrypt.hashSync(rawUserData[key], 10) : rawUserData[key]; });
+            return {success: true, user: await this.userRepository.save(modifiedUser)};
+        }
+        return{ success: false, user: undefined };
+
     }
     public async addToGroup(userId: number, groupId: number, forceTrainee: boolean = false): Promise<{ success: boolean, error?: any }> {
         try {

@@ -18,7 +18,7 @@ export class TrainingComponent implements OnInit {
         this.loadTrainings();
     }
     async loadTrainings(): Promise<void> {
-        this.trainings = await this.http.get<RawTraining[]>(`http://localhost:3000/training`).toPromise()
+        this.trainings = await this.http.get<RawTraining[]>(`http://api.hkadmin.icescream.net/training`).toPromise()
             // .catch( error => { 
             //   console.log(error); 
             //   return {error}; 

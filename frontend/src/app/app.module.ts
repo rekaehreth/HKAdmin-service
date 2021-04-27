@@ -16,6 +16,8 @@ import { MatListModule } from '@angular/material/list';
 import { MatDialogModule } from '@angular/material/dialog';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 import { AppComponent } from './app.component';
 import { LocationComponent } from './location/location.component';
@@ -32,45 +34,48 @@ import { UserComponent } from './user/user.component';
 import { EditUserComponent } from './user/edit-user/edit-user.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    LocationComponent,
-    NavBarComponent,
-    TrainingComponent,
-    FinanceComponent,
-    ProfileComponent,
-    SettingsComponent,
-    LandingpageComponent,
-    RegistrationComponent,
-    TrainingCardComponent,
-    GroupComponent,
-    UserComponent,
-    EditUserComponent,
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule,
-    BrowserAnimationsModule,
-    MatGridListModule,
-    MatButtonModule,
-    FlexLayoutModule,
-    MatListModule,
-    MatCardModule,
-    MatTabsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatCheckboxModule,
-    MatIconModule,
-    MatDialogModule,
-    MatExpansionModule, 
-    FormsModule,
-    ReactiveFormsModule,
-  ],
-  providers: [
-    RegistrationComponent,
-    
-  ],
-  bootstrap: [AppComponent]
+    declarations: [
+        AppComponent,
+        LocationComponent,
+        NavBarComponent,
+        TrainingComponent,
+        FinanceComponent,
+        ProfileComponent,
+        SettingsComponent,
+        LandingpageComponent,
+        RegistrationComponent,
+        TrainingCardComponent,
+        GroupComponent,
+        UserComponent,
+        EditUserComponent,
+    ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        HttpClientModule,
+        BrowserAnimationsModule,
+        MatGridListModule,
+        MatButtonModule,
+        FlexLayoutModule,
+        MatListModule,
+        MatCardModule,
+        MatTabsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatCheckboxModule,
+        MatIconModule,
+        MatDialogModule,
+        MatExpansionModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
+
+    ],
+    providers: [
+        RegistrationComponent,
+        MatDatepickerModule,
+    ],
+    bootstrap: [AppComponent]
 })
 export class AppModule { }

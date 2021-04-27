@@ -23,7 +23,7 @@ export class UserComponent implements OnInit {
         }
     }
     async loadUsers(): Promise<void> {
-        this.users = await this.http.get<RawUser[]>(`http://localhost:3000/user`).toPromise()
+        this.users = await this.http.get<RawUser[]>(`http://api.hkadmin.icescream.net/user`).toPromise()
             // .catch( error => { 
             //   console.log(error); 
             //   return {error}; 
