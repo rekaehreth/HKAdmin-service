@@ -15,6 +15,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatListModule } from '@angular/material/list';
 import { MatDialogModule } from '@angular/material/dialog';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 import { AppComponent } from './app.component';
 import { LocationComponent } from './location/location.component';
@@ -28,6 +29,7 @@ import { LandingpageComponent } from './landingpage/landingpage.component';
 import { TrainingCardComponent } from './training/training-card/training-card.component';
 import { GroupComponent } from './group/group.component';
 import { UserComponent } from './user/user.component';
+import { EditUserComponent } from './user/edit-user/edit-user.component';
 
 @NgModule({
   declarations: [
@@ -43,6 +45,7 @@ import { UserComponent } from './user/user.component';
     TrainingCardComponent,
     GroupComponent,
     UserComponent,
+    EditUserComponent,
   ],
   imports: [
     BrowserModule,
@@ -60,9 +63,9 @@ import { UserComponent } from './user/user.component';
     MatCheckboxModule,
     MatIconModule,
     MatDialogModule,
+    MatExpansionModule, 
     FormsModule,
     ReactiveFormsModule,
-    
   ],
   providers: [
     RegistrationComponent,

@@ -1,1 +1,15 @@
-<p>user works!</p>
+<div class="sortOptions">
+    <!-- by name -->
+    <!-- by group -->
+    <!-- by role -->
+</div>
+<mat-list role="list" fxLayout="column">
+    <mat-list-item fxLayout="row" class="userListItem" *ngFor="let user of users">
+        <a mat-raised-button class="userButton" (click)="openEditUserDialog(user)">
+            <p mat-line> 
+                {{ user.name }}
+                <span style="color:gray;" *ngFor="let group of user.groups" > {{ group.name }} </span>
+            </p>
+        </a>
+    </mat-list-item>
+</mat-list>

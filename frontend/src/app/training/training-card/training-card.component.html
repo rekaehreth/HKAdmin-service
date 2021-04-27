@@ -1,7 +1,14 @@
 <mat-card class="trainingCard">
-    <mat-card-title> {{formatFullDate(trainingData.startTime)}} </mat-card-title>
-    <mat-card-subtitle> {{formatHourDate(trainingData.startTime)}} - {{formatHourDate(trainingData.endTime)}} </mat-card-subtitle>
+    <mat-card-title> 
+        <mat-icon> event </mat-icon>
+        {{formatFullDate(trainingData.startTime)}} 
+    </mat-card-title>
+    <mat-card-subtitle> 
+        <mat-icon> schedule </mat-icon>
+        {{formatHourDate(trainingData.startTime)}} - {{formatHourDate(trainingData.endTime)}} 
+    </mat-card-subtitle>
     <mat-card-content>
+        <mat-icon> place </mat-icon>
         {{ trainingData.location.name }}
         <br> Jelentkezés gomb helye
     </mat-card-content>

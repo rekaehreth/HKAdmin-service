@@ -9,7 +9,7 @@ import { AuthService } from '../auth.service';
 export class NavBarComponent implements OnInit {
 
     userRoles: string[] = [];
-    roleSpecificMenuItems: Array<{ title: string, routerLink: string }> = [];
+    roleSpecificMenuItems: Array<{ title: string, routerLink: string, icon: string }> = [];
     constructor() { }
     currentlyActive = -1;
     menuItems = [
@@ -17,31 +17,37 @@ export class NavBarComponent implements OnInit {
             title: "Training",
             routerLink: '/training',
             roles: ["guest", "trainee", "coach", "admin"],
+            icon: "ice_skating",
         },
         {
             title: "Users",
             routerLink: '/users',
             roles: ["admin"],
+            icon: "manage_accounts",
         },
         {
             title: "Groups",
             routerLink: '/groups',
             roles: ["user", "coach", "admin"],
+            icon: "groups",
         },
         {
             title: "Finances",
             routerLink: '/finance',
             roles: ["trainee", "coach", "admin"],
+            icon: "attach_money",
+        },
+        {
+            title: "Profile",
+            routerLink: '/profile',
+            roles: ["trainee", "coach", "admin"],
+            icon: "account_circle",
         },
         {
             title: "Settings",
             routerLink: '/settings',
             roles: ["trainee", "coach", "admin"],
-        },
-        {
-            title: "My Profile",
-            routerLink: '/profile',
-            roles: ["trainee", "coach", "admin"],
+            icon: "settings",
         },
     ];
 
@@ -62,9 +68,9 @@ export class NavBarComponent implements OnInit {
         {
             for( const role of this.userRoles )
             {
-                if( item.roles.includes(role))
+                if( item.roles.includes(role) )
                 {
-                    this.roleSpecificMenuItems.push( { title: item.title, routerLink: item.routerLink } );
+                    this.roleSpecificMenuItems.push( {title: item.title, routerLink: item.routerLink, icon: item.icon } );
                     break;
                 }
             }
