@@ -25,7 +25,7 @@ export class AppComponent {
         })
     }
     get isUserLoggedIn(): boolean {
-        return AuthService.getLoggedInUser() == undefined;
+        return AuthService.getLoggedInUser() === undefined;
     }
     logOut() {
         AuthService.logOutUser();

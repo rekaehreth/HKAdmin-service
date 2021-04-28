@@ -1,8 +1,8 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { AuthService } from '../auth.service';
+import { HttpService } from '../httpService';
 import { RawUser } from '../types';
 import { nameValidator } from '../utils';
 
@@ -12,53 +12,57 @@ import { nameValidator } from '../utils';
     styleUrls: ['./registration.component.scss']
 })
 export class RegistrationComponent implements OnInit {
+    emailLoginControl = new FormControl("", [Validators.required, Validators.email]);
     emailControl = new FormControl("", [Validators.required, Validators.email]);
+    passwordLoginControl = new FormControl("", [Validators.required, Validators.minLength(6)]);
+    rePasswordControl = new FormControl("", [Validators.required, Validators.minLength(6)]);
     passwordControl = new FormControl("", [Validators.required, Validators.minLength(6)]);
     nameControl = new FormControl("", [Validators.required, nameValidator()]);
     birthControl = new FormControl("", Validators.required);
 
     constructor(
-        private http: HttpClient,
+        private http: HttpService,
         public dialogRef: MatDialogRef<RegistrationComponent>,
         @Inject(MAT_DIALOG_DATA) public data: any) { }
     ngOnInit(): void {
     }
-    signIn() {
-        if (!this.emailControl.errors && !this.passwordControl.errors) {
-            this.http.post<{ success: boolean, token?: string, userId?: number, userRoles?: string }>(`http://api.hkadmin.icescream.net/user/login`, { email: this.emailControl.value, password: this.passwordControl.value }).subscribe(result => {
-                console.log(result);
-                if (result.success) {
-                    AuthService.setLoggedInUser(
-                        result.userId ? result.userId : 0,
-                        result.userRoles ? result.userRoles.split(" ") : [],
-                        result.token ? result.token : "");
-                    this.dialogRef.close({ "succes": "true" });
-                }
-            });
+    async signIn() {
+        if (!this.emailLoginControl.errors && !this.passwordLoginControl.errors) {
+            const result = await this.http.post<{ success: boolean, token?: string, userId?: number, userRoles?: string }>
+                ('user/login', { email: this.emailLoginControl.value, password: this.passwordLoginControl.value });
+            console.log(result);
+            if (result.success) {
+                AuthService.setLoggedInUser(
+                    result.userId ? result.userId : 0,
+                    result.userRoles ? result.userRoles.split(" ") : [],
+                    result.token ? result.token : "");
+                this.dialogRef.close({ "succes": "true" });
+            }
         }
     }
-    register() {
-        console.log("debugging");
-        if (!this.emailControl.errors && !this.passwordControl.errors && !this.nameControl.errors && !this.birthControl.errors) {
-            console.log("debugging - No errors");
-            this.http.post<{ success: boolean, user: RawUser }>(`http://api.hkadmin.icescream.net/user/new`, { name: this.nameControl.value, email: this.emailControl.value, birthdate: this.birthControl.value, password: this.passwordControl.value }).subscribe(result => {
+    async register() {
+        if ( this.checkRegisterForm() ) {
+            let result = await this.http.post<{ success: boolean, user: RawUser }>('user/new', { name: this.nameControl.value, email: this.emailControl.value, birth_date: this.birthControl.value, password: this.passwordControl.value });
+            if (result.success) {
+                let loginResult = await this.http.post<{ success: boolean, token?: string, userId?: number, userRoles?: string }>('user/login', { email: this.emailControl.value, password: this.passwordControl.value })
                 console.log(result);
+                debugger;
                 if (result.success) {
-                    this.http.post<{ success: boolean, token?: string, userId?: number, userRoles?: string }>
-                    (`http://api.hkadmin.icescream.net/user/login`, { email: this.emailControl.value, password: this.passwordControl.value })
-                    .subscribe(result => {
-                        console.log(result);
-                        if (result.success) {
-                            AuthService.setLoggedInUser(
-                                result.userId ? result.userId : 0,
-                                result.userRoles ? result.userRoles.split(" ") : [],
-                                result.token ? result.token : "");
-                            this.dialogRef.close({ "succes": "true" });
-                        }
-                    });
+                    AuthService.setLoggedInUser(
+                        loginResult.userId ? loginResult.userId : 0,
+                        loginResult.userRoles ? loginResult.userRoles.split(" ") : [],
+                        loginResult.token ? loginResult.token : "");
+                    this.dialogRef.close({ "succes": "true" });
                 }
-            });
-
+            }
         }
+    }
+    checkRegisterForm(): boolean {
+        const valid = !this.emailControl.errors 
+            && !this.passwordControl.errors 
+            && !this.nameControl.errors 
+            && !this.birthControl.errors
+            && this.passwordControl.value === this.rePasswordControl.value;
+        return valid;
     }
 }
