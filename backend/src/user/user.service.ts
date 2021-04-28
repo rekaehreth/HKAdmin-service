@@ -33,13 +33,17 @@ export class UserService {
         name: string,
         roles: string,
         email: string,
-        username: string,
         password: string,
         birth_date: Date,
-    }): Promise<User> {
-        const newUser = new User();
-        Object.keys(rawUserData).forEach((key) => { newUser[key] = (key === "password") ? bcrypt.hashSync(rawUserData[key], 10) : rawUserData[key]; });
-        return await this.userRepository.save(newUser);
+    }): Promise<{success: boolean, user: User }> {
+        if ( !await this.userRepository.findOne(rawUserData.email) ){
+            const newUser = new User();
+            Object.keys(rawUserData).forEach((key) => { newUser[key] = (key === "password") ? bcrypt.hashSync(rawUserData[key], 10) : rawUserData[key]; });
+            newUser.roles = "trainee";
+            return {success: true, user: await this.userRepository.save(newUser)};
+        }
+        return{ success: false, user: undefined };
+        
     }
     public async delete(id: number): Promise<DeleteResult> {
         return await this.userRepository.delete(id);
@@ -48,7 +52,6 @@ export class UserService {
         name: string,
         roles: string,
         email: string,
-        username: string,
         password: string,
         birth_date: Date,
     }): Promise<{success: boolean, user: User }> {

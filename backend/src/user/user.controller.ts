@@ -32,14 +32,13 @@ export class UserController
             name : string,
             roles : string,
             email : string,
-            username : string, 
             password : string,
             birth_date : Date,
         } 
     ) : Promise<{success: boolean, user: User }>
     {
         const newUser = await this.service.create(rawUserData);
-        return omit(newUser, "password");
+        return { success: newUser.success, user: omit(newUser.user, "password")};
     }
 
     @Delete('/:id')
@@ -57,15 +56,14 @@ export class UserController
                 name : string,
                 roles : string,
                 email : string,
-                username : string, 
                 password : string,
                 birth_date : Date,
             }
         }
-    ) : Promise<User>
+    ) : Promise<{success: boolean, user: User }>
     {
         const modUser = await this.service.modify(requestBody.userId, requestBody.rawUserData);
-        return omit(modUser, "password");
+        return { success: modUser.success, user: omit(modUser.user, "password")};
     }
 
     @Post('/login')

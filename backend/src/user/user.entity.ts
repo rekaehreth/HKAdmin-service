@@ -17,8 +17,6 @@ export class User
     roles : string; // trainee | coach | guardian | guest | admin
     @Column()
     email : string;
-    @Column()
-    username : string;
     @Column( { nullable : true } )
     password : string;
     @ManyToMany( () => Group, group => group.members)

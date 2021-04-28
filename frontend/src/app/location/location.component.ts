@@ -22,7 +22,7 @@ export class LocationComponent implements OnInit {
 
   async loadLocation() : Promise<void> {
     console.log(this.locationId);
-    const locationObj = await this.http.get<RawLocation>( `http://api.hkadmin.icescream.net/location/${this.locationId}` ).toPromise()
+    const locationObj = await this.http.get<RawLocation>( `https://hkadmin-api.icescream.net/location/${this.locationId}` ).toPromise()
     // .catch( error => { 
     //   console.log(error); 
     //   return {error}; 
