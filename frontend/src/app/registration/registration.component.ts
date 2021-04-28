@@ -25,7 +25,7 @@ export class RegistrationComponent implements OnInit {
     }
     signIn() {
         if (!this.emailControl.errors && !this.passwordControl.errors) {
-            this.http.post<{ success: boolean, token?: string, userId?: number, userRoles?: string }>(`http://api.hkadmin.icescream.net/user/login`, { email: this.emailControl.value, password: this.passwordControl.value }).subscribe(result => {
+            this.http.post<{ success: boolean, token?: string, userId?: number, userRoles?: string }>(`https://hkadmin-api.icescream.net/user/login`, { email: this.emailControl.value, password: this.passwordControl.value }).subscribe(result => {
                 console.log(result);
                 if (result.success) {
                     AuthService.setLoggedInUser(
@@ -39,13 +39,13 @@ export class RegistrationComponent implements OnInit {
     }
     register() {
         console.log("debugging");
-        if (!this.emailControl.errors && !this.passwordControl.errors && !this.nameControl.errors && !this.birthControl.errors) {
+        // if (!this.emailControl.errors && !this.passwordControl.errors /*&& !this.nameControl.errors*/ && !this.birthControl.errors) {
             console.log("debugging - No errors");
-            this.http.post<{ success: boolean, user: RawUser }>(`http://api.hkadmin.icescream.net/user/new`, { name: this.nameControl.value, email: this.emailControl.value, birthdate: this.birthControl.value, password: this.passwordControl.value }).subscribe(result => {
+            this.http.post<{ success: boolean, user: RawUser }>(`https://hkadmin-api.icescream.net/user/new`, { name: this.nameControl.value, email: this.emailControl.value, birthdate: this.birthControl.value, password: this.passwordControl.value }).subscribe(result => {
                 console.log(result);
                 if (result.success) {
                     this.http.post<{ success: boolean, token?: string, userId?: number, userRoles?: string }>
-                    (`http://api.hkadmin.icescream.net/user/login`, { email: this.emailControl.value, password: this.passwordControl.value })
+                    (`https://hkadmin-api.icescream.net/user/login`, { email: this.emailControl.value, password: this.passwordControl.value })
                     .subscribe(result => {
                         console.log(result);
                         if (result.success) {
@@ -58,7 +58,6 @@ export class RegistrationComponent implements OnInit {
                     });
                 }
             });
-
-        }
+        // }
     }
 }
