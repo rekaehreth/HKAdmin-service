@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { Training } from 'src/training/training.entity';
 import { DeleteResult } from 'typeorm';
 import { User } from './user.entity';
 import { UserService } from './user.service';
 import { omit } from 'lodash';
+import { AdminAuthGuard, LoggedInAuthGuard } from './auth/jwt-auth.guard';
 
 @Controller('user')
 export class UserController 
@@ -13,6 +14,7 @@ export class UserController
         private readonly service : UserService
     ){}
     
+    @UseGuards( AdminAuthGuard )
     @Get()
     async getAll() : Promise<User[]> {
         const allUsers = await this.service.getAll();
