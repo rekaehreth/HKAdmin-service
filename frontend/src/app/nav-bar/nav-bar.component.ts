@@ -28,7 +28,7 @@ export class NavBarComponent implements OnInit {
         {
             title: "Groups",
             routerLink: '/groups',
-            roles: ["user", "coach", "admin"],
+            roles: ["trainee", "coach", "admin"],
             icon: "groups",
         },
         {

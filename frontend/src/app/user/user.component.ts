@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { RawUser } from '../types';
 import { MatDialog } from '@angular/material/dialog';
 import { EditUserComponent } from './edit-user/edit-user.component';
+import { HttpService } from '../httpService';
 
 @Component({
     selector: 'app-user',
@@ -13,7 +14,7 @@ export class UserComponent implements OnInit {
     users : RawUser[] = [];
     panelOpenState: boolean[] = [];
     constructor(
-        private http: HttpClient,
+        private http: HttpService,
         public dialog: MatDialog,
         ) { }
     ngOnInit(): void {
@@ -23,12 +24,7 @@ export class UserComponent implements OnInit {
         }
     }
     async loadUsers(): Promise<void> {
-        this.users = await this.http.get<RawUser[]>(`https://hkadmin-api.icescream.net/user`).toPromise()
-            // .catch( error => { 
-            //   console.log(error); 
-            //   return {error}; 
-            // } )
-            ;
+        this.users = await this.http.get<RawUser[]>('user');
         console.log(this.users);
     }
     openEditUserDialog( user : RawUser ) {
