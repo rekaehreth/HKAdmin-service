@@ -22,3 +22,11 @@ export type RawUser = {
     payments : any[];
     // children : any[];
 }
+
+export type RawLocation = {
+    id : number;
+    name : string;
+    capacity : number;
+    min_attendees : number;
+    trainings : any[];
+}

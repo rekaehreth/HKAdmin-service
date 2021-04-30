@@ -1,7 +1,9 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { format } from 'date-fns';
+import { HttpService } from '../httpService';
 import { RawTraining } from '../types';
+import { NewTrainingComponent } from './new-training/new-training.component';
 
 @Component({
     selector: 'app-training',
@@ -13,17 +15,15 @@ export class TrainingComponent implements OnInit {
     colNum: number = 5;
     trainings: any[] = [];
     
-    constructor(private http: HttpClient) { }
+    constructor(
+        private http: HttpService,
+        public dialog: MatDialog,
+        ) { }
     ngOnInit(): void {
         this.loadTrainings();
     }
     async loadTrainings(): Promise<void> {
-        this.trainings = await this.http.get<RawTraining[]>(`https://hkadmin-api.icescream.net/training`).toPromise()
-            // .catch( error => { 
-            //   console.log(error); 
-            //   return {error}; 
-            // } )
-            ;
+        this.trainings = await this.http.get<RawTraining[]>('training');
         console.log(this.trainings);
     }
     formatFullDate(date: Date): string {
@@ -37,5 +37,15 @@ export class TrainingComponent implements OnInit {
             this.colNum = screenWidth / 360 >= 1 ? screenWidth / 360 : 1;
 
             return true;
+    }
+    openNewTrainingDialog() {
+        const dialogRef = this.dialog.open(NewTrainingComponent, {
+            width: '50vw',
+            disableClose: true,
+        });
+        dialogRef.afterClosed().subscribe(result => {
+            console.log("New training dialog closed ", result);
+            this.loadTrainings();
+        })
     }
 }

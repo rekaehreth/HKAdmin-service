@@ -15,8 +15,7 @@
                         <mat-icon matSuffix>email</mat-icon>
                     </mat-form-field>
                     <mat-form-field>
-                        <input matInput placeholder="Password" type="password" name="password"
-                            [formControl]="passwordLoginControl">
+                        <input matInput placeholder="Password" type="password" name="password" [formControl]="passwordLoginControl">
                         <mat-error *ngIf="passwordLoginControl.errors && passwordLoginControl.errors.required">
                             Password is required
                         </mat-error>

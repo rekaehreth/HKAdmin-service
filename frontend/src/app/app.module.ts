@@ -18,6 +18,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select'
 
 import { AppComponent } from './app.component';
 import { LocationComponent } from './location/location.component';
@@ -32,6 +33,7 @@ import { TrainingCardComponent } from './training/training-card/training-card.co
 import { GroupComponent } from './group/group.component';
 import { UserComponent } from './user/user.component';
 import { EditUserComponent } from './user/edit-user/edit-user.component';
+import { NewTrainingComponent } from './training/new-training/new-training.component';
 
 @NgModule({
     declarations: [
@@ -48,6 +50,7 @@ import { EditUserComponent } from './user/edit-user/edit-user.component';
         GroupComponent,
         UserComponent,
         EditUserComponent,
+        NewTrainingComponent,
     ],
     imports: [
         BrowserModule,
@@ -70,7 +73,8 @@ import { EditUserComponent } from './user/edit-user/edit-user.component';
         ReactiveFormsModule,
         MatDatepickerModule,
         MatNativeDateModule,
-
+        MatSelectModule,
+        
     ],
     providers: [
         RegistrationComponent,
