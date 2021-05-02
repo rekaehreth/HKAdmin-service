@@ -10,11 +10,11 @@
             <router-outlet></router-outlet>
         </div>
         <div id="socialMediaContainer" fxFlex=15 class="bordered">
-            <button class="loginButton" *ngIf="isUserLoggedIn" mat-raised-button (click)="openLoginDialog()">
+            <button class="loginButton" *ngIf="!isUserLoggedIn" mat-raised-button (click)="openLoginDialog()">
                 <mat-icon> login </mat-icon>
                 Login / Register
             </button>
-            <button class="loginButton" *ngIf="!isUserLoggedIn" mat-raised-button (click)="logOut()">
+            <button class="loginButton" *ngIf="isUserLoggedIn" mat-raised-button (click)="logOut()">
                 <mat-icon> logout </mat-icon>
                 Logout
             </button>

@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
 import { RegistrationComponent } from './registration/registration.component';
 
@@ -8,11 +9,18 @@ import { RegistrationComponent } from './registration/registration.component';
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
     title = 'frontend';
     constructor(
         public dialog: MatDialog,
+        private authService: AuthService,
+        private router: Router
     ) {
+    }
+    ngOnInit() {
+        this.authService.logOutForced.subscribe( _ => {
+            this.alertForcedLogout();
+        })
     }
     openLoginDialog() {
         const dialogRef = this.dialog.open(RegistrationComponent, {
@@ -25,9 +33,13 @@ export class AppComponent {
         })
     }
     get isUserLoggedIn(): boolean {
-        return AuthService.getLoggedInUser() === undefined;
+        return this.authService.isLoggedIn();
+    }
+    alertForcedLogout() {
+        window.alert("Session expired. Please log in again")
     }
     logOut() {
-        AuthService.logOutUser();
+        this.authService.logOutUser();
+        this.router.navigate(['']);
     }
 }

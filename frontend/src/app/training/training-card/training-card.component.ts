@@ -35,7 +35,7 @@ export class TrainingCardComponent implements OnInit {
             disableClose: true,
         });
         dialogRef.afterClosed().subscribe(result => {
-            
+            console.log(result);
         })
     }
     deleteTraining() {

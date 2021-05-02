@@ -1,10 +1,11 @@
 <mat-card>
-    <mat-card-title style="text-align:center;">Add new training</mat-card-title>
+    <mat-card-title style="text-align:center;" *ngIf="mode==='new'">Add new training</mat-card-title>
+    <mat-card-title style="text-align:center;"*ngIf="mode==='edit'" >Edit training</mat-card-title>
     <mat-card-content>
         <form action="">
             <mat-form-field>
                 <mat-label> Location </mat-label>
-                <mat-select #locationSelector [(value)]="selectedLocationId">
+                <mat-select #locationSelector [(value)]="selectedLocationId" required>
                     <mat-option *ngFor="let location of locations" [value]="location.id">
                         {{location.name}}
                     </mat-option>
@@ -15,7 +16,7 @@
                 <mat-label>Choose a day</mat-label>
                 <input matInput [matDatepicker]="picker" placeHolder="Date of training" required name="day" [formControl]="dateControl"/>
                 <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-datepicker #picker></mat-datepicker>
+                <mat-datepicker #picker [startAt]="displayDate"></mat-datepicker>
                 <mat-error *ngIf="dateControl.errors && dateControl.errors.required">
                     Date of training is required
                 </mat-error>
@@ -32,6 +33,9 @@
         </form>
         <button mat-raised-button color="primary" class="login-button" (click)="saveTraining()">
             Save
+        </button>
+        <button mat-raised-button color="secondary" class="cancel-button" (click)="cancel()">
+            Cancel
         </button>
     </mat-card-content>
 </mat-card>

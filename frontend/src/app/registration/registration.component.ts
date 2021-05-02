@@ -22,6 +22,7 @@ export class RegistrationComponent implements OnInit {
 
     constructor(
         private http: HttpService,
+        private authService: AuthService, 
         public dialogRef: MatDialogRef<RegistrationComponent>,
         @Inject(MAT_DIALOG_DATA) public data: any) { }
     ngOnInit(): void {
@@ -32,7 +33,7 @@ export class RegistrationComponent implements OnInit {
                 ('user/login', { email: this.emailLoginControl.value, password: this.passwordLoginControl.value });
             console.log(result);
             if (result.success) {
-                AuthService.setLoggedInUser(
+                this.authService.setLoggedInUser(
                     result.userId ? result.userId : 0,
                     result.userRoles ? result.userRoles.split(" ") : [],
                     result.token ? result.token : "");
@@ -48,7 +49,7 @@ export class RegistrationComponent implements OnInit {
                 console.log(result);
                 debugger;
                 if (result.success) {
-                    AuthService.setLoggedInUser(
+                    this.authService.setLoggedInUser(
                         loginResult.userId ? loginResult.userId : 0,
                         loginResult.userRoles ? loginResult.userRoles.split(" ") : [],
                         loginResult.token ? loginResult.token : "");

@@ -7,10 +7,11 @@
         <mat-icon> schedule </mat-icon>
         {{formatHourDate(trainingData.startTime)}} - {{formatHourDate(trainingData.endTime)}} 
     </mat-card-subtitle>
-    <mat-card-content>
-        <mat-icon> place </mat-icon>
-        {{ trainingData.location.name }}
-        <br> 
+    <mat-card-content>        
+        <p *ngIf="trainingData.location">
+            <mat-icon> place </mat-icon>
+            {{ trainingData.location.name }}
+        </p>
         <div class="modifierButtons">
             <button mat-raised-button (click)="openRegisterDialog()">
                 <mat-icon> person_add </mat-icon>

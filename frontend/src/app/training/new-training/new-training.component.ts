@@ -3,7 +3,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { HttpService } from 'src/app/httpService';
 import { RawLocation } from 'src/app/types';
-import { formatFullDate } from 'src/app/utils';
+import { formatFullDate, formatHourDate } from 'src/app/utils';
 
 @Component({
     selector: 'app-new-training',
@@ -14,12 +14,16 @@ export class NewTrainingComponent implements OnInit {
     selectedLocationId: number = 0;
     locations: RawLocation[] = [];
     mode: string = "new";
+    displayDate: Date = new Date();
+    startHour: Date = new Date();
+    endHour: Date = new Date();
 
-    dateControl = new FormControl("", Validators.required);
-    startTimeControl = new FormControl("", Validators.required);
-    endTimeControl = new FormControl("", Validators.required);
+    dateControl = new FormControl();
+    startTimeControl = new FormControl();
+    endTimeControl = new FormControl();
 
     formatFullDate = formatFullDate;
+    formatHourDate = formatHourDate;
 
     constructor(
         private http: HttpService,
@@ -30,8 +34,18 @@ export class NewTrainingComponent implements OnInit {
         this.loadLocations();
         if( this.data ) {
             this.mode = "edit";
+            this.selectedLocationId = this.data.location.id;
+            this.displayDate = new Date(this.data.startTime);
+            this.startHour = this.data.startTime;
+            this.endHour = this.data.endTime;
         }
-        console.log(this.mode);
+        this.initControls();
+        console.log(this.data);
+    }
+    initControls() {
+        this.dateControl = new FormControl(this.displayDate, Validators.required);
+        this.startTimeControl = new FormControl(formatHourDate(this.startHour), Validators.required);
+        this.endTimeControl = new FormControl(formatHourDate(this.endHour), Validators.required);
     }
     async loadLocations(): Promise<void> {
         this.locations = await this.http.get<RawLocation[]>('location');
@@ -45,6 +59,9 @@ export class NewTrainingComponent implements OnInit {
                 endTime: formatFullDate(this.dateControl.value) + " " + this.endTimeControl.value
             }});
         console.log(newTraining);
-        this.dialogRef.close()
+        this.dialogRef.close({refreshNeeded: true});
     } 
+    cancel() {
+        this.dialogRef.close({refreshNeeded: false});
+    }
 }

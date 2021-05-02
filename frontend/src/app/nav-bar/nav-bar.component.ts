@@ -10,7 +10,9 @@ export class NavBarComponent implements OnInit {
 
     userRoles: string[] = [];
     roleSpecificMenuItems: Array<{ title: string, routerLink: string, icon: string }> = [];
-    constructor() { }
+    constructor(
+        private authService: AuthService, 
+    ) { }
     currentlyActive = -1;
     menuItems = [
         {
@@ -52,11 +54,10 @@ export class NavBarComponent implements OnInit {
     ];
 
     ngOnInit(): void {
-        this.userRoles = AuthService.getLoggedInRoles();
+        this.userRoles = this.authService.getLoggedInRoles();
         this.getRoleSpecificMenuItems();
-        AuthService.loginStatusChange.subscribe( _ => {
-            // debugger;
-            this.userRoles = AuthService.getLoggedInRoles();
+        this.authService.loginStatusChange.asObservable().subscribe( _ => {
+            this.userRoles = this.authService.getLoggedInRoles();
             this.getRoleSpecificMenuItems();
         });
     }

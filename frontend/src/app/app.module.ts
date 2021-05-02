@@ -17,7 +17,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select'
 
 import { AppComponent } from './app.component';
@@ -34,6 +34,9 @@ import { GroupComponent } from './group/group.component';
 import { UserComponent } from './user/user.component';
 import { EditUserComponent } from './user/edit-user/edit-user.component';
 import { NewTrainingComponent } from './training/new-training/new-training.component';
+import { AuthService } from './auth.service';
+import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
+import { RoleGuardService } from './role-guard.service';
 
 @NgModule({
     declarations: [
@@ -79,6 +82,11 @@ import { NewTrainingComponent } from './training/new-training/new-training.compo
     providers: [
         RegistrationComponent,
         MatDatepickerModule,
+        AuthService,
+        { provide: JWT_OPTIONS, useValue: JWT_OPTIONS },
+        JwtHelperService,
+        RoleGuardService,
+        {provide: MAT_DATE_LOCALE, useValue: 'hu-HU'},
     ],
     bootstrap: [AppComponent]
 })

@@ -1,38 +1,51 @@
 import { Subject } from "rxjs";
+import { JwtHelperService } from "@auth0/angular-jwt";
+import { Injectable } from "@angular/core";
 
+@Injectable()
 export class AuthService {
-    static loginStatusChange = new Subject();
-    static getLoggedInUser(): { userId: number, userRoles: string[] } | undefined {
-        const loggedInUser = localStorage.getItem("loggedInUser");
-        if (loggedInUser) {
-            return JSON.parse(loggedInUser);
-        }
-        return undefined;
-    }
-    static getLoggedInUserToken(): string {
-        const token = window.localStorage.getItem("userToken");
+    constructor(
+        public jwtHelper: JwtHelperService
+    ) { }
+    loginStatusChange = new Subject();
+    logOutForced = new Subject();
+    getLoggedInUserToken(): string {
+        const token = localStorage.getItem("userToken");
         return (token === null) ? "" : token;
     }
-    static getLoggedInRoles(): string[] {
-        const user = this.getLoggedInUser();
-        if (user) {
-            return user.userRoles;
+    getLoggedInRoles(): string[] {
+        if (this.isLoggedIn()) {
+            return this.jwtHelper.decodeToken( this.getLoggedInUserToken() ).roles.split(" ");
         }
         else {
             return ["guest"];
         }
     }
-    static setLoggedInUser(userId: number, userRoles: string[], token: string) {
-        window.localStorage.setItem("loggedInUser", JSON.stringify({ userId, userRoles }));
-        window.localStorage.setItem("userToken", token);
+    setLoggedInUser(userId: number, userRoles: string[], token: string) {
+        localStorage.setItem("userToken", token);
         this.loginStatusChange.next("login");
     }
-    static logOutUser() {
-        window.localStorage.removeItem("loggedInUser");
-        window.localStorage.removeItem("userToken");
+    logOutUser() {
+        localStorage.removeItem("userToken");
         this.loginStatusChange.next("logout");
     }
-    static triggerLoginStatusChange(): void {
+    triggerLoginStatusChange(): void {
         this.loginStatusChange.next("Meow =^_^= ");
+    }
+    isLoggedIn(): boolean {
+        return localStorage.getItem("userToken") !== null;
+    }
+
+    isAuthenticated(): boolean {
+        const token = this.getLoggedInUserToken();
+        if( token === "" ) {
+            return false;
+        }
+        const isAuthenticated = !this.jwtHelper.isTokenExpired(token);
+        if( !isAuthenticated ){
+            this.logOutUser();
+                this.logOutForced.next("Token expired.");
+        }
+        return isAuthenticated;
     }
 }

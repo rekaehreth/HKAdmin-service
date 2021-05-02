@@ -45,7 +45,9 @@ export class TrainingComponent implements OnInit {
         });
         dialogRef.afterClosed().subscribe(result => {
             console.log("New training dialog closed ", result);
-            this.loadTrainings();
+            if(result.refreshNeeded) {
+                this.loadTrainings();
+            }
         })
     }
 }
