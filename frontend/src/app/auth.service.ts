@@ -21,6 +21,9 @@ export class AuthService {
             return ["guest"];
         }
     }
+    getLoggedInUser() {
+        return this.jwtHelper.decodeToken( this.getLoggedInUserToken() ).userId;
+    }
     setLoggedInUser(userId: number, userRoles: string[], token: string) {
         localStorage.setItem("userToken", token);
         this.loginStatusChange.next("login");

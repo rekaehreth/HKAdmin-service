@@ -30,3 +30,11 @@ export type RawLocation = {
     min_attendees : number;
     trainings : any[];
 }
+
+export type RawGroup = {
+    id : number;
+    name : string;
+    members : any[];
+    coaches : any[];
+    trainings : any[];
+}
