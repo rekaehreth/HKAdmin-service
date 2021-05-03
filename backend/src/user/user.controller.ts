@@ -177,7 +177,13 @@ export class UserController
     }
 
     @Get('listAvailableTrainings/:id')
-    async listAvailableTrainings( @Param('id') id : number ) : Promise<[Training, boolean][]> {
+    async listAvailableTrainings( @Param('id') id: number ) : Promise<[Training, boolean][]> {
         return await this.service.listAvailableTrainings( id );
+    }
+
+    @Get('getCoachId/:id')
+    async getCoachIdLinkedToUser( @Param('id') id: number ) : Promise<number> {
+        const coach = await this.service.getCoach( id );
+        return coach.id;
     }
 }
