@@ -191,4 +191,8 @@ export class UserService {
         }
         return failResult;
     }
+    public async getCoach(userId: number): Promise<Coach> {
+        const user = await this.userRepository.findOne( userId );
+        return await this.coachRepository.findOne( {user: user} );
+    }
 }
