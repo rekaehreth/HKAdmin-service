@@ -19,6 +19,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select'
+import { MatTableModule } from '@angular/material/table';
+import { MatSortModule } from '@angular/material/sort';
 
 import { AppComponent } from './app.component';
 import { LocationComponent } from './location/location.component';
@@ -77,7 +79,9 @@ import { RoleGuardService } from './role-guard.service';
         MatDatepickerModule,
         MatNativeDateModule,
         MatSelectModule,
-        
+        MatTableModule,
+        MatSortModule,
+
     ],
     providers: [
         RegistrationComponent,

@@ -30,7 +30,7 @@ export class NavBarComponent implements OnInit {
         {
             title: "Groups",
             routerLink: '/groups',
-            roles: ["trainee", "coach", "admin"],
+            roles: ["coach", "admin"],
             icon: "groups",
         },
         {
@@ -45,12 +45,12 @@ export class NavBarComponent implements OnInit {
             roles: ["trainee", "coach", "admin"],
             icon: "account_circle",
         },
-        {
-            title: "Settings",
-            routerLink: '/settings',
-            roles: ["trainee", "coach", "admin"],
-            icon: "settings",
-        },
+        // {
+        //     title: "Settings",
+        //     routerLink: '/settings',
+        //     roles: ["trainee", "coach", "admin"],
+        //     icon: "settings",
+        // },
     ];
 
     ngOnInit(): void {

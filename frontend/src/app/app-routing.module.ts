@@ -5,23 +5,24 @@ import { GroupComponent } from './group/group.component';
 import { LandingpageComponent } from './landingpage/landingpage.component';
 import { ProfileComponent } from './profile/profile.component';
 import { RoleGuardService } from './role-guard.service';
-import { SettingsComponent } from './settings/settings.component';
+// import { SettingsComponent } from './settings/settings.component';
 import { TrainingComponent } from './training/training.component';
 import { UserComponent } from './user/user.component';
 
 
 const routes: Routes = [
-  { path : 'training', component : TrainingComponent },
-  { path : 'finance', component : FinanceComponent }, 
-  { path : 'profile', component : ProfileComponent },
-  { path : 'settings', component : SettingsComponent },
-  { path : 'users', component : UserComponent, canActivate: [RoleGuardService], data: { acceptedRoles: ["admin"] }},
-  { path : 'groups', component : GroupComponent, canActivate: [RoleGuardService], data: { acceptedRoles: ["admin", "coach", "trainee"] } },
-  { path : '', pathMatch : "full", component : LandingpageComponent },
+    { path: 'training', component: TrainingComponent },
+    { path: 'finance', component: FinanceComponent },
+    { path: 'profile', component: ProfileComponent },
+    // { path : 'settings', component : SettingsComponent },
+    { path: 'users', component: UserComponent, canActivate: [RoleGuardService], data: { acceptedRoles: ["admin"] } },
+    { path: 'groups', component: GroupComponent, canActivate: [RoleGuardService], data: { acceptedRoles: ["admin", "coach", "trainee"] } },
+    { path: '', pathMatch: "full", component: LandingpageComponent },
+    // **TODO** add 404 error for non-existent / not-authenticated endpoints
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+    imports: [RouterModule.forRoot(routes)],
+    exports: [RouterModule]
 })
 export class AppRoutingModule { }

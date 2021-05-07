@@ -22,7 +22,7 @@ export class AuthService {
         }
     }
     getLoggedInUser() {
-        return this.jwtHelper.decodeToken( this.getLoggedInUserToken() ).userId;
+        return this.jwtHelper.decodeToken( this.getLoggedInUserToken() ).id;
     }
     setLoggedInUser(userId: number, userRoles: string[], token: string) {
         localStorage.setItem("userToken", token);
