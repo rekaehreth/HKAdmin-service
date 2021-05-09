@@ -1,7 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { RouteConfigLoadStart } from '@angular/router';
 import { AuthService } from 'src/app/auth.service';
 import { HttpService } from 'src/app/httpService';
 import { RawGroup, RawLocation } from 'src/app/types';

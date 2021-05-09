@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { format } from 'date-fns';
+import { AuthService } from '../auth.service';
 import { HttpService } from '../httpService';
 import { RawTraining } from '../types';
+import { formatFullDate, formatHourDate } from '../utils';
 import { NewTrainingComponent } from './new-training/new-training.component';
 
 @Component({
@@ -14,23 +16,36 @@ import { NewTrainingComponent } from './new-training/new-training.component';
 export class TrainingComponent implements OnInit {
     colNum: number = 5;
     trainings: any[] = [];
-    
+    roles: string[] = [];
+
     constructor(
         private http: HttpService,
         public dialog: MatDialog,
+        private authService: AuthService,
         ) { }
     ngOnInit(): void {
         this.loadTrainings();
+        this.roles = this.authService.getLoggedInRoles();
     }
+    formatFullDate = formatFullDate;
+    formatHourDate = formatHourDate;
     async loadTrainings(): Promise<void> {
         this.trainings = await this.http.get<RawTraining[]>('training');
+        if( this.trainings.length != 0 ){
+            this.trainings.sort((a: RawTraining, b: RawTraining) => {
+                if( a.startTime < b.startTime ) {
+                    return -1;
+                }
+                if( a.startTime === b.startTime ) {
+                    return 0;
+                }
+                if( a.startTime > b.startTime ) {
+                    return 1;
+                }
+                return -1;
+            });
+        }
         console.log(this.trainings);
-    }
-    formatFullDate(date: Date): string {
-        return format(new Date(date), "yyyy.MM.dd HH:mm");
-    }
-    formatHourDate(date: Date): string {
-        return format(new Date(date), "HH:mm");
     }
     setColNum(): boolean {
             const screenWidth = window.innerWidth;

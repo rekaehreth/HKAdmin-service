@@ -1,0 +1,13 @@
+<mat-card>
+    <mat-card-title>
+        {{ this.data }}
+    </mat-card-title>
+    <mat-card-actions>
+        <button mat-raised-button color="primary" (click)="confirm()">
+            Yes
+        </button>
+        <button mat-raised-button color="basic" (click)="cancel()">
+            No
+        </button>
+    </mat-card-actions>
+</mat-card>
