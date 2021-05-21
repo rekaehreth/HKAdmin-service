@@ -5,6 +5,7 @@ import { User } from './user.entity';
 import { UserService } from './user.service';
 import { omit } from 'lodash';
 import { AdminAuthGuard, LoggedInAuthGuard } from './auth/jwt-auth.guard';
+import { Coach } from 'src/coach/coach.entity';
 
 @Controller('user')
 export class UserController 
@@ -185,5 +186,9 @@ export class UserController
     async getCoachIdLinkedToUser( @Param('id') id: number ) : Promise<number> {
         const coach = await this.service.getCoach( id );
         return coach.id;
+    }
+    @Get('getCoach/:id')
+    async getCoachLinkedToUser( @Param('id') id: number ) : Promise<Coach> {
+        return await this.service.getCoach( id );
     }
 }

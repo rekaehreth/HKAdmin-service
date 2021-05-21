@@ -30,6 +30,7 @@ export class TrainingController
                 startTime : Date,
                 endTime : Date,
                 status : string, // Planned | Fixed | Past
+                type: string, // Száraz || Jeges | Balett
             } 
         }
     ) : Promise<Training>
@@ -53,6 +54,7 @@ export class TrainingController
                 startTime : Date,
                 endTime : Date,
                 status : string, // Planned | Fixed | Past
+                type: string, // Száraz || Jeges | Balett
             } 
         }
     ) : Promise<Training>

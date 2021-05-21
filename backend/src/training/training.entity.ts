@@ -26,4 +26,6 @@ export class Training
     endTime : Date;
     @Column()
     status : string; // Planned | Fixed | Past
+    @Column()
+    type: string; // Száraz | Jeges | Balett 
 }
