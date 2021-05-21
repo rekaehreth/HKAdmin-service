@@ -1,4 +1,4 @@
-<button mat-raised-button (click)="openNewTrainingDialog()">
+<button mat-raised-button (click)="openNewTrainingDialog()" *ngIf="this.roles.includes('admin') || this.roles.includes('coach')" >
     <mat-icon>
         add
     </mat-icon>
@@ -7,7 +7,7 @@
 <div [fxShow]="setColNum()"> 
     <mat-grid-list [cols]="colNum" >
         <mat-grid-tile *ngFor="let training of trainings" >
-            <app-training-card [trainingData]="training" class="trainingCard">
+            <app-training-card [trainingData]="training" (refreshTrainings)="loadTrainings()" class="trainingCard">
             </app-training-card>
         </mat-grid-tile>
     </mat-grid-list>

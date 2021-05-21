@@ -21,6 +21,7 @@ import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select'
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { AppComponent } from './app.component';
 import { LocationComponent } from './location/location.component';
@@ -39,6 +40,7 @@ import { NewTrainingComponent } from './training/new-training/new-training.compo
 import { AuthService } from './auth.service';
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { RoleGuardService } from './role-guard.service';
+import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 
 @NgModule({
     declarations: [
@@ -56,6 +58,7 @@ import { RoleGuardService } from './role-guard.service';
         UserComponent,
         EditUserComponent,
         NewTrainingComponent,
+        ConfirmDialogComponent,
     ],
     imports: [
         BrowserModule,
@@ -81,7 +84,8 @@ import { RoleGuardService } from './role-guard.service';
         MatSelectModule,
         MatTableModule,
         MatSortModule,
-
+        MatTooltipModule,
+        
     ],
     providers: [
         RegistrationComponent,

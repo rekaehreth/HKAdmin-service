@@ -9,6 +9,10 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
         <td mat-cell *matCellDef="let user"> {{user.name}} </td>
     </ng-container>
+    <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef> Email </th>
+        <td mat-cell *matCellDef="let user"> {{user.email}} </td>
+    </ng-container>
     <!-- Groups Column -->
     <ng-container matColumnDef="groups">
         <th mat-header-cell *matHeaderCellDef> Groups </th>
@@ -28,16 +32,16 @@
     <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef> Actions </th>
         <td mat-cell *matCellDef="let user">
-            <a mat-raised-button class="manageUserRoles" (click)="manageUserRoles(user)">
+            <button mat-raised-button matTooltip="Manage user roles" class="manageUserRoles" (click)="manageUserRoles(user)">
                 <mat-icon>
                     add_moderator
                 </mat-icon>
-            </a>
-            <a mat-raised-button color="warn" (click)="deleteUser(user)">
+            </button>
+            <button mat-raised-button matTooltip="Delete user" color="warn" (click)="deleteUser(user)">
                 <mat-icon>
                     delete
                 </mat-icon>
-            </a>
+            </button>
         </td>
     </ng-container>
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

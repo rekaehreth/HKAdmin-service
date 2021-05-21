@@ -5,6 +5,7 @@ import { EditUserComponent } from './edit-user/edit-user.component';
 import { HttpService } from '../httpService';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 
 @Component({
     selector: 'app-user',
@@ -15,7 +16,7 @@ export class UserComponent implements OnInit, AfterViewInit {
     users: RawUser[] = [];
     dataSource = new MatTableDataSource<RawUser>();
     @ViewChild(MatSort) sort?: MatSort;
-    displayedColumns: string[] = ['name', 'groups', 'roles', 'actions'];
+    displayedColumns: string[] = ['name', 'email', 'groups', 'roles', 'actions'];
     panelOpenState: boolean[] = [];
     constructor(
         private http: HttpService,
@@ -25,7 +26,7 @@ export class UserComponent implements OnInit, AfterViewInit {
         this.loadUsers();
     }
     ngAfterViewInit() {
-        console.log( this.sort )
+        console.log(this.sort)
         if (this.sort) {
             this.dataSource.sort = this.sort;
         }
@@ -44,11 +45,34 @@ export class UserComponent implements OnInit, AfterViewInit {
             disableClose: true,
         });
         dialogRef.afterClosed().subscribe(result => {
-            console.log("Edit user roles dialog closed ", result);
-        })
+            console.log(result);
+            if (result.action === "save") {
+                console.log( result.newRoles );
+                const rolesString = result.newRoles.join(" ");
+                this.http.post<{}>('user/modify', {
+                    userId: user.id,
+                    rawUserData: {
+                        email: user.email,
+                        roles: rolesString
+                    }
+                });
+                this.loadUsers();
+            }
+        });
     }
     deleteUser(user: RawUser): void {
-        // **TODO** verify dialog + subscribe to ok 
+        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+            width: '50vw',
+            data: "Do you really want to delete this user?",
+            disableClose: true,
+        });
+        dialogRef.afterClosed().subscribe(async result => {
+            console.log(result);
+            if (result.result === "confirm") {
+                await this.http.delete(`user/${user.id}`);
+                this.loadUsers();
+            }
+        });
     }
     filterByRole(target: any) {
 
