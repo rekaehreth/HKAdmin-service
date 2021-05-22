@@ -23,6 +23,14 @@ export type RawUser = {
     // children : any[];
 }
 
+export type RawCoach = {
+    id: number, 
+    user: RawUser,
+    groups: RawGroup[],
+    trainings: RawTraining[],
+    wage: number
+}
+
 export type RawLocation = {
     id : number;
     name : string;

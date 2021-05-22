@@ -41,6 +41,8 @@ import { AuthService } from './auth.service';
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { RoleGuardService } from './role-guard.service';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
+import { RegistrationRoleDialogComponent } from './training/training-card/registration-role-dialog/registration-role-dialog.component';
+import { RegisterGuestDialogComponent } from './training/training-card/register-guest-dialog/register-guest-dialog.component';
 
 @NgModule({
     declarations: [
@@ -59,6 +61,8 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
         EditUserComponent,
         NewTrainingComponent,
         ConfirmDialogComponent,
+        RegistrationRoleDialogComponent,
+        RegisterGuestDialogComponent,
     ],
     imports: [
         BrowserModule,
