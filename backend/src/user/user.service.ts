@@ -196,6 +196,7 @@ export class UserService {
     }
     public async getCoach(userId: number): Promise<Coach> {
         const user = await this.userRepository.findOne( userId );
-        return await this.coachRepository.findOne( {user: user} );
+        return await this.coachRepository.findOne( { where: { user: user } } );
+        // userRepository.find({ where: { name: { first: "Timber", last: "Saw" } } });
     }
 }

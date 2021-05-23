@@ -17,7 +17,12 @@ export class FinanceController {
     @Get('/:id')
     async getById( @Param('id') id : number ) : Promise<Payment> 
     {
-        return await this. service.getById(id);
+        return await this.service.getById(id);
+    }
+    @Get('getByUser/:userId')
+    async getByUser( @Param('userId') userId : number ) : Promise<Payment[]> 
+    {
+        return await this.service.getByUser(userId);
     }
     @Post('/new')
     async create

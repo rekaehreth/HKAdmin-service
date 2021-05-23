@@ -33,7 +33,6 @@ export class TrainingCardComponent implements OnInit {
     ngOnInit(): void {
         this.roles = this.authService.getLoggedInRoles();
     }
-    openRegisterDialog() { }
     openEditTrainingDialog() {
         const dialogRef = this.dialog.open(NewTrainingComponent, {
             width: '50vw',
@@ -97,6 +96,7 @@ export class TrainingCardComponent implements OnInit {
                 }
             });
         }
+        // **TODO** successfull registration popup
         // **TODO** a payment should always contain the name and email address of the linked user
         // **TODO** change icon from person_add to person_remove
     }
@@ -112,7 +112,7 @@ export class TrainingCardComponent implements OnInit {
             "rawPaymentData" : {
                 "amount" : amount,
                 "status" : "pending", 
-                "description": `Training ${user.name} ${user.email}, ${this.trainingData.location.name} ${formatFullDate(this.trainingData.startTime)} ${formatHourDate(this.trainingData.startTime)}`
+                "description": `Training ${user.name} ${user.email}, ${this.trainingData.location.name} ${formatFullDate(this.trainingData.startTime)} ${formatHourDate(this.trainingData.startTime)}-${formatHourDate(this.trainingData.endTime)}`
             }
         });
         // **TODO** Handle time differences --> 50 mins - 4000, 110 min - 8000, 
@@ -121,6 +121,8 @@ export class TrainingCardComponent implements OnInit {
     async addCoachToTraining() {
         const user = this.authService.getLoggedInUser();
         const coach = await this.http.get<RawCoach>(`user/getCoach/${user.id}`);
+        console.log(coach);
+        // nem talál coach
         this.http.post<{}>('coach/addToTraining', {
             "coachId": coach.id,
             "trainingId": this.trainingData.id
@@ -130,7 +132,9 @@ export class TrainingCardComponent implements OnInit {
             "userId" : user.id,
             "rawPaymentData" : {
                 "amount" : coach.wage,
-                "description": `Coaching ${user.name} ${user.email}, ${this.trainingData.location.name} ${formatFullDate(this.trainingData.startTime)} ${formatHourDate(this.trainingData.startTime)}`
+                "time": this.trainingData.startTime,
+                "status" : "pending",
+                "description": `Coaching ${user.name} ${user.email}, ${this.trainingData.location.name} ${formatFullDate(this.trainingData.startTime)} ${formatHourDate(this.trainingData.startTime)}-${formatHourDate(this.trainingData.endTime)}`
             }
         });
     }
@@ -160,6 +164,7 @@ export class TrainingCardComponent implements OnInit {
             "userId" : user.id,
             "rawPaymentData" : {
                 "amount" : amount,
+                "time": this.trainingData.startTime,
                 "status" : "pending", 
                 "description": `Training ${user.name} ${user.email}, ${this.trainingData.location.name} ${formatFullDate(this.trainingData.startTime)} ${formatHourDate(this.trainingData.startTime)}`
             }
