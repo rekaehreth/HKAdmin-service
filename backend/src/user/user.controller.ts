@@ -6,6 +6,7 @@ import { UserService } from './user.service';
 import { omit } from 'lodash';
 import { AdminAuthGuard, LoggedInAuthGuard } from './auth/jwt-auth.guard';
 import { Coach } from 'src/coach/coach.entity';
+import { identity } from 'rxjs';
 
 @Controller('user')
 export class UserController 
@@ -26,6 +27,14 @@ export class UserController
     async getById( @Param('id') id : number ) : Promise<User> {
         const user = await this.service.getById(id);
         return omit(user, "password");
+    }
+    @Get('/getByEmail/:email')
+    async getByEmail( @Param('email') email: string ) : Promise<{success: boolean, user: User}> {
+        const user = await this.service.getByEmail(email);
+        if(user) {
+            return {success: true, user: user};
+        }
+        return {success: false, user: undefined};
     }
 
     @Post('/new')

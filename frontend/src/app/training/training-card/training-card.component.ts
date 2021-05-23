@@ -136,27 +136,21 @@ export class TrainingCardComponent implements OnInit {
     }
     async addGuestToTraining() {
         // **TODO** addGuestToTraining(); - dialog
-        // let user!: RawUser;
-        // const dialogRef = this.dialog.open(RegisterGuestDialogComponent, {
-        //     width: '50vw',
-        //     disableClose: true,
-        // });
-        // dialogRef.afterClosed().subscribe(async result => {
-        //     console.log("Register guest dialog closed.", result);
-        //     if(result.action === "save") {
-        //         user = await this.http.post<RawUser>('user/new', {
-        //             "name": result.name,
-        //             "email": result.email, 
-        //             "roles": ["guest"], 
-        //         });
-        //     }
-        //     else {
-        //         return;
-        //     }
-        // });
-        // get name and email address 
-        // create guest user if email is not already in database 
-        // **TODO** Make sure the user can still register if they want
+        let user!: RawUser;
+        const dialogRef = this.dialog.open(RegisterGuestDialogComponent, {
+            width: '50vw',
+            disableClose: true,
+        });
+        dialogRef.afterClosed().subscribe(async result => {
+            console.log("Register guest dialog closed.", result);
+            if(result.action === "save") {
+                user = result.user;
+            }
+            else {
+                return;
+                // **TODO** warning noti?
+            }
+        });
         this.http.post<{}>('user/addToTraining', {
             "userId": user.id,
             "trainingId": this.trainingData.id

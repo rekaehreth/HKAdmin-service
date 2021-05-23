@@ -29,6 +29,9 @@ export class UserService {
     public async getById(id: number): Promise<User> {
         return await this.userRepository.findOne(id, { relations: ["trainings", "groups"] });
     }
+    public async getByEmail(email: string): Promise<User> {
+        return await this.userRepository.findOne(email, { relations: ["trainings", "groups"] });
+    }
     public async create(rawUserData: {
         name: string,
         roles: string,

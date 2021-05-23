@@ -4,7 +4,7 @@
     </mat-card-title>
     <mat-card-content>
         <mat-list-item #userRoles> 
-            <mat-list-option *ngFor="let role of this.roles" [value]="role" (clikc)="updateSelectedRole(role)">
+            <mat-list-option *ngFor="let role of this.roles" [value]="role" (click)="updateSelectedRole(role)">
                 {{ role }}
             </mat-list-option>
         </mat-list-item>

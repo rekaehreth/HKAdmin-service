@@ -43,19 +43,48 @@ export class RegistrationComponent implements OnInit {
     }
     async register() {
         if ( this.checkRegisterForm() ) {
-            let result = await this.http.post<{ success: boolean, user: RawUser }>('user/new', { name: this.nameControl.value, email: this.emailControl.value, birth_date: this.birthControl.value, password: this.passwordControl.value });
-            if (result.success) {
-                let loginResult = await this.http.post<{ success: boolean, token?: string, userId?: number, userRoles?: string }>('user/login', { email: this.emailControl.value, password: this.passwordControl.value })
-                console.log(result);
-                // debugger;
+            let existingUser = await this.http.get<{ success: boolean, user: RawUser }>(`user/getByEmail/${this.emailControl.value}`);
+            if(existingUser.success && existingUser.user.name === this.nameControl.value) {
+                let result = await this.http.post<{ success: boolean, user: RawUser }>('user/new', { 
+                    name: this.nameControl.value, 
+                    email: this.emailControl.value, 
+                    birth_date: this.birthControl.value, 
+                    password: this.passwordControl.value 
+                });
                 if (result.success) {
+                    let loginResult = await this.http.post<{ success: boolean, token?: string, userId?: number, userRoles?: string }>('user/login', { 
+                        email: this.emailControl.value, 
+                        password: this.passwordControl.value })
+                    console.log(result);
+                    // debugger;
+                    if (loginResult.success) {
+                        this.authService.setLoggedInUser(
+                            loginResult.userId ? loginResult.userId : 0,
+                            loginResult.userRoles ? loginResult.userRoles.split(" ") : [],
+                            loginResult.token ? loginResult.token : "");
+                        this.dialogRef.close({ "succes": "true" });
+                    }
+                }
+            }
+            this.http.post<{}>('user/modify', {
+                userId: existingUser.user.id,
+                rawUserData: {
+                    name: this.nameControl.value,
+                    birth_date: this.birthControl.value, 
+                    password: this.passwordControl.value
+                }
+            });
+            let loginResult = await this.http.post<{ success: boolean, token?: string, userId?: number, userRoles?: string }>('user/login', { 
+                email: this.emailControl.value, 
+                password: this.passwordControl.value 
+            })
+                if (loginResult.success) {
                     this.authService.setLoggedInUser(
                         loginResult.userId ? loginResult.userId : 0,
                         loginResult.userRoles ? loginResult.userRoles.split(" ") : [],
                         loginResult.token ? loginResult.token : "");
                     this.dialogRef.close({ "succes": "true" });
                 }
-            }
         }
     }
     checkRegisterForm(): boolean {
