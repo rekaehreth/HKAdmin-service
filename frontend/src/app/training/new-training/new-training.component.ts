@@ -3,7 +3,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { AuthService } from 'src/app/auth.service';
 import { HttpService } from 'src/app/httpService';
-import { RawGroup, RawLocation } from 'src/app/types';
+import { RawCoach, RawGroup, RawLocation, RawTraining } from 'src/app/types';
 import { formatFullDate, formatHourDate } from 'src/app/utils';
 
 @Component({
@@ -14,8 +14,10 @@ import { formatFullDate, formatHourDate } from 'src/app/utils';
 export class NewTrainingComponent implements OnInit {
     locations: RawLocation[] = [];
     selectedLocationId: number = 0;
-    groups: RawGroup[]= [];
+    groups: RawGroup[] = [];
     selectedGroups: number[] = [];
+    selectedType: string = "";
+    trainingTypes: string[] = ["Off Ice", "Ice", "Ballet"];
     mode: string = "new";
     displayDate: Date = new Date();
     startHour: Date = new Date();
@@ -33,17 +35,20 @@ export class NewTrainingComponent implements OnInit {
         private http: HttpService,
         public dialogRef: MatDialogRef<NewTrainingComponent>,
         private authService: AuthService,
-        @Inject(MAT_DIALOG_DATA) public data: any,
+        @Inject(MAT_DIALOG_DATA) public data: RawTraining,
     ) { }
     ngOnInit(): void {
         this.loadLocations();
         this.loadGroups();
-        if( this.data ) {
+        if (this.data) {
             this.mode = "edit";
             this.selectedLocationId = this.data.location.id;
             this.displayDate = new Date(this.data.startTime);
             this.startHour = this.data.startTime;
             this.endHour = this.data.endTime;
+            this.data.groups.forEach( group => {
+                this.selectedGroups.push( group.id);
+            });
         }
         this.initControls();
         console.log(this.data);
@@ -55,70 +60,62 @@ export class NewTrainingComponent implements OnInit {
     }
     async loadLocations(): Promise<void> {
         this.locations = await this.http.get<RawLocation[]>('location');
-        // console.log(this.locations);
     }
     async loadGroups(): Promise<void> {
         this.groups = await this.http.get<RawGroup[]>('group');
         console.log(this.groups);
     }
     async saveTraining(): Promise<void> {
-        // if( this.mode === "new") {
-        //     this.saveNewTraining();
-        // }
-        // else 
-        // {
-        //     this.updateTraining();
-        // }
-        const newTraining = await this.http.post<{}>('training/new', {
-            locationId: this.selectedLocationId, 
-            rawTrainingData: { 
-                startTime: formatFullDate(this.dateControl.value) + " " + this.startTimeControl.value, 
-                endTime: formatFullDate(this.dateControl.value) + " " + this.endTimeControl.value
-            }});
-        for( const groupId of this.selectedGroups ){
-            await this.http.post<{}>('training/addGroupToTraining', {
-                "groupId" : this.data.id,
-                "trainingId" : groupId
+        if (this.mode === "new") {
+            this.saveNewTraining();
+        }
+        else {
+            this.updateTraining();
+        }
+    }
+    async saveNewTraining(): Promise<void> {
+        const newTraining = await this.http.post<RawTraining>('training/new', {
+            locationId: this.selectedLocationId,
+            rawTrainingData: {
+                startTime: formatFullDate(this.dateControl.value) + " " + this.startTimeControl.value,
+                endTime: formatFullDate(this.dateControl.value) + " " + this.endTimeControl.value,
+                type: this.selectedType,
+            }
+        });
+        for (const groupId of this.selectedGroups) {
+            await this.http.post<{}>('training/addGroup', {
+                "groupId": groupId,
+                "trainingId": newTraining.id
             });
         }
         console.log(newTraining);
-        this.dialogRef.close({refreshNeeded: true});
-    } 
-    // async saveNewTraining(): Promise<void> {
-
-    // }
-    // async updateTraining(): Promise<void> {
-
-    // }
-    async addTraineeToTraining() {
-        const roles = this.authService.getLoggedInRoles();
-        if ( roles.includes("admin") )
-        {
-            const adminIndex = roles.indexOf("admin");
-            roles.splice(adminIndex);
-        }
-        if( roles.length === 1 && !roles.includes("guest")){
-            const user = this.authService.getLoggedInUser();
-            if( roles[0] === "trainee") {
-                this.http.post<{}>('user/addToTraining', {
-                    "userId" : user.id, 
-                    "trainingId" : this.data.id
-                });
+        this.dialogRef.close({ refreshNeeded: true });
+    }
+    async updateTraining(): Promise<void> {
+        // **TODO** only modify data that has been modified in form - does typeorm does that for me? 
+        const modifiedTraining = await this.http.post<{}>('training/modify', {
+            locationId: this.selectedLocationId,
+            rawTrainingData: {
+                id: this.data.id,
+                startTime: formatFullDate(this.dateControl.value) + " " + this.startTimeControl.value,
+                endTime: formatFullDate(this.dateControl.value) + " " + this.endTimeControl.value,
+                type: this.selectedType,
             }
-            else if( roles[0] === "coach") {
-                const coachId = this.http.get<{}>(`user/getCoachId/${user.id}`);
-                this.http.post<{}>('coach/addToTraining', {
-                    "coachId" : coachId, 
-                    "trainingId" : this.data.id
-                });
-            }
+        });
+        for (const groupId of this.selectedGroups) {
+            // **TODO** remove groups that have been deselected
+            // **TODO** only add groups that have not been added previously
+            console.log( groupId );
+            console.log( this.data.id );
+            await this.http.post<RawGroup>('training/addGroup', {
+                "groupId": groupId,
+                "trainingId": this.data.id
+            });
         }
-        else {
-            // dialog to choose from trainee / coach | guardian / child
-        }
-        // **TODO** change icon from person_add to person_remove
+        console.log(modifiedTraining);
+        this.dialogRef.close({ refreshNeeded: true });
     }
     cancel() {
-        this.dialogRef.close({refreshNeeded: false});
+        this.dialogRef.close({ refreshNeeded: false });
     }
 }

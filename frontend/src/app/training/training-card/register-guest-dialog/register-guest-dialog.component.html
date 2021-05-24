@@ -1,0 +1,29 @@
+<mat-card>
+    <mat-card-title style="text-align:center;">Please fill your credentials</mat-card-title>
+    <mat-card-content>
+        <form action="">
+            <mat-form-field>
+                <input matInput placeholder="Name" required name="name" [formControl]="nameControl">
+                    <mat-error *ngIf="nameControl.errors && nameControl.errors.nameRegEx">
+                        Name is invalid. Please don't use anything but characters from the hungarian alphabet, and privide your full name.
+                    </mat-error>
+            </mat-form-field>
+            <mat-form-field>
+                <input matInput placeholder="Email" name="email" [formControl]="emailControl">
+                <mat-error *ngIf="emailControl.errors && emailControl.errors.email">
+                    Please provide a valid email address.
+                </mat-error>
+                <mat-error *ngIf="emailControl.errors && emailControl.errors.required">
+                    Email is required
+                </mat-error>
+                <mat-icon matSuffix>email</mat-icon>
+            </mat-form-field>
+            <button mat-raised-button color="primary" class="login-button" (click)="register()">
+                Register
+            </button>
+            <button mat-raised-button color="primary" class="login-button" (click)="cancel()">
+                Cancel
+            </button>
+        </form>
+    </mat-card-content>
+</mat-card>

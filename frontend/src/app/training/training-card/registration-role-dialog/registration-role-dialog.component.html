@@ -1,0 +1,20 @@
+<mat-card>
+    <mat-card-title>
+        Select the who you want to register to this training as
+    </mat-card-title>
+    <mat-card-content>
+        <mat-list-item #userRoles> 
+            <mat-list-option *ngFor="let role of this.roles" [value]="role" (click)="updateSelectedRole(role)">
+                {{ role }}
+            </mat-list-option>
+        </mat-list-item>
+    </mat-card-content>
+    <mat-card-actions>
+        <button mat-raised-button color="primary" (click)="close('save')">
+            Ok
+        </button>
+        <button mat-raised-button color="basic" (click)="close('cancel')">
+            Cancel
+        </button>
+    </mat-card-actions>
+</mat-card>

@@ -15,7 +15,7 @@ import { NewTrainingComponent } from './new-training/new-training.component';
 
 export class TrainingComponent implements OnInit {
     colNum: number = 5;
-    trainings: any[] = [];
+    trainings: RawTraining[] = [];
     roles: string[] = [];
 
     constructor(

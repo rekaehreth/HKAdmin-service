@@ -15,14 +15,18 @@ export class FinanceService {
         this.locationRepository = connection.getRepository( Location );
         this.paymentRepository = connection.getRepository( Payment );
     }
-    public async getAll() : Promise<Payment[]>
-    {
+
+    public async getAll() : Promise<Payment[]> {
         return await this.paymentRepository.find( { relations: ["user"] } );
     }
 
-    public async getById( id : number ) : Promise<Payment>
-    {
+    public async getById( id : number ) : Promise<Payment> {
         return await this.paymentRepository.findOne( id, { relations: ["user"] } );
+    }
+
+    public async getByUser( userId: number ) : Promise<Payment[]> {
+        const user = await this.userRepository.findOne(userId);
+        return await this.paymentRepository.find( user );
     }
 
     public async create( userId : number, rawPaymentData : {
@@ -31,8 +35,7 @@ export class FinanceService {
         status : string, 
         description : string, 
         notes : string
-    } ) : Promise<Payment>
-    {
+    } ) : Promise<Payment> {
         const newPayment = new Payment();
         Object.keys(rawPaymentData).forEach( (key) => { newPayment[key] = rawPaymentData[key] });
         const user = await this.userRepository.findOne(userId);
@@ -40,18 +43,17 @@ export class FinanceService {
         return await this.paymentRepository.save(newPayment);
     }
 
-    public async delete ( id : number ) : Promise<DeleteResult>
-    {
+    public async delete ( id : number ) : Promise<DeleteResult> {
         return await this.paymentRepository.delete(id);
     }
+
     public async modify ( userId : number = -1, paymentId : number, rawPaymentData : {
         amount : number,
         time : Date,
         status : string, 
         description : string, 
         notes : string
-    } ) : Promise<Payment>
-    {
+    } ) : Promise<Payment> {
         const modifiedPayment = await this.paymentRepository.findOne( paymentId, { relations: ["user"] } );
         Object.keys(rawPaymentData).forEach( (key) => { modifiedPayment[key] = rawPaymentData[key] });
         if ( userId > 0 )

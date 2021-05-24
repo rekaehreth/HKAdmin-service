@@ -29,6 +29,9 @@ export class UserService {
     public async getById(id: number): Promise<User> {
         return await this.userRepository.findOne(id, { relations: ["trainings", "groups"] });
     }
+    public async getByEmail(email: string): Promise<User> {
+        return await this.userRepository.findOne(email, { relations: ["trainings", "groups"] });
+    }
     public async create(rawUserData: {
         name: string,
         roles: string,
@@ -194,6 +197,7 @@ export class UserService {
     }
     public async getCoach(userId: number): Promise<Coach> {
         const user = await this.userRepository.findOne( userId );
-        return await this.coachRepository.findOne( {user: user} );
+        return await this.coachRepository.findOne( { where: { user: user } } );
+        // userRepository.find({ where: { name: { first: "Timber", last: "Saw" } } });
     }
 }

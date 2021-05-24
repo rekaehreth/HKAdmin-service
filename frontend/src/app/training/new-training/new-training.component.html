@@ -13,6 +13,15 @@
             </mat-form-field>
             <br>
             <mat-form-field>
+                <mat-label> Type </mat-label>
+                <mat-select #typeSelector [(value)]="selectedType" required>
+                    <mat-option *ngFor="let type of trainingTypes" [value]="type">
+                        {{type}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <br>
+            <mat-form-field>
                 <mat-label>Choose a day</mat-label>
                 <input matInput [matDatepicker]="picker" placeHolder="Date of training" required name="day"
                     [formControl]="dateControl" />
@@ -38,7 +47,7 @@
                 <mat-label> Groups </mat-label>
                 <mat-select #groupSelector [(value)]="selectedGroups" [formControl]="groupControl" multiple>
                     <mat-option *ngFor="let group of this.groups" [value]="group.id">
-                        {{group.name}} 
+                        {{group.name}}
                     </mat-option>
                 </mat-select>
             </mat-form-field>
