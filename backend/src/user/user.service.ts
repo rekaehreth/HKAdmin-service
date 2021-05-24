@@ -97,7 +97,7 @@ export class UserService {
         try {
             const groupToRemoveFrom = await this.groupRepository.findOne(groupId, { relations: ["trainings", "members", "coaches"] });
             const userToRemove = await this.userRepository.findOne(userId, { relations: ["groups"] });
-            if (userToRemove.roles.match(/.*coach.*/) || !forceTrainee) {
+            if (userToRemove.roles.match(/.*coach.*/) && !forceTrainee) {
                 let coachToRemove = await this.coachRepository.findOne({ user: userToRemove }, { relations: ["groups"] });
                 let coachIndex = groupToRemoveFrom.coaches.indexOf(coachToRemove);
                 groupToRemoveFrom.coaches.splice(coachIndex, 1);
@@ -146,7 +146,7 @@ export class UserService {
         try {
             const trainingToRemoveFrom = await this.trainingRepository.findOne(trainingId, { relations: ["coaches", "attendees"] });
             const userToRemove = await this.userRepository.findOne(userId); // , { relations: ["groups"] }
-            if (userToRemove.roles.match(/.*coach.*/) || !forceTrainee) {
+            if (userToRemove.roles.match(/.*coach.*/) && !forceTrainee) {
                 let coachToRemove = await this.coachRepository.findOne({ user: userToRemove }, { relations: ["trainings"] });
                 let coachIndex = trainingToRemoveFrom.coaches.indexOf(coachToRemove);
                 trainingToRemoveFrom.coaches.splice(coachIndex, 1);
