@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../auth.service';
 import { HttpService } from '../httpService';
-import { RawGroup, RawCoach } from '../types';
+import { RawGroup, RawCoach, RawUser } from '../types';
 
 @Component({
     selector: 'app-group',
@@ -11,7 +11,10 @@ import { RawGroup, RawCoach } from '../types';
 export class GroupComponent implements OnInit {
     groups: RawGroup[] = [];
     roles: string[] = [];
-
+    usersNotInGroup: RawUser[] = [];
+    coachesNotInGroup: RawUser[] = [];
+    selectedUser!: RawUser;
+    selectedCoach!: RawUser;
 
     constructor(
         private http: HttpService,
@@ -33,11 +36,57 @@ export class GroupComponent implements OnInit {
             this.groups = coach.groups;
         }
     }
-    addUser(): void {
-
+    async refreshTrainees(groupId: number): Promise<void> {
+        let group = await this.http.get<RawGroup>(`group/${groupId}`);
+        this.usersNotInGroup = [];
+        let users = await this.http.get<RawUser[]>(`user/getByRole/trainee`);
+        for(let user of users ) {
+            if( !group.members.map( trainee => trainee.id ).includes(user.id)) {
+                this.usersNotInGroup.push(user);
+            }
+        }
+        console.log("Users not in group: ", this.usersNotInGroup);
+        console.log("Group members:", group.members)
+        // debugger;
     }
-
-    addCoach(): void {
-        
+    async refreshCoaches(groupId: number): Promise<void> {
+        let group = await this.http.get<RawGroup>(`group/${groupId}`);
+        this.coachesNotInGroup = [];
+        let coaches = await this.http.get<RawCoach[]>(`coach`);
+        for(let coach of coaches ) {
+            if( !group.coaches.map( coach => coach.id ).includes(coach.id)) {
+                this.coachesNotInGroup.push(coach.user);
+            }
+        }
+        console.log("Coaches not in group: ", this.coachesNotInGroup);
+        console.log("Group coaches: ", group.coaches);
+    }
+    async addTrainee(userId: number, groupId: number): Promise<void> {
+        await this.http.post<{}>('user/addTraineeToGroup', {
+            userId : userId, 
+            groupId : groupId,
+        });
+        this.getGroups();
+    }
+    async addCoach(userId: number, groupId: number): Promise<void> {
+        await this.http.post<{}>('user/addCoachToGroup', {
+            userId : userId, 
+            groupId : groupId,
+        });
+        this.getGroups();
+    }
+    async removeTrainee(userId: number, groupId: number): Promise<void> {
+        await this.http.post<{}>('user/removeTraineeFromGroup', {
+            userId : userId, 
+            groupId : groupId,
+        });
+        this.getGroups();
+    }
+    async removeCoach(userId: number, groupId: number): Promise<void> {
+        await this.http.post<{}>('user/removeCoachFromGroup', {
+            userId : userId, 
+            groupId : groupId,
+        });
+        this.getGroups();
     }
 }

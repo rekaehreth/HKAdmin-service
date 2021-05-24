@@ -1,7 +1,7 @@
 <mat-card>
     <mat-accordion>
         <mat-expansion-panel hideToggle *ngFor="let group of groups">
-            <mat-expansion-panel-header>
+            <mat-expansion-panel-header class="right-aligned-header">
                 <mat-panel-title>
                     {{ group.name }}
                 </mat-panel-title>
@@ -11,50 +11,68 @@
                     </button>
                 </mat-panel-description>
             </mat-expansion-panel-header>
-            <mat-expansion-panel hideToggle>
+            <mat-expansion-panel hideToggle (opened)="refreshTrainees(group.id)">
                 <mat-expansion-panel-header>
                     <mat-panel-title>
                         Members
                     </mat-panel-title>
                     <mat-panel-description>
-                        <button mat-button (click)="addUser()">
-                            <mat-icon matTooltip="Add user to group"> group_add </mat-icon>
-                        </button>
+                        Open panel to see members.
                     </mat-panel-description>
                 </mat-expansion-panel-header>
-                <p *ngIf="!group.members" class="noData"> No users in group </p>
-                <mat-list *ngIf="group.members">
-                    <mat-list-item *ngFor="let trainee of group.members">
+                <mat-list>
+                    <mat-list-item *ngIf="group.members.length === 0">
+                        <p class="noData"> No users in group </p>
+                    </mat-list-item>
+                    <!-- Members in group -->
+                    <mat-list-item *ngFor="let trainee of group.members" class="smol">
                         {{ trainee.name }}
-                        <button mat-raised-button>
+                        <button mat-raised-button (click)="removeTrainee(trainee.id, group.id)" >
                             <mat-icon matTooltip="Remove user from group"> group_remove </mat-icon>
                         </button>
                     </mat-list-item>
-                    <!-- <mat-list-item>
-                        <mat-select>
-                            <mat-option>
-
+                    <!-- Add new trainee -->
+                    <mat-list-item>
+                        <mat-select placeholder="Add user" [(value)]="selectedUser" class="smol">
+                            <mat-option *ngFor="let user of usersNotInGroup" [value]="user" class="smol">
+                                {{user.name}}
                             </mat-option>
                         </mat-select>
-                    </mat-list-item> -->
+                        <button mat-stroked-button>
+                            <mat-icon (click)="addTrainee(selectedUser.id, group.id)"> add </mat-icon>
+                        </button>
+                    </mat-list-item>
                 </mat-list>
             </mat-expansion-panel>
-            <mat-expansion-panel hideToggle>
+            <mat-expansion-panel hideToggle (opened)="refreshCoaches(group.id)">
                 <mat-expansion-panel-header>
                     <mat-panel-title>
                         Coaches
                     </mat-panel-title>
                     <mat-panel-description>
-                        <button mat-button>
-                            <mat-icon matTooltip="Add coach to group"> group_add </mat-icon>
-                        </button>
+                        Open panel to see coaches.
                     </mat-panel-description>
                 </mat-expansion-panel-header>
                 <mat-list>
-                    <mat-list-item *ngFor="let coach of group.coaches">
-                        {{ coach.name }}
-                        <button mat-raised-button>
+                    <mat-list-item *ngIf="group.coaches.length === 0">
+                        <p class="noData"> No coaches in group </p>
+                    </mat-list-item>
+                    <!-- Coaches in group -->
+                    <mat-list-item *ngFor="let coach of group.coaches" class="smol">
+                        {{ coach.user.name }}
+                        <button mat-raised-button (click)="removeCoach(coach.id, group.id)">
                             <mat-icon matTooltip="Remove coach from group"> group_remove </mat-icon>
+                        </button>
+                    </mat-list-item>
+                    <!-- Add new coach -->
+                    <mat-list-item>
+                        <mat-select placeholder="Add coach" [(value)]="selectedCoach" class="smol">
+                            <mat-option *ngFor="let coach of coachesNotInGroup" [value]="coach" class="smol">
+                                {{coach.name}}
+                            </mat-option>
+                        </mat-select>
+                        <button mat-stroked-button>
+                            <mat-icon (click)="addCoach(selectedCoach.id, group.id)"> add </mat-icon>
                         </button>
                     </mat-list-item>
                 </mat-list>

@@ -6,3 +6,11 @@ body {
     font-family: Roboto, "Helvetica Neue", sans-serif; 
     background-color: #0a1e33;
 }
+
+.right-aligned-header > .mat-content {
+    justify-content: space-between;
+}
+
+.mat-content > mat-panel-title, .mat-content > mat-panel-description {
+    flex: 0 0 auto;
+}
