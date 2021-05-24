@@ -18,17 +18,19 @@ export class TrainingComponent implements OnInit {
     trainings: RawTraining[] = [];
     roles: string[] = [];
 
+    formatFullDate = formatFullDate;
+    formatHourDate = formatHourDate;
     constructor(
         private http: HttpService,
         public dialog: MatDialog,
         private authService: AuthService,
-        ) { }
+    ) {
+        this.authService.loginStatusChange.subscribe( _ => { this.loadTrainings() });
+    }
     ngOnInit(): void {
         this.loadTrainings();
         this.roles = this.authService.getLoggedInRoles();
     }
-    formatFullDate = formatFullDate;
-    formatHourDate = formatHourDate;
     async loadTrainings(): Promise<void> {
         this.trainings = await this.http.get<RawTraining[]>('training');
         if( this.trainings.length != 0 ){
@@ -45,7 +47,6 @@ export class TrainingComponent implements OnInit {
                 return -1;
             });
         }
-        console.log(this.trainings);
     }
     setColNum(): boolean {
             const screenWidth = window.innerWidth;
