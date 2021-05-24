@@ -28,9 +28,16 @@ export class GroupComponent implements OnInit {
             this.groups = await this.http.get<RawGroup[]>('group');
         } 
         else if ( this.roles.includes("coach") ) {
-            const user = this.authService.getLoggedInUser();
+            const user = this.authService.getLoggedInUserId();
             const coach = await this.http.get<RawCoach>(`user/getCoach/${user.id}`);
             this.groups = coach.groups;
         }
+    }
+    addUser(): void {
+
+    }
+
+    addCoach(): void {
+        
     }
 }

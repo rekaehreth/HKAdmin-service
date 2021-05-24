@@ -22,25 +22,19 @@
     <ng-container matColumnDef="roles">
         <th mat-header-cell *matHeaderCellDef> 
             Roles 
-            <input matInput (input)="filterByRole( $event.target )">
+            <!-- <input matInput (input)="filterByRole( $event.target )"> -->
         </th>
-        <td mat-cell *matCellDef="let user">
-            {{user.roles}}
-        </td>
+        <td mat-cell *matCellDef="let user"> {{user.roles}} </td>
     </ng-container>
     <!-- Actions Column -->
     <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef> Actions </th>
         <td mat-cell *matCellDef="let user">
             <button mat-raised-button matTooltip="Manage user roles" class="manageUserRoles" (click)="manageUserRoles(user)">
-                <mat-icon>
-                    add_moderator
-                </mat-icon>
+                <mat-icon> add_moderator </mat-icon>
             </button>
             <button mat-raised-button matTooltip="Delete user" color="warn" (click)="deleteUser(user)">
-                <mat-icon>
-                    delete
-                </mat-icon>
+                <mat-icon> delete </mat-icon>
             </button>
         </td>
     </ng-container>

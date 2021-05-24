@@ -4,6 +4,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { AuthService } from '../auth.service';
 import { HttpService } from '../httpService';
 import { RawPayment, RawUser } from '../types';
+import { formatFullDate, formatHourDate } from '../utils';
 
 @Component({
     selector: 'app-finance',
@@ -22,29 +23,35 @@ export class FinanceComponent implements OnInit {
 
     roles: string[] = [];
     user!: RawUser;
+
+    formatFullDate = formatFullDate;
+    formatHourDate = formatHourDate;
+
     constructor(
         private http: HttpService,
         private authService: AuthService,
     ) { }
 
     ngOnInit(): void {
-        this.roles = this.authService.getLoggedInRoles();
-        if( this.roles.includes("admin")) {
-            this.loadAdminPayments();
-        }
-        else {
-            this.loadUserPayments();
-        }
-        // **TODO** for admins: tab: all payments - linked to user? 
-        this.adminDataSource = new MatTableDataSource(this.allPayments);
-        this.userDataSource = new MatTableDataSource(this.userPayments);
+        this.loadPayments();
+    }
+    ngAfterViewInit() {
+        console.log(this.sort)
         if (this.sort) {
             this.adminDataSource.sort = this.sort;
             this.userDataSource.sort = this.sort;
         }
     }
-    ngAfterViewInit() {
-        console.log(this.sort)
+    async loadPayments(): Promise<void> {
+        this.roles = this.authService.getLoggedInRoles();
+        if( this.roles.includes("admin")) {
+            await this.loadAdminPayments();
+        }
+        await this.loadUserPayments();
+        // console.log(this.allPayments);
+        // console.log(this.userPayments);
+        this.adminDataSource = new MatTableDataSource(this.allPayments);
+        this.userDataSource = new MatTableDataSource(this.userPayments);
         if (this.sort) {
             this.adminDataSource.sort = this.sort;
             this.userDataSource.sort = this.sort;
@@ -54,7 +61,7 @@ export class FinanceComponent implements OnInit {
         this.allPayments = await this.http.get<RawPayment[]>(`finance`);
     }
     async loadUserPayments(): Promise<void> {
-        const userId = this.authService.getLoggedInUser();
+        const userId = this.authService.getLoggedInUserId();
         this.userPayments = await this.http.get<RawPayment[]>(`finance/getByUser/${userId}`);
     }
     // layout: similarly to user, a table, with sort options to username, payment date, description

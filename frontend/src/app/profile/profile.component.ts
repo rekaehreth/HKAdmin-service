@@ -33,7 +33,7 @@ export class ProfileComponent implements OnInit {
         this.getUser();
     }
     async getUser(): Promise<void> {
-        const userId = this.authService.getLoggedInUser();
+        const userId = this.authService.getLoggedInUserId();
         this.user = await this.http.get<RawUser>(`user/${userId}`);
         this.initControls();
     }
