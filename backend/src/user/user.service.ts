@@ -74,7 +74,8 @@ export class UserService {
         try {
             const groupToAddTo = await this.groupRepository.findOne(groupId, { relations: ["trainings", "members", "coaches"] });
             const userToBeAdded = await this.userRepository.findOne(userId, { relations: ["groups"] });
-            if (userToBeAdded.roles.match(/.*coach.*/) || !forceTrainee) {
+            console.log(forceTrainee);
+            if (userToBeAdded.roles.match(/.*coach.*/) && !forceTrainee) {
                 const coachToBeAdded = await this.coachRepository.findOne({ user: userToBeAdded }, { relations: ["groups"] });
                 groupToAddTo.coaches.push(coachToBeAdded);
                 coachToBeAdded.groups.push(groupToAddTo);
@@ -123,7 +124,7 @@ export class UserService {
         try {
             const trainingToAddTo = await this.trainingRepository.findOne(trainingId, { relations: ["attendees", "coaches"] });
             const userToBeAdded = await this.userRepository.findOne(userId, { relations: ["trainings"] });
-            if (userToBeAdded.roles.match(/.*coach.*/) || !forceTrainee) {
+            if (userToBeAdded.roles.match(/.*coach.*/) && !forceTrainee) {
                 const coachToBeAdded = await this.coachRepository.findOne({ user: userToBeAdded }, { relations: ["trainings"] });
                 trainingToAddTo.coaches.push(coachToBeAdded);
                 coachToBeAdded.trainings.push(trainingToAddTo);
