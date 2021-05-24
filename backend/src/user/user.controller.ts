@@ -4,9 +4,8 @@ import { DeleteResult } from 'typeorm';
 import { User } from './user.entity';
 import { UserService } from './user.service';
 import { omit } from 'lodash';
-import { AdminAuthGuard, LoggedInAuthGuard } from './auth/jwt-auth.guard';
+import { AdminAuthGuard } from './auth/jwt-auth.guard';
 import { Coach } from 'src/coach/coach.entity';
-import { identity } from 'rxjs';
 
 @Controller('user')
 export class UserController 
