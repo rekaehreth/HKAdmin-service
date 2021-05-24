@@ -51,7 +51,6 @@ export class NewTrainingComponent implements OnInit {
             });
         }
         this.initControls();
-        console.log(this.data);
     }
     initControls() {
         this.dateControl = new FormControl(this.displayDate, Validators.required);
@@ -63,7 +62,6 @@ export class NewTrainingComponent implements OnInit {
     }
     async loadGroups(): Promise<void> {
         this.groups = await this.http.get<RawGroup[]>('group');
-        console.log(this.groups);
     }
     async saveTraining(): Promise<void> {
         if (this.mode === "new") {
@@ -88,7 +86,6 @@ export class NewTrainingComponent implements OnInit {
                 "trainingId": newTraining.id
             });
         }
-        console.log(newTraining);
         this.dialogRef.close({ refreshNeeded: true });
     }
     async updateTraining(): Promise<void> {
@@ -105,14 +102,11 @@ export class NewTrainingComponent implements OnInit {
         for (const groupId of this.selectedGroups) {
             // **TODO** remove groups that have been deselected
             // **TODO** only add groups that have not been added previously
-            console.log( groupId );
-            console.log( this.data.id );
             await this.http.post<RawGroup>('training/addGroup', {
                 "groupId": groupId,
                 "trainingId": this.data.id
             });
         }
-        console.log(modifiedTraining);
         this.dialogRef.close({ refreshNeeded: true });
     }
     cancel() {
