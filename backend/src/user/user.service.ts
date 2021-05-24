@@ -39,7 +39,8 @@ export class UserService {
         if ( !await this.userRepository.findOne(rawUserData.email) ){
             const newUser = new User();
             Object.keys(rawUserData).forEach((key) => { newUser[key] = (key === "password") ? bcrypt.hashSync(rawUserData[key], 10) : rawUserData[key]; });
-            newUser.roles = "trainee";
+            newUser.roles = rawUserData.roles;
+            newUser.roles+="trainee";
             return {success: true, user: await this.userRepository.save(newUser)};
         }
         return{ success: false, user: undefined };
