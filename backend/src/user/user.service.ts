@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Coach } from 'src/coach/coach.entity';
 import { Group } from 'src/group/group.entity';
 import { Training } from 'src/training/training.entity';
-import { Connection, DeleteResult, Repository } from 'typeorm';
+import { Connection, DeleteResult, Like, Repository } from 'typeorm';
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -15,8 +15,8 @@ export class UserService {
     trainingRepository: Repository<Training>;
 
     constructor(
-        connection: Connection, 
-        private jwtService : JwtService 
+        connection: Connection,
+        private jwtService: JwtService
     ) {
         this.userRepository = connection.getRepository(User);
         this.groupRepository = connection.getRepository(Group);
@@ -32,22 +32,25 @@ export class UserService {
     public async getByEmail(email: string): Promise<User> {
         return await this.userRepository.findOne(email, { relations: ["trainings", "groups"] });
     }
+    public async getByRole(role: string): Promise<User[]> {
+        return await this.userRepository.find({ relations: ["trainings", "groups"], where: { roles: Like(`%${role}%`) } });
+    }
     public async create(rawUserData: {
         name: string,
         roles: string,
         email: string,
         password: string,
         birth_date: Date,
-    }): Promise<{success: boolean, user: User }> {
-        if ( !await this.userRepository.findOne(rawUserData.email) ){
+    }): Promise<{ success: boolean, user: User }> {
+        if (!await this.userRepository.findOne(rawUserData.email)) {
             const newUser = new User();
             Object.keys(rawUserData).forEach((key) => { newUser[key] = (key === "password") ? bcrypt.hashSync(rawUserData[key], 10) : rawUserData[key]; });
             newUser.roles = rawUserData.roles;
-            newUser.roles+="trainee";
-            return {success: true, user: await this.userRepository.save(newUser)};
+            newUser.roles += "trainee";
+            return { success: true, user: await this.userRepository.save(newUser) };
         }
-        return{ success: false, user: undefined };
-        
+        return { success: false, user: undefined };
+
     }
     public async delete(id: number): Promise<DeleteResult> {
         return await this.userRepository.delete(id);
@@ -58,13 +61,13 @@ export class UserService {
         email: string,
         password: string,
         birth_date: Date,
-    }): Promise<{success: boolean, user: User }> {
-        if ( !await this.userRepository.findOne(rawUserData.email) ){
+    }): Promise<{ success: boolean, user: User }> {
+        if (!await this.userRepository.findOne(rawUserData.email)) {
             const modifiedUser = await this.userRepository.findOne(userId);
             Object.keys(rawUserData).forEach((key) => { modifiedUser[key] = (key === "password") ? bcrypt.hashSync(rawUserData[key], 10) : rawUserData[key]; });
-            return {success: true, user: await this.userRepository.save(modifiedUser)};
+            return { success: true, user: await this.userRepository.save(modifiedUser) };
         }
-        return{ success: false, user: undefined };
+        return { success: false, user: undefined };
 
     }
     public async addToGroup(userId: number, groupId: number, forceTrainee: boolean = false): Promise<{ success: boolean, error?: any }> {
@@ -169,7 +172,7 @@ export class UserService {
         const availableTrainings: [Training, boolean][] = []; // boolean is true if user has already signed up for that training
         let user = await this.userRepository.findOne(userId, { relations: ["groups", "trainings"] });
 
-        for(const userGroup of user.groups){
+        for (const userGroup of user.groups) {
             let group = await this.groupRepository.findOne(userGroup.id, { relations: ["trainings"] });
             group.trainings.forEach(training => {
                 if (user.trainings.includes(training)) { availableTrainings.push([training, false]) }
@@ -178,25 +181,25 @@ export class UserService {
         }
         return availableTrainings;
     }
-    public async login(email: string, rawpassword: string): Promise<{ success : boolean, token ?: string, userId?: number, userRoles?: string}> {
-        let failResult = {success : false };
+    public async login(email: string, rawpassword: string): Promise<{ success: boolean, token?: string, userId?: number, userRoles?: string }> {
+        let failResult = { success: false };
         let user = await this.userRepository.findOne({ email });
         if (!user) {
             return failResult;
         }
         const pwdCorrect = bcrypt.compareSync(rawpassword, user.password);
-        if( pwdCorrect ) {
-            return { 
-                success: true, 
-                token: this.jwtService.sign({ id: user.id, roles: user.roles }), 
-                userId: user.id, 
+        if (pwdCorrect) {
+            return {
+                success: true,
+                token: this.jwtService.sign({ id: user.id, roles: user.roles }),
+                userId: user.id,
                 userRoles: user.roles
             }
         }
         return failResult;
     }
     public async getCoach(userId: number): Promise<Coach> {
-        const user = await this.userRepository.findOne( userId );
-        return await this.coachRepository.findOne( { user: user }, { relations: ["user", "groups", "trainings"] } );
+        const user = await this.userRepository.findOne(userId);
+        return await this.coachRepository.findOne({ user: user }, { relations: ["user", "groups", "trainings"] });
     }
 }

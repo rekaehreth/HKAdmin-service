@@ -36,7 +36,10 @@ export class UserController
         }
         return {success: false, user: undefined};
     }
-
+    @Get('/getByRole/:role')
+    async getByRole( @Param('role') role: string): Promise<User[]> {
+        return await this.service.getByRole(role);
+    }
     @Post('/new')
     async create(
         @Body() 
