@@ -32,13 +32,13 @@ export class UserController
     async getByEmail( @Param('email') email: string ) : Promise<{success: boolean, user: User}> {
         const user = await this.service.getByEmail(email);
         if(user) {
-            return {success: true, user: user};
+            return {success: true, user: omit(user, "password")};
         }
         return {success: false, user: undefined};
     }
     @Get('/getByRole/:role')
     async getByRole( @Param('role') role: string): Promise<User[]> {
-        return await this.service.getByRole(role);
+        return await (await this.service.getByRole(role)).map(user => omit(user, "password"));
     }
     @Post('/new')
     async create(
