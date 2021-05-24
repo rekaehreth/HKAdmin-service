@@ -26,7 +26,7 @@ export class FinanceService {
 
     public async getByUser( userId: number ) : Promise<Payment[]> {
         const user = await this.userRepository.findOne(userId);
-        return await this.paymentRepository.find( user );
+        return  await this.paymentRepository.find( { relations: ["user"], where: {user: user} } );
     }
 
     public async create( userId : number, rawPaymentData : {

@@ -70,7 +70,7 @@ export class TrainingService {
         const groupToRemove = await this.groupRepository.findOne(groupId);
         const trainingToRemoveFrom = await this.trainingRepository.findOne(trainingId, { relations: ["attendees", "coaches", "groups"] });
         const groupIndex = trainingToRemoveFrom.groups.indexOf(groupToRemove);
-        trainingToRemoveFrom.groups.splice(groupIndex);
+        trainingToRemoveFrom.groups.splice(groupIndex, 1);
         this.trainingRepository.save(trainingToRemoveFrom);
         return trainingToRemoveFrom;
     }
