@@ -8,7 +8,7 @@ export class Coach
 {
     @PrimaryGeneratedColumn()
     id : number; 
-    @OneToOne( () => User )
+    @OneToOne( () => User, {eager: true} )
     @JoinColumn()
     user : User;
     @ManyToMany( () => Group, group => group.coaches )
