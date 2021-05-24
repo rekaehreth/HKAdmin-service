@@ -72,14 +72,13 @@ export class UserService {
     }
     public async addToGroup(userId: number, groupId: number, forceTrainee: boolean = false): Promise<{ success: boolean, error?: any }> {
         try {
-            const groupToAddTo = await this.groupRepository.findOne(groupId, { relations: ["trainings", "members", "coaches"] });
+            const groupToAddTo = await this.groupRepository.findOne(groupId, { relations: ["members", "coaches"] });
             const userToBeAdded = await this.userRepository.findOne(userId, { relations: ["groups"] });
-            console.log(forceTrainee);
             if (userToBeAdded.roles.match(/.*coach.*/) && !forceTrainee) {
                 const coachToBeAdded = await this.coachRepository.findOne({ user: userToBeAdded }, { relations: ["groups"] });
                 groupToAddTo.coaches.push(coachToBeAdded);
                 coachToBeAdded.groups.push(groupToAddTo);
-                await this.coachRepository.save(coachToBeAdded)
+                await this.coachRepository.save(coachToBeAdded);
             }
             else {
                 groupToAddTo.members.push(userToBeAdded);
