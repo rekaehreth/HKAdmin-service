@@ -61,7 +61,7 @@ export class TrainingCardComponent implements OnInit {
         const roles = this.authService.getLoggedInRoles();
         if (roles.includes("admin")) {
             const adminIndex = roles.indexOf("admin");
-            roles.splice(adminIndex);
+            roles.splice(adminIndex, 1);
         }
         if( roles.length === 0) {
             this.addGuestToTraining();
@@ -70,8 +70,7 @@ export class TrainingCardComponent implements OnInit {
             if (roles[0] === "guest") {
                 this.addGuestToTraining();
             }
-            else 
-            if (roles[0] === "trainee") {
+            else if (roles[0] === "trainee") {
                 await this.addTraineeToTraining();
             }
             else if (roles[0] === "coach") {
@@ -101,16 +100,18 @@ export class TrainingCardComponent implements OnInit {
         // **TODO** change icon from person_add to person_remove
     }
     async addTraineeToTraining() {
-        const user = this.authService.getLoggedInUser();
+        const userId = this.authService.getLoggedInUserId();
+        const user = await this.http.get<RawUser>(`user/${userId}`);
         this.http.post<{}>('user/addToTraining', {
-            "userId": user.id,
+            "userId": userId,
             "trainingId": this.trainingData.id
         });
         const amount: number = (-1) * 4000;
         this.http.post<{}>('finance/new', {
-            "userId" : user.id,
+            "userId" : userId,
             "rawPaymentData" : {
                 "amount" : amount,
+                "time": new Date(), 
                 "status" : "pending", 
                 "description": `Training ${user.name} ${user.email}, ${this.trainingData.location.name} ${formatFullDate(this.trainingData.startTime)} ${formatHourDate(this.trainingData.startTime)}-${formatHourDate(this.trainingData.endTime)}`
             }
@@ -119,22 +120,20 @@ export class TrainingCardComponent implements OnInit {
         // **TODO** Handle fix wage / training vs. fix wage per capita
     }
     async addCoachToTraining() {
-        const user = this.authService.getLoggedInUser();
-        const coach = await this.http.get<RawCoach>(`user/getCoach/${user.id}`);
+        const userId = this.authService.getLoggedInUserId();
+        const coach = await this.http.get<RawCoach>(`user/getCoach/${userId}`);
         console.log(coach);
-        // nem talál coach
         this.http.post<{}>('coach/addToTraining', {
             "coachId": coach.id,
             "trainingId": this.trainingData.id
         });
-        const amount: number = (-1) * 4000;
         this.http.post<{}>('finance/new', {
-            "userId" : user.id,
+            "userId" : userId,
             "rawPaymentData" : {
                 "amount" : coach.wage,
-                "time": this.trainingData.startTime,
+                "time": new Date(),
                 "status" : "pending",
-                "description": `Coaching ${user.name} ${user.email}, ${this.trainingData.location.name} ${formatFullDate(this.trainingData.startTime)} ${formatHourDate(this.trainingData.startTime)}-${formatHourDate(this.trainingData.endTime)}`
+                "description": `Coaching ${coach.user.name} ${coach.user.email}, ${this.trainingData.location.name} ${formatFullDate(this.trainingData.startTime)} ${formatHourDate(this.trainingData.startTime)}-${formatHourDate(this.trainingData.endTime)}`
             }
         });
     }

@@ -1,10 +1,10 @@
 <mat-card>
     <mat-card-title>
-        Select the who you want to register to this training as
+        Select who you want to register to this training as
     </mat-card-title>
     <mat-card-content>
         <mat-list-item #userRoles> 
-            <mat-list-option *ngFor="let role of this.roles" [value]="role" (click)="updateSelectedRole(role)">
+            <mat-list-option *ngFor="let role of roles" (click)="updateSelectedRole(role)">
                 {{ role }}
             </mat-list-option>
         </mat-list-item>

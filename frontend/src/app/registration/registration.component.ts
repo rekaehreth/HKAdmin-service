@@ -56,7 +56,6 @@ export class RegistrationComponent implements OnInit {
                         email: this.emailControl.value, 
                         password: this.passwordControl.value })
                     console.log(result);
-                    // debugger;
                     if (loginResult.success) {
                         this.authService.setLoggedInUser(
                             loginResult.userId ? loginResult.userId : 0,

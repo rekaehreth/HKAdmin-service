@@ -6,20 +6,59 @@
                     {{ group.name }}
                 </mat-panel-title>
                 <mat-panel-description>
-                    This is a summary of the content
+                    <button mat-button>
+                        <mat-icon matTooltip="Delete group"> delete </mat-icon>
+                    </button>
                 </mat-panel-description>
             </mat-expansion-panel-header>
-            <mat-list>
-                <mat-list-item *ngFor="let trainee of group.members">
-                    {{ trainee.name }}
-                    <button mat-raised-button>
-                        <mat-icon>
-                            person_remove
-                        </mat-icon>
-                    </button>
-                </mat-list-item>
-            </mat-list>
-            <p>This is the primary content of the panel.</p>
+            <mat-expansion-panel hideToggle>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        Members
+                    </mat-panel-title>
+                    <mat-panel-description>
+                        <button mat-button (click)="addUser()">
+                            <mat-icon matTooltip="Add user to group"> group_add </mat-icon>
+                        </button>
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+                <p *ngIf="!group.members" class="noData"> No users in group </p>
+                <mat-list *ngIf="group.members">
+                    <mat-list-item *ngFor="let trainee of group.members">
+                        {{ trainee.name }}
+                        <button mat-raised-button>
+                            <mat-icon matTooltip="Remove user from group"> group_remove </mat-icon>
+                        </button>
+                    </mat-list-item>
+                    <!-- <mat-list-item>
+                        <mat-select>
+                            <mat-option>
+
+                            </mat-option>
+                        </mat-select>
+                    </mat-list-item> -->
+                </mat-list>
+            </mat-expansion-panel>
+            <mat-expansion-panel hideToggle>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        Coaches
+                    </mat-panel-title>
+                    <mat-panel-description>
+                        <button mat-button>
+                            <mat-icon matTooltip="Add coach to group"> group_add </mat-icon>
+                        </button>
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+                <mat-list>
+                    <mat-list-item *ngFor="let coach of group.coaches">
+                        {{ coach.name }}
+                        <button mat-raised-button>
+                            <mat-icon matTooltip="Remove coach from group"> group_remove </mat-icon>
+                        </button>
+                    </mat-list-item>
+                </mat-list>
+            </mat-expansion-panel>
         </mat-expansion-panel>
     </mat-accordion>
 </mat-card>
