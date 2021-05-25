@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { AuthService } from '../auth.service';
 import { HttpService } from '../httpService';
 import { RawGroup, RawCoach, RawUser } from '../types';
@@ -10,11 +11,13 @@ import { RawGroup, RawCoach, RawUser } from '../types';
 })
 export class GroupComponent implements OnInit {
     groups: RawGroup[] = [];
+    unfilteredGroups: RawGroup[] = [];
     roles: string[] = [];
     usersNotInGroup: RawUser[] = [];
     coachesNotInGroup: RawUser[] = [];
     selectedUser!: RawUser;
     selectedCoach!: RawUser;
+    nameFilterControl:FormControl = new FormControl("");
 
     constructor(
         private http: HttpService,
@@ -24,17 +27,18 @@ export class GroupComponent implements OnInit {
     ngOnInit(): void {
         this.roles = this.authService.getLoggedInRoles();
         this.getGroups();
-        console.log( this.groups );
+        this.nameFilterControl.valueChanges.subscribe(value => this.filterByName(value));
     }
     async getGroups() {
         if( this.roles.includes("admin") ) {
-            this.groups = await this.http.get<RawGroup[]>('group');
+            this.unfilteredGroups = await this.http.get<RawGroup[]>('group');
         } 
         else if ( this.roles.includes("coach") ) {
             const user = this.authService.getLoggedInUserId();
             const coach = await this.http.get<RawCoach>(`user/getCoach/${user.id}`);
-            this.groups = coach.groups;
+            this.unfilteredGroups = coach.groups;
         }
+        this.groups = this.unfilteredGroups;
     }
     async refreshTrainees(groupId: number): Promise<void> {
         let group = await this.http.get<RawGroup>(`group/${groupId}`);
@@ -45,9 +49,6 @@ export class GroupComponent implements OnInit {
                 this.usersNotInGroup.push(user);
             }
         }
-        console.log("Users not in group: ", this.usersNotInGroup);
-        console.log("Group members:", group.members)
-        // debugger;
     }
     async refreshCoaches(groupId: number): Promise<void> {
         let group = await this.http.get<RawGroup>(`group/${groupId}`);
@@ -88,5 +89,9 @@ export class GroupComponent implements OnInit {
             groupId : groupId,
         });
         this.getGroups();
+    }
+    filterByName(filterString: string){
+        const filteredGroups = this.unfilteredGroups.filter(group => group.name.toLowerCase().includes(filterString.toLowerCase()));
+        this.groups = filteredGroups;
     }
 }

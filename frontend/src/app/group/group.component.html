@@ -1,4 +1,8 @@
 <mat-card>
+    <mat-form-field appearance="fill">
+        <mat-label>Filter for name</mat-label>
+        <input matInput [formControl]="nameFilterControl">
+      </mat-form-field>
     <mat-accordion>
         <mat-expansion-panel hideToggle *ngFor="let group of groups">
             <mat-expansion-panel-header class="right-aligned-header">

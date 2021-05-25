@@ -10,7 +10,14 @@
     </ng-container>
     <!-- Groups Column -->
     <ng-container matColumnDef="groups">
-        <th mat-header-cell *matHeaderCellDef> Groups </th>
+        <th mat-header-cell *matHeaderCellDef>
+            <mat-form-field appearance="fill">
+                <mat-label>Groups</mat-label>
+                <mat-select [formControl]="groupFilterControl" multiple>
+                  <mat-option *ngFor="let group of groupList" [value]="group">{{group}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+        </th>
         <td mat-cell *matCellDef="let user">
             <mat-chip-list aria-label="Fish selection" *ngFor="let group of user.groups">
                 <mat-chip> {{group.name}}  </mat-chip>
@@ -20,8 +27,12 @@
     <!-- Roles Column -->
     <ng-container matColumnDef="roles">
         <th mat-header-cell *matHeaderCellDef> 
-            Roles 
-            <!-- <input matInput (input)="filterByRole( $event.target )"> -->
+            <mat-form-field appearance="fill">
+                <mat-label>Roles</mat-label>
+                <mat-select [formControl]="roleFilterControl" multiple>
+                  <mat-option *ngFor="let role of roleList" [value]="role">{{role}}</mat-option>
+                </mat-select>
+              </mat-form-field>
         </th>
         <td mat-cell *matCellDef="let user"> {{user.roles}} </td>
     </ng-container>
@@ -37,6 +48,7 @@
             </button>
         </td>
     </ng-container>
+    <tr lass="mat-row" *matNoDataRow><td class="mat-cell nodata" colspan="5">No users match the given filter</td></tr>
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 </table>
