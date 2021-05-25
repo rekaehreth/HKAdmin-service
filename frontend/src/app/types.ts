@@ -8,6 +8,7 @@ export type RawTraining = {
     endTime: Date,
     status: string, // Planned | Fixed | Past
     payments: RawPayment[];
+    type: string;
 }
 
 export type RawUser = {
@@ -38,6 +39,7 @@ export type RawLocation = {
     capacity : number;
     min_attendees : number;
     trainings : any[];
+    plus_code: string;
 }
 
 export type RawGroup = {

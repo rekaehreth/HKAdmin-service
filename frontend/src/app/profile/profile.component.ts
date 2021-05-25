@@ -15,6 +15,7 @@ export class ProfileComponent implements OnInit {
     user!: RawUser;
     inputChanged: boolean = false;
     changePassword: boolean = false;
+    passwordVerified: boolean = false;
 
     dateControl = new FormControl();
     nameControl = new FormControl();
@@ -78,5 +79,41 @@ export class ProfileComponent implements OnInit {
     }
     passwordChange(): void {
         this.changePassword = true;
+    }
+    async verifyPassword(): Promise<void> {
+        const result = await this.http.post<{ 
+            success: boolean, 
+            token?: string, 
+            userId?: number, 
+            userRoles?: string 
+        }> ('user/login', { 
+            email: this.user.email, 
+            password: this.passwordControl.value ? this.passwordControl.value : "" 
+        });
+        if (result.success) {
+            this.passwordVerified = true;
+        }
+        else {
+            window.alert("Password incorrect. ");
+        }
+    }
+    async saveNewPassword(): Promise<void> {
+        if(!this.newPasswordControl.errors &&!this.rePasswordControl.errors && this.newPasswordControl.value === this.rePasswordControl.value) {
+            const result = await this.http.post<{success: boolean, user: RawUser }>(`user/modify`, {            
+                userId : this.user.id, 
+                rawUserData : {
+                    password: this.newPasswordControl.value
+            }});
+            if( result.success ) {
+                window.alert("Password changed");
+                this.passwordVerified = false;
+                this.changePassword = false;
+            } 
+            else {
+                window.alert("Password change failed");
+            }
+        }else{
+            window.alert("Passwords don't match");
+        }
     }
 }

@@ -6,6 +6,7 @@ import { HttpService } from 'src/app/httpService';
 import { RawCoach, RawTraining, RawUser } from 'src/app/types';
 import { formatFullDate, formatHourDate } from 'src/app/utils';
 import { NewTrainingComponent } from '../new-training/new-training.component';
+import { TrainingDetailsDialogComponent } from '../training-details-dialog/training-details-dialog.component';
 import { ManageTrainingFinancesDialogComponent } from './manage-training-finances-dialog/manage-training-finances-dialog.component';
 import { RegisterGuestDialogComponent } from './register-guest-dialog/register-guest-dialog.component';
 import { RegistrationRoleDialogComponent } from './registration-role-dialog/registration-role-dialog.component';
@@ -35,10 +36,15 @@ export class TrainingCardComponent implements OnInit {
         this.roles = this.authService.getLoggedInRoles();
     }
     openEditTrainingDialog() {
-        this.dialog.open(NewTrainingComponent, {
+        const dialogRef = this.dialog.open(NewTrainingComponent, {
             width: '50vw',
             data: this.trainingData,
             disableClose: true,
+        });
+        dialogRef.afterClosed().subscribe(async result => {
+            if (result.refreshNeeded) {
+                this.refreshTrainings.emit("update");
+            }
         });
     }
     deleteTraining() {
@@ -175,6 +181,12 @@ export class TrainingCardComponent implements OnInit {
             width: '50vw',
             data: this.trainingData,
             disableClose: true,
+        });
+    }
+    openDetailDialog(): void {
+        this.dialog.open(TrainingDetailsDialogComponent, {
+            width: '60vw',
+            data: this.trainingData,
         });
     }
 }

@@ -1,34 +1,37 @@
 <div class="userData">
     <form action="">
-        <mat-form-field>
-            <mat-label>Name:</mat-label>
-            <input matInput *ngIf="user" [value]="user.name" required [formControl]="nameControl"/>
-        </mat-form-field>
-        <br/>
-        <mat-form-field>
-            <mat-label>Email:</mat-label>
-            <input matInput *ngIf="user" [value]="user.email" required [formControl]="emailControl"/>
-        </mat-form-field>
-        <br/>
-        <mat-form-field *ngIf="user">
-            <mat-label> Date of birth: </mat-label> 
-            <input matInput [matDatepicker]="picker" [value]="formatFullDate(user.birth_date)" required [formControl]="dateControl"/>
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker [startAt]="user.birth_date"></mat-datepicker>
-            <mat-error *ngIf="dateControl.errors && dateControl.errors.required">
-                Date of birth is required
-            </mat-error>
-        </mat-form-field>
-        <br/>
-        <div *ngIf="changePassword">
+        <ng-container *ngIf="user && !changePassword">
             <mat-form-field>
-                <mat-label>Password:</mat-label>
-                <input matInput *ngIf="user" type="password" [formControl]="passwordControl"/>   
+                <mat-label>Name:</mat-label>
+                <input matInput  [value]="user.name" required [formControl]="nameControl"/>
             </mat-form-field>
             <br/>
             <mat-form-field>
+                <mat-label>Email:</mat-label>
+                <input matInput  [value]="user.email" required [formControl]="emailControl"/>
+            </mat-form-field>
+            <br/>
+            <mat-form-field>
+                <mat-label> Date of birth: </mat-label> 
+                <input matInput [matDatepicker]="picker" [value]="formatFullDate(user.birth_date)" required [formControl]="dateControl"/>
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker [startAt]="user.birth_date"></mat-datepicker>
+                <mat-error *ngIf="dateControl.errors && dateControl.errors.required">
+                    Date of birth is required
+                </mat-error>
+            </mat-form-field>
+        </ng-container>
+        <br/>
+        <ng-container *ngIf="changePassword && !passwordVerified">
+            <mat-form-field>
+                <mat-label>Old password:</mat-label>
+                <input matInput  type="password" [formControl]="passwordControl"/>   
+            </mat-form-field>
+        </ng-container>
+        <ng-container *ngIf="passwordVerified">
+            <mat-form-field>
                 <mat-label>New password:</mat-label>
-                <input matInput placeholder="Password" type="password" name="password"
+                <input matInput type="password" name="password"
                     [formControl]="newPasswordControl">
                 <mat-error *ngIf="newPasswordControl.errors && newPasswordControl.errors.required">
                     Password is required
@@ -40,18 +43,26 @@
             </mat-form-field>
             <br/>
             <mat-form-field>
-                <input matInput placeholder="Password" type="password" name="repassword"
+                <mat-label>Repeat new password:</mat-label>
+                <input matInput type="password" name="repassword"
                     [formControl]="rePasswordControl">
-                <mat-error *ngIf="rePasswordControl.value != passwordControl.value">
+                <mat-error *ngIf="rePasswordControl.value != newPasswordControl.value">
                     Passwords must match
                 </mat-error>
                 <mat-icon matSuffix>lock</mat-icon>
             </mat-form-field>
-        </div>
-        <button mat-raised-button (click)="passwordChange()">
+        </ng-container>
+        <br/>
+        <button *ngIf="!changePassword" mat-raised-button (click)="passwordChange()">
             Change password
         </button>
         <button *ngIf="inputChanged" mat-raised-button (click)="editUserData()">
+            Save
+        </button>
+        <button *ngIf="changePassword && !passwordVerified" mat-raised-button (click)="verifyPassword()">
+            Next
+        </button>
+        <button *ngIf="passwordVerified" mat-raised-button (click)="saveNewPassword()">
             Save
         </button>
     </form>

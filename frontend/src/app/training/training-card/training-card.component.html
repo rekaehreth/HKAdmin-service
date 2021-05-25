@@ -1,4 +1,4 @@
-<mat-card class="trainingCard">
+<mat-card class="trainingCard" (click)="openDetailDialog()">
     <mat-card-title> 
         <mat-icon> event </mat-icon>
         {{formatFullDate(trainingData.startTime)}} 

@@ -12,8 +12,8 @@ import { UserComponent } from './user/user.component';
 
 const routes: Routes = [
     { path: 'training', component: TrainingComponent, data: { acceptedRoles: ["admin", "coach", "trainee", "guest"] } },
-    { path: 'finance', component: FinanceComponent, data: { acceptedRoles: ["admin", "coach", "trainee"] } },
-    { path: 'profile', component: ProfileComponent, data: { acceptedRoles: ["admin", "coach", "trainee"] } },
+    { path: 'finance', component: FinanceComponent, canActivate: [RoleGuardService], data: { acceptedRoles: ["admin", "coach", "trainee"] } },
+    { path: 'profile', component: ProfileComponent, canActivate: [RoleGuardService], data: { acceptedRoles: ["admin", "coach", "trainee"] } },
     // { path : 'settings', component : SettingsComponent },
     { path: 'users', component: UserComponent, canActivate: [RoleGuardService], data: { acceptedRoles: ["admin"] } },
     { path: 'groups', component: GroupComponent, canActivate: [RoleGuardService], data: { acceptedRoles: ["admin", "coach"] } },

@@ -15,6 +15,7 @@ export class NewTrainingComponent implements OnInit {
     locations: RawLocation[] = [];
     selectedLocationId: number = 0;
     groups: RawGroup[] = [];
+    loadedGroupIds: number[] = [];
     selectedGroups: number[] = [];
     selectedType: string = "";
     trainingTypes: string[] = ["Off Ice", "Ice", "Ballet"];
@@ -46,9 +47,12 @@ export class NewTrainingComponent implements OnInit {
             this.displayDate = new Date(this.data.startTime);
             this.startHour = this.data.startTime;
             this.endHour = this.data.endTime;
+            this.selectedType = this.data.type;
             this.data.groups.forEach( group => {
                 this.selectedGroups.push( group.id);
+                this.loadedGroupIds.push( group.id );
             });
+            this.groupControl.setValue(this.selectedGroups);
         }
         this.initControls();
     }
@@ -99,10 +103,16 @@ export class NewTrainingComponent implements OnInit {
                 type: this.selectedType,
             }
         });
-        for (const groupId of this.selectedGroups) {
-            // **TODO** remove groups that have been deselected
-            // **TODO** only add groups that have not been added previously
+        const removedGroups = this.loadedGroupIds.filter( id => { return !this.selectedGroups.includes(id); });
+        const addedGroups = this.selectedGroups.filter( id => { return !this.loadedGroupIds.includes(id); });
+        for (const groupId of addedGroups) {
             await this.http.post<RawGroup>('training/addGroup', {
+                "groupId": groupId,
+                "trainingId": this.data.id
+            });
+        }
+        for (const groupId of removedGroups) {
+            await this.http.post<RawGroup>('training/removeGroup', {
                 "groupId": groupId,
                 "trainingId": this.data.id
             });

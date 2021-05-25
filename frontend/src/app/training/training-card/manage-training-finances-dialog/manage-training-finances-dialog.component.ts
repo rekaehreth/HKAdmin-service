@@ -14,7 +14,7 @@ export class ManageTrainingFinancesDialogComponent implements OnInit {
 	payments: RawPayment[] = [];
 	paymentDataSource = new MatTableDataSource<RawPayment>();
 	@ViewChild(MatSort) sort?: MatSort;
-	displayedColumns: string[] = ['name', 'email', 'amount', 'status', 'action'];
+	displayedColumns: string[] = ['name', 'email', 'amount', 'status', 'actions'];
 	constructor(
 		public dialog: MatDialog,
 		private http: HttpService,
@@ -27,17 +27,17 @@ export class ManageTrainingFinancesDialogComponent implements OnInit {
 		this.payments = this.data.payments;
 		this.paymentDataSource = new MatTableDataSource(this.payments);
 	}
-	async changePaymentStatus(payment: RawPayment, status: string) : Promise<void> {
-		await this.http.post<RawPayment>('finance/modify', {
+	async changePaymentStatus(payment: RawPayment, index: number, status: string) : Promise<void> {
+		const changedPayment = await this.http.post<RawPayment>('finance/modify', {
 			userId : payment.user.id, 
             paymentId : payment.id, 
             trainingId: this.data.id,
             rawPaymentData : {
                 status : status,
                 time : Date(),
-            }});
+		}});
+		this.data.payments[index] = changedPayment;
+		await this.loadPayments();
 	}
 	// **TODO** ok and cancel buttons
-	// **
-
 }

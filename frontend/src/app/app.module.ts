@@ -45,6 +45,7 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
 import { RegistrationRoleDialogComponent } from './training/training-card/registration-role-dialog/registration-role-dialog.component';
 import { RegisterGuestDialogComponent } from './training/training-card/register-guest-dialog/register-guest-dialog.component';
 import { ManageTrainingFinancesDialogComponent } from './training/training-card/manage-training-finances-dialog/manage-training-finances-dialog.component';
+import { TrainingDetailsDialogComponent } from './training/training-details-dialog/training-details-dialog.component';
 
 @NgModule({
     declarations: [
@@ -66,6 +67,7 @@ import { ManageTrainingFinancesDialogComponent } from './training/training-card/
         RegistrationRoleDialogComponent,
         RegisterGuestDialogComponent,
         ManageTrainingFinancesDialogComponent,
+        TrainingDetailsDialogComponent,
     ],
     imports: [
         BrowserModule,

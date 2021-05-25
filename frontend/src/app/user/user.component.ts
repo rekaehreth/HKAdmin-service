@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
-import { RawGroup, RawUser } from '../types';
+import { RawCoach, RawGroup, RawUser } from '../types';
 import { MatDialog } from '@angular/material/dialog';
 import { EditUserComponent } from './edit-user/edit-user.component';
 import { HttpService } from '../httpService';
@@ -81,12 +81,25 @@ export class UserComponent implements OnInit, AfterViewInit {
             data: { user },
             disableClose: true,
         });
-        dialogRef.afterClosed().subscribe(result => {
+        dialogRef.afterClosed().subscribe(async result => {
             console.log(result);
             if (result.action === "save") {
                 console.log( result.newRoles );
+                if( user.roles.includes("coach") && !result.newRoles.includes("coach")) {
+                    // delete coach
+                    const coachId = (await this.http.get<RawCoach>(`coach/getByUserId/${user.id}`)).id;
+                    await this.http.delete(`coach/${coachId}`);
+                }
+                if( !user.roles.includes("coach") && result.newRoles.includes("coach")) {
+                    await this.http.post<RawCoach>('coach/new', {
+                        userId : user.id,
+                        rawCoachData : { 
+                            wage : 4000
+                        }
+                    })
+                }
                 const rolesString = result.newRoles.join(" ");
-                this.http.post<{}>('user/modify', {
+                await this.http.post<{}>('user/modify', {
                     userId: user.id,
                     rawUserData: {
                         email: user.email,

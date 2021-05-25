@@ -31,7 +31,6 @@ export class RegistrationComponent implements OnInit {
         if (!this.emailLoginControl.errors && !this.passwordLoginControl.errors) {
             const result = await this.http.post<{ success: boolean, token?: string, userId?: number, userRoles?: string }>
                 ('user/login', { email: this.emailLoginControl.value, password: this.passwordLoginControl.value });
-            console.log(result);
             if (result.success) {
                 this.authService.setLoggedInUser(
                     result.userId ? result.userId : 0,
