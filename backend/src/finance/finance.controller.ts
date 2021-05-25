@@ -30,6 +30,7 @@ export class FinanceController {
         @Body() 
         requestBody : {
             userId : number,
+            trainingId: number,
             rawPaymentData : {
                 amount : number,
                 time : Date,
@@ -40,7 +41,7 @@ export class FinanceController {
         }
     ) : Promise<Payment> 
     {
-        return await this.service.create(requestBody.userId, requestBody.rawPaymentData);
+        return await this.service.create(requestBody.userId, requestBody.trainingId, requestBody.rawPaymentData);
     }
     @Delete('/:id')
     async delete ( @Param('id') id : number ) : Promise<DeleteResult>
@@ -53,6 +54,7 @@ export class FinanceController {
         requestBody : {
             userId : number, 
             paymentId : number, 
+            trainingId: number,
             rawPaymentData : {
                 amount : number,
                 time : Date,
@@ -63,6 +65,6 @@ export class FinanceController {
         }
     ) : Promise<Payment>
     {
-        return await this.service.modify(requestBody.userId, requestBody.paymentId, requestBody.rawPaymentData );
+        return await this.service.modify(requestBody.userId, requestBody.paymentId, requestBody.trainingId, requestBody.rawPaymentData );
     }
 }

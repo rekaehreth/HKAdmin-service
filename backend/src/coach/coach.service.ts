@@ -19,7 +19,7 @@ export class CoachService
     
     public async getAll() : Promise<Coach[]>
     {
-        return await this.coachRepository.find( { relations : ["user", "trainings"] } );
+        return await this.coachRepository.find( { relations : ["user", "trainings"]} );
     }
     public async getById( id : number ) : Promise<Coach> 
     {

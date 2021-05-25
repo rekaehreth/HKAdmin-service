@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { DeleteResult } from 'typeorm';
 import { Coach } from './coach.entity';
 import { CoachService } from './coach.service';
+import { omit } from 'lodash';
 
 @Controller('coach')
 export class CoachController 
@@ -13,12 +14,13 @@ export class CoachController
     @Get()
     async getAll() : Promise<Coach[]>
     {
-        return await this.service.getAll();
+        return await (await this.service.getAll()).map(coach => ({...coach, user: omit(coach.user, "password")}));
     }
     @Get('/:id')
     async getById( @Param('id') id : number ) : Promise<Coach> 
     {
-        return await this. service.getById(id);
+        const coach = await this.service.getById(id);
+        return ({...coach, user: omit(coach.user, "password")});
     }
     @Post('/new')
     async create
@@ -50,6 +52,7 @@ export class CoachController
         }
     ) : Promise<Coach>
     {
-        return await this.service.modify(requestBody.coachId, requestBody.rawCoachData)
+        const coach = await this.service.modify(requestBody.coachId, requestBody.rawCoachData);
+        return ({...coach, user: omit(coach.user, "password")});
     }
 }

@@ -8,13 +8,14 @@ export class Coach
 {
     @PrimaryGeneratedColumn()
     id : number; 
-    @OneToOne( () => User )
+    @OneToOne( () => User, {eager: true} )
     @JoinColumn()
     user : User;
     @ManyToMany( () => Group, group => group.coaches )
-    @JoinTable({name: "coach_trainings_training"})
+    @JoinTable()
     groups : Group[];
     @ManyToMany( () => Training, training => training.coaches )
+    @JoinTable({name: "coach_trainings_training"})
     trainings : Training[];
     @Column()
     wage : number;

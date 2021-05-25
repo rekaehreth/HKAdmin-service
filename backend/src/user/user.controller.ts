@@ -4,9 +4,8 @@ import { DeleteResult } from 'typeorm';
 import { User } from './user.entity';
 import { UserService } from './user.service';
 import { omit } from 'lodash';
-import { AdminAuthGuard, LoggedInAuthGuard } from './auth/jwt-auth.guard';
+import { AdminAuthGuard } from './auth/jwt-auth.guard';
 import { Coach } from 'src/coach/coach.entity';
-import { identity } from 'rxjs';
 
 @Controller('user')
 export class UserController 
@@ -31,12 +30,16 @@ export class UserController
     @Get('/getByEmail/:email')
     async getByEmail( @Param('email') email: string ) : Promise<{success: boolean, user: User}> {
         const user = await this.service.getByEmail(email);
+        console.log(user);
         if(user) {
-            return {success: true, user: user};
+            return {success: true, user: omit(user, "password")};
         }
         return {success: false, user: undefined};
     }
-
+    @Get('/getByRole/:role')
+    async getByRole( @Param('role') role: string): Promise<User[]> {
+        return await (await this.service.getByRole(role)).map(user => omit(user, "password"));
+    }
     @Post('/new')
     async create(
         @Body() 
