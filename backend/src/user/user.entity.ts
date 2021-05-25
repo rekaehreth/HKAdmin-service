@@ -24,7 +24,7 @@ export class User
     groups : Group[];
     @Column( { nullable : true } )
     birth_date : Date;
-    @OneToMany( () => Payment, payment => payment.user )
+    @OneToMany( () => Payment, payment => payment.user, { nullable: true, onDelete: "SET NULL"} )
     payments : Payment[];
     // @OneToMany( () => Child, child => child.id )
     // children : Child[];

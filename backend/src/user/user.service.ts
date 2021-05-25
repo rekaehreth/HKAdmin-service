@@ -6,6 +6,7 @@ import { Connection, DeleteResult, Like, Repository } from 'typeorm';
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { Payment } from 'src/finance/payment.entity';
 
 @Injectable()
 export class UserService {
@@ -30,7 +31,7 @@ export class UserService {
         return await this.userRepository.findOne(id, { relations: ["trainings", "groups"] });
     }
     public async getByEmail(email: string): Promise<User> {
-        return await this.userRepository.findOne(email, { relations: ["trainings", "groups"] });
+        return await this.userRepository.findOne({ relations: ["trainings", "groups"], where: {email: email} });
     }
     public async getByRole(role: string): Promise<User[]> {
         return await this.userRepository.find({ relations: ["trainings", "groups"], where: { roles: Like(`%${role}%`) } });

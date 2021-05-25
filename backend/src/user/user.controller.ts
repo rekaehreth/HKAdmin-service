@@ -30,6 +30,7 @@ export class UserController
     @Get('/getByEmail/:email')
     async getByEmail( @Param('email') email: string ) : Promise<{success: boolean, user: User}> {
         const user = await this.service.getByEmail(email);
+        console.log(user);
         if(user) {
             return {success: true, user: omit(user, "password")};
         }

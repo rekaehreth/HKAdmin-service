@@ -1,8 +1,9 @@
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Location } from "src/location/location.entity";
 import { User } from "src/user/user.entity";
 import { Coach } from "src/coach/coach.entity";
 import { Group } from "src/group/group.entity";
+import { Payment } from "src/finance/payment.entity";
 
 @Entity()
 export class Training 
@@ -20,6 +21,8 @@ export class Training
     @ManyToMany( () => Group, group => group.trainings)
     @JoinTable()
     groups : Group[];
+    @OneToMany( () => Payment, payment => payment.training)
+    payments: Payment[];
     @Column()
     startTime : Date;
     @Column()
