@@ -1,8 +1,3 @@
-<div class="sortOptions">
-    <!-- by name -->
-    <!-- by group -->
-    <!-- by role -->
-</div>
 <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
     <!-- Name Column -->
     <ng-container matColumnDef="name">
@@ -16,7 +11,11 @@
     <!-- Groups Column -->
     <ng-container matColumnDef="groups">
         <th mat-header-cell *matHeaderCellDef> Groups </th>
-        <td mat-cell *matCellDef="let user"> {{user.groups}} </td>
+        <td mat-cell *matCellDef="let user">
+            <p *ngFor="let group of user.groups">
+                {{group.name}} 
+            </p> 
+        </td>
     </ng-container>
     <!-- Roles Column -->
     <ng-container matColumnDef="roles">

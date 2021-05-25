@@ -22,6 +22,7 @@ export class RegistrationRoleDialogComponent implements OnInit {
     close(action: string) {
         if (action === 'save') {
             this.dialogRef.close({ action: "save", role: this.selectedRole });
+            console.log(this.selectedRole);
         }
         else {
             this.dialogRef.close({ action: "cancel" });

@@ -43,6 +43,7 @@ import { RoleGuardService } from './role-guard.service';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 import { RegistrationRoleDialogComponent } from './training/training-card/registration-role-dialog/registration-role-dialog.component';
 import { RegisterGuestDialogComponent } from './training/training-card/register-guest-dialog/register-guest-dialog.component';
+import { ManageTrainingFinancesDialogComponent } from './training/training-card/manage-training-finances-dialog/manage-training-finances-dialog.component';
 
 @NgModule({
     declarations: [
@@ -63,6 +64,7 @@ import { RegisterGuestDialogComponent } from './training/training-card/register-
         ConfirmDialogComponent,
         RegistrationRoleDialogComponent,
         RegisterGuestDialogComponent,
+        ManageTrainingFinancesDialogComponent,
     ],
     imports: [
         BrowserModule,

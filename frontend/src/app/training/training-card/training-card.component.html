@@ -15,11 +15,13 @@
         <div class="modifierButtons">
             <button mat-raised-button (click)="addUserToTraining()">
                 <mat-icon> person_add </mat-icon>
-                <!-- Register -->
             </button>
             <button mat-raised-button (click)="openEditTrainingDialog()" *ngIf="this.roles.includes('admin') || this.roles.includes('coach')">
                 <mat-icon> edit </mat-icon>
             </button>
+            <!-- <button mat-raised-button (click)="openAdministrateTrainingDialog()" *ngIf="this.roles.includes('admin') || this.roles.includes('coach')">
+                <mat-icon> attach_money </mat-icon>
+            </button> -->
             <button mat-raised-button color="warn" (click)="deleteTraining()" *ngIf="this.roles.includes('admin') || this.roles.includes('coach')">
                 <mat-icon> delete </mat-icon>
             </button>

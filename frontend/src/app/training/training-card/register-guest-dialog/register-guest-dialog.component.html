@@ -8,6 +8,7 @@
                         Name is invalid. Please don't use anything but characters from the hungarian alphabet, and privide your full name.
                     </mat-error>
             </mat-form-field>
+            <br/>
             <mat-form-field>
                 <input matInput placeholder="Email" name="email" [formControl]="emailControl">
                 <mat-error *ngIf="emailControl.errors && emailControl.errors.email">
@@ -18,6 +19,7 @@
                 </mat-error>
                 <mat-icon matSuffix>email</mat-icon>
             </mat-form-field>
+            <br/>
             <button mat-raised-button color="primary" class="login-button" (click)="register()">
                 Register
             </button>

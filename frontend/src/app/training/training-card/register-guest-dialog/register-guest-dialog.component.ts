@@ -23,17 +23,19 @@ export class RegisterGuestDialogComponent implements OnInit {
     async register(): Promise<void> {
         if (!this.nameControl.errors && !this.emailControl.errors) {
             const result = await this.http.get<{ success: boolean, user: RawUser }>(`user/getByEmail/${this.emailControl.value}`);
+            console.log(result);
             if( result.success ) {
-                console.log(result);
                 this.dialogRef.close({ action: "save", user: result.user });
             }
-            // create new user
-            const newUser = await this.http.post<RawUser>('user/new', {
-                name : this.nameControl.value,
-                roles : "guest, trainee",
-                email : this.emailControl.value,
-            } );
-            this.dialogRef.close({ action: "save", user: newUser });
+            else {
+                // create new user
+                const newUser = await this.http.post<RawUser>('user/new', {
+                    name : this.nameControl.value,
+                    roles : "guest ",
+                    email : this.emailControl.value,
+                } );
+                this.dialogRef.close({ action: "save", user: newUser });
+            }
         }
     }
     cancel(): void {

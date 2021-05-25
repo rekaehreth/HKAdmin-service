@@ -6,6 +6,7 @@ import { HttpService } from 'src/app/httpService';
 import { RawCoach, RawTraining, RawUser } from 'src/app/types';
 import { formatFullDate, formatHourDate } from 'src/app/utils';
 import { NewTrainingComponent } from '../new-training/new-training.component';
+import { ManageTrainingFinancesDialogComponent } from './manage-training-finances-dialog/manage-training-finances-dialog.component';
 import { RegisterGuestDialogComponent } from './register-guest-dialog/register-guest-dialog.component';
 import { RegistrationRoleDialogComponent } from './registration-role-dialog/registration-role-dialog.component';
 
@@ -34,14 +35,11 @@ export class TrainingCardComponent implements OnInit {
         this.roles = this.authService.getLoggedInRoles();
     }
     openEditTrainingDialog() {
-        const dialogRef = this.dialog.open(NewTrainingComponent, {
+        this.dialog.open(NewTrainingComponent, {
             width: '50vw',
             data: this.trainingData,
             disableClose: true,
         });
-        dialogRef.afterClosed().subscribe(result => {
-            console.log(result);
-        })
     }
     deleteTraining() {
         const dialogRef = this.dialog.open(ConfirmDialogComponent, {
@@ -50,7 +48,6 @@ export class TrainingCardComponent implements OnInit {
             disableClose: true,
         });
         dialogRef.afterClosed().subscribe(async result => {
-            console.log(result);
             if (result.result === "confirm") {
                 this.http.delete(`training/${this.trainingData.id}`);
                 this.refreshTrainings.emit("update");
@@ -84,7 +81,6 @@ export class TrainingCardComponent implements OnInit {
                 disableClose: true,
             });
             dialogRef.afterClosed().subscribe(result => {
-                console.log("Registration role dialog closed.", result);
                 if(result.action === "save") {
                     if (result.role === "coach") {
                         this.addCoachToTraining();
@@ -92,6 +88,9 @@ export class TrainingCardComponent implements OnInit {
                     else if (result.role === "trainee") {
                         this.addTraineeToTraining();
                     }
+                }
+                else {
+                    window.alert("Registration cancelled");
                 }
             });
         }
@@ -103,42 +102,44 @@ export class TrainingCardComponent implements OnInit {
         const userId = this.authService.getLoggedInUserId();
         const user = await this.http.get<RawUser>(`user/${userId}`);
         this.http.post<{}>('user/addToTraining', {
-            "userId": userId,
-            "trainingId": this.trainingData.id
+            userId: userId,
+            trainingId: this.trainingData.id
         });
         const amount: number = (-1) * 4000;
         this.http.post<{}>('finance/new', {
-            "userId" : userId,
-            "rawPaymentData" : {
-                "amount" : amount,
-                "time": new Date(), 
-                "status" : "pending", 
-                "description": `Training ${user.name} ${user.email}, ${this.trainingData.location.name} ${formatFullDate(this.trainingData.startTime)} ${formatHourDate(this.trainingData.startTime)}-${formatHourDate(this.trainingData.endTime)}`
+            userId : userId,
+            trainingId: this.trainingData.id,
+            rawPaymentData : {
+                amount : amount,
+                time: new Date(), 
+                status : "pending", 
+                description: `Training ${user.name} ${user.email}, ${this.trainingData.location.name} ${formatFullDate(this.trainingData.startTime)} ${formatHourDate(this.trainingData.startTime)}-${formatHourDate(this.trainingData.endTime)}`
             }
         });
+        window.alert("Registration successful");
         // **TODO** Handle time differences --> 50 mins - 4000, 110 min - 8000, 
         // **TODO** Handle fix wage / training vs. fix wage per capita
     }
     async addCoachToTraining() {
         const userId = this.authService.getLoggedInUserId();
-        const coach = await this.http.get<RawCoach>(`user/getCoach/${userId}`);
-        console.log(coach);
-        this.http.post<{}>('coach/addToTraining', {
-            "coachId": coach.id,
-            "trainingId": this.trainingData.id
+        this.http.post<{}>('user/addCoachToTraining', {
+            userId: userId,
+            trainingId: this.trainingData.id
         });
+        const coach = await this.http.get<RawCoach>(`user/getCoach/${userId}`);
         this.http.post<{}>('finance/new', {
-            "userId" : userId,
-            "rawPaymentData" : {
-                "amount" : coach.wage,
-                "time": new Date(),
-                "status" : "pending",
-                "description": `Coaching ${coach.user.name} ${coach.user.email}, ${this.trainingData.location.name} ${formatFullDate(this.trainingData.startTime)} ${formatHourDate(this.trainingData.startTime)}-${formatHourDate(this.trainingData.endTime)}`
+            userId : userId,
+            trainingId: this.trainingData.id,
+            rawPaymentData : {
+                amount : coach.wage,
+                time: new Date(),
+                status : "pending",
+                description: `Coaching ${coach.user.name} ${coach.user.email}, ${this.trainingData.location.name} ${formatFullDate(this.trainingData.startTime)} ${formatHourDate(this.trainingData.startTime)}-${formatHourDate(this.trainingData.endTime)}`
             }
         });
+        window.alert("Registration successful");
     }
     async addGuestToTraining() {
-        // **TODO** addGuestToTraining(); - dialog
         let user!: RawUser;
         const dialogRef = this.dialog.open(RegisterGuestDialogComponent, {
             width: '50vw',
@@ -148,25 +149,32 @@ export class TrainingCardComponent implements OnInit {
             console.log("Register guest dialog closed.", result);
             if(result.action === "save") {
                 user = result.user;
+                this.http.post<{}>('user/addTraineeToTraining', {
+                    userId: user.id,
+                    trainingId: this.trainingData.id
+                });
+                const amount: number = (-1) * 4000;
+                this.http.post<{}>('finance/new', {
+                    userId : user.id,
+                    rawPaymentData : {
+                        amount : amount,
+                        time: this.trainingData.startTime,
+                        status : "pending", 
+                        description: `Training ${user.name} ${user.email}, ${this.trainingData.location.name} ${formatFullDate(this.trainingData.startTime)} ${formatHourDate(this.trainingData.startTime)}`
+                    }
+                });
+                window.alert("Registration successful");
             }
             else {
-                return;
-                // **TODO** warning noti?
-            }
-        });
-        this.http.post<{}>('user/addToTraining', {
-            "userId": user.id,
-            "trainingId": this.trainingData.id
-        });
-        const amount: number = (-1) * 4000;
-        this.http.post<{}>('finance/new', {
-            "userId" : user.id,
-            "rawPaymentData" : {
-                "amount" : amount,
-                "time": this.trainingData.startTime,
-                "status" : "pending", 
-                "description": `Training ${user.name} ${user.email}, ${this.trainingData.location.name} ${formatFullDate(this.trainingData.startTime)} ${formatHourDate(this.trainingData.startTime)}`
+                window.alert("Registration cancelled");
             }
         });
     }
+//     openAdministrateTrainingDialog(): void {
+//         this.dialog.open(ManageTrainingFinancesDialogComponent, {
+//             width: '50vw',
+//             // data: ,
+//             disableClose: true,
+//         });
+//     }
 }

@@ -3,11 +3,11 @@
         Select who you want to register to this training as
     </mat-card-title>
     <mat-card-content>
-        <mat-list-item #userRoles> 
-            <mat-list-option *ngFor="let role of roles" (click)="updateSelectedRole(role)">
+        <mat-select [(value)]="selectedRole" placeholder="Select role">
+            <mat-option *ngFor="let role of roles" [value]="role">
                 {{ role }}
-            </mat-list-option>
-        </mat-list-item>
+            </mat-option>
+        </mat-select>
     </mat-card-content>
     <mat-card-actions>
         <button mat-raised-button color="primary" (click)="close('save')">
