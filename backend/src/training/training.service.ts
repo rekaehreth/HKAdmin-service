@@ -17,18 +17,18 @@ export class TrainingService {
         this.groupRepository = connection.getRepository(Group);
     }
     public async getAll(): Promise<Training[]> {
-        return await this.trainingRepository.find({ relations: ["location", "attendees", "coaches", "groups"] });
+        return await this.trainingRepository.find({ relations: ["location", "attendees", "coaches", "groups", "payments"] });
     }
 
     public async getById(id: number): Promise<Training> {
-        return await this.trainingRepository.findOne(id, { relations: ["location", "attendees", "coaches"] });
+        return await this.trainingRepository.findOne(id, { relations: ["location", "attendees", "coaches", "groups", "payments"] });
     }
 
     public async create(locationId: number, rawTrainingData: {
         startTime: Date,
         endTime: Date,
         status: string, // Planned | Fixed | Past
-        type: string, // Száraz || Jeges | Balett
+        type: string, // Száraz | Jeges | Balett
     }): Promise<Training> {
         const newTraining = new Training();
         Object.keys(rawTrainingData).forEach((key) => { newTraining[key] = rawTrainingData[key] });
@@ -61,14 +61,14 @@ export class TrainingService {
     }
     public async addGroupToTraining(groupId, trainingId): Promise<Training> {
         const groupToAdd = await this.groupRepository.findOne(groupId);
-        const trainingToAddTo = await this.trainingRepository.findOne(trainingId, { relations: ["attendees", "coaches", "groups"] });
+        const trainingToAddTo = await this.trainingRepository.findOne(trainingId, { relations: ["groups"] });
         trainingToAddTo.groups.push(groupToAdd);
         this.trainingRepository.save(trainingToAddTo);
         return trainingToAddTo;
     }
     public async removeGroupFromTraining(groupId, trainingId): Promise<Training> {
         const groupToRemove = await this.groupRepository.findOne(groupId);
-        const trainingToRemoveFrom = await this.trainingRepository.findOne(trainingId, { relations: ["attendees", "coaches", "groups"] });
+        const trainingToRemoveFrom = await this.trainingRepository.findOne(trainingId, { relations: ["groups"] });
         const groupIndex = trainingToRemoveFrom.groups.indexOf(groupToRemove);
         trainingToRemoveFrom.groups.splice(groupIndex, 1);
         this.trainingRepository.save(trainingToRemoveFrom);
