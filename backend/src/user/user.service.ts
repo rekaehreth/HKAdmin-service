@@ -63,8 +63,8 @@ export class UserService {
         password: string,
         birth_date: Date,
     }): Promise<{ success: boolean, user: User }> {
-        if (!await this.userRepository.findOne(rawUserData.email)) {
-            const modifiedUser = await this.userRepository.findOne(userId);
+        const modifiedUser = await this.userRepository.findOne(userId);
+        if (modifiedUser && !(await this.getByEmail(rawUserData.email))) {
             Object.keys(rawUserData).forEach((key) => { modifiedUser[key] = (key === "password") ? bcrypt.hashSync(rawUserData[key], 10) : rawUserData[key]; });
             return { success: true, user: await this.userRepository.save(modifiedUser) };
         }

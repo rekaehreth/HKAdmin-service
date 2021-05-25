@@ -20,16 +20,16 @@ export class FinanceService {
     }
 
     public async getAll() : Promise<Payment[]> {
-        return await this.paymentRepository.find( { relations: ["user"] } );
+        return await this.paymentRepository.find( { relations: ["user", "training"] } );
     }
 
     public async getById( id : number ) : Promise<Payment> {
-        return await this.paymentRepository.findOne( id, { relations: ["user"] } );
+        return await this.paymentRepository.findOne( id, { relations: ["user", "training"] } );
     }
 
     public async getByUser( userId: number ) : Promise<Payment[]> {
         const user = await this.userRepository.findOne(userId);
-        return  await this.paymentRepository.find( { relations: ["user"], where: {user: user} } );
+        return  await this.paymentRepository.find( { relations: ["user", "training"], where: {user: user} } );
     }
 
     public async create( userId : number, trainingId: number, rawPaymentData : {
@@ -59,7 +59,7 @@ export class FinanceService {
         description : string, 
         notes : string
     } ) : Promise<Payment> {
-        const modifiedPayment = await this.paymentRepository.findOne( paymentId, { relations: ["user"] } );
+        const modifiedPayment = await this.paymentRepository.findOne( paymentId, { relations: ["user", "training"] } );
         Object.keys(rawPaymentData).forEach( (key) => { modifiedPayment[key] = rawPaymentData[key] });
         if ( userId > 0 ){
             const user = await this.userRepository.findOne(userId);

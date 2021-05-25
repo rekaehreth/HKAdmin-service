@@ -75,7 +75,7 @@ export class TrainingController
     }
 
     @Post('/removeGroup')
-    async rmoveGroupFromTraining(
+    async removeGroupFromTraining(
         @Body()
         requestBody : {
             groupId : number,

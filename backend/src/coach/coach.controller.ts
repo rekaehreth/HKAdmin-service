@@ -12,19 +12,21 @@ export class CoachController
         private readonly service : CoachService
     ){}
     @Get()
-    async getAll() : Promise<Coach[]>
-    {
+    async getAll() : Promise<Coach[]> {
         return await (await this.service.getAll()).map(coach => ({...coach, user: omit(coach.user, "password")}));
     }
     @Get('/:id')
-    async getById( @Param('id') id : number ) : Promise<Coach> 
-    {
+    async getById( @Param('id') id : number ) : Promise<Coach> {
         const coach = await this.service.getById(id);
         return ({...coach, user: omit(coach.user, "password")});
     }
+    @Get('/getByUserId/:userId')
+    async getByUserId( @Param('userId') userId: number ): Promise<Coach> {
+        const coach = await this.service.getByUserId(userId);
+        return ({...coach, user: omit(coach.user, "password")});
+    }
     @Post('/new')
-    async create
-    ( 
+    async create ( 
         @Body() 
         requestBody : {
             userId : number,
@@ -32,17 +34,15 @@ export class CoachController
                 wage : number
             }
         }
-    ) : Promise<Coach> 
-    {
+    ) : Promise<Coach> {
         return await this.service.create(requestBody.userId, requestBody.rawCoachData);
     }
     @Delete('/:id')
-    async delete ( @Param('id') id : number ) : Promise<DeleteResult>
-    {
+    async delete ( @Param('id') id : number ) : Promise<DeleteResult> {
         return await this.service.delete(id);
     }
     @Post('/modify')
-    async modify(
+    async modify (
         @Body()
         requestBody : {
             coachId : number,
@@ -50,8 +50,7 @@ export class CoachController
                 wage : number
             }
         }
-    ) : Promise<Coach>
-    {
+    ) : Promise<Coach> {
         const coach = await this.service.modify(requestBody.coachId, requestBody.rawCoachData);
         return ({...coach, user: omit(coach.user, "password")});
     }

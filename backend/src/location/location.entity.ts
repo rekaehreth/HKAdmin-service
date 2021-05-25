@@ -14,4 +14,6 @@ export class Location
     min_attendees : number;
     @OneToMany( () => Training, training => training.location, { cascade: true } )
     trainings : Training[];
+    @Column()
+    plus_code: string;
 }

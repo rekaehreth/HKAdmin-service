@@ -12,41 +12,43 @@ export class LocationService
         this.locationRepository = connection.getRepository( Location );
     }
 
-    public async getAll() : Promise<Location[]>
+    public async getAll(): Promise<Location[]>
     {
         // return await this.LocationRepo.find(); // SELECT * FROM trainig_site WHERE ( 1=1 // find param )
         return await this.locationRepository.find( { relations: ["trainings"] } );
     }
 
-    public async getById( id : number ) : Promise<Location>
+    public async getById( id: number ): Promise<Location>
     {
         return await this.locationRepository.findOne(id, { relations: ["trainings"] });
     }
 
-    public async create( rawSiteData : {
-        name : string, 
-        capacity : number, 
-        min_attendees : number, 
-        price : number,
-    } ) : Promise<Location>
+    public async create( rawSiteData: {
+        name: string, 
+        capacity: number, 
+        min_attendees: number, 
+        price: number,
+        plus_code: string,
+    } ): Promise<Location>
     {
         const newSite = new Location();
         Object.keys(rawSiteData).forEach( (key) => { newSite[key] = rawSiteData[key] });
         return await this.locationRepository.save(newSite);
     }
 
-    public async delete ( id : number ) : Promise<DeleteResult>
+    public async delete ( id: number ): Promise<DeleteResult>
     {
         return await this.locationRepository.delete(id);
     }
 
-    public async modify ( rawSiteData : {
-        id : number,
-        name ?: string, 
-        capacity ?: number, 
-        min_attendees ?: number, 
-        price ?: number,
-    } ) : Promise<Location>
+    public async modify ( rawSiteData: {
+        id: number,
+        name: string, 
+        capacity: number, 
+        min_attendees: number, 
+        price: number,
+        plus_code: string,
+    } ): Promise<Location>
     {
         const modifiedSite = await this.locationRepository.findOne( rawSiteData.id );
         Object.keys(rawSiteData).forEach( (key) => { modifiedSite[key] = rawSiteData[key] });
