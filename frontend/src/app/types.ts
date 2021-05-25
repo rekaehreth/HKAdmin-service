@@ -7,6 +7,7 @@ export type RawTraining = {
     startTime: Date,
     endTime: Date,
     status: string, // Planned | Fixed | Past
+    payments: RawPayment[];
 }
 
 export type RawUser = {
@@ -55,4 +56,5 @@ export type RawPayment = {
     description : string; // E.g. Edzés, Gyakorló Jégcsarnok 2021.04.18. 9:00
     notes : string; // E.g. Credentials of deleted user
     user : RawUser;
+    training: RawTraining;
 }

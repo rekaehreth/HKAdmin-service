@@ -1,8 +1,12 @@
 import { AbstractControl, ValidatorFn } from "@angular/forms";
-import { format } from "date-fns";
+import { format, parse } from 'date-fns';
 
 export const formatFullDate = (date: Date): string => {
+    // let dateString: string = "";
+    // parse(dateString, "yyyy.MM.dd", date, { weekStartsOn: 1});
+    // return dateString;
     return format(new Date(date), "yyyy.MM.dd.");
+    // return formatToTimeZone(new Date(date), "yyyy.MM.dd.", {timeZone: "Europe/Budapest"});
 }
 export const formatHourDate = (date: Date): string => {
     return format(new Date(date), "HH:mm");

@@ -170,11 +170,11 @@ export class TrainingCardComponent implements OnInit {
             }
         });
     }
-//     openAdministrateTrainingDialog(): void {
-//         this.dialog.open(ManageTrainingFinancesDialogComponent, {
-//             width: '50vw',
-//             // data: ,
-//             disableClose: true,
-//         });
-//     }
+    openAdministrateTrainingDialog(): void {
+        this.dialog.open(ManageTrainingFinancesDialogComponent, {
+            width: '50vw',
+            data: this.trainingData,
+            disableClose: true,
+        });
+    }
 }

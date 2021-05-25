@@ -24,6 +24,7 @@
     "@angular/router": "~11.2.8",
     "@auth0/angular-jwt": "^5.0.2",
     "date-fns": "^2.20.1",
+    "date-fns-timezone": "^0.1.4",
     "material-dashboard": "^2.1.0",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",

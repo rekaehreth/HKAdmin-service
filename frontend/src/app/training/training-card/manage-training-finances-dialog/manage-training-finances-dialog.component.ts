@@ -1,9 +1,9 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { HttpService } from 'src/app/httpService';
-import { RawPayment } from 'src/app/types';
+import { RawPayment, RawTraining } from 'src/app/types';
 
 @Component({
 	selector: 'app-manage-training-finances-dialog',
@@ -16,15 +16,28 @@ export class ManageTrainingFinancesDialogComponent implements OnInit {
 	@ViewChild(MatSort) sort?: MatSort;
 	displayedColumns: string[] = ['name', 'email', 'amount', 'status', 'action'];
 	constructor(
-		private http: HttpService,
 		public dialog: MatDialog,
+		private http: HttpService,
+		@Inject(MAT_DIALOG_DATA) public data: RawTraining,
 	) { }
 	ngOnInit(): void {
 		this.loadPayments();
 	}
 	async loadPayments(): Promise<void> {
-		
+		this.payments = this.data.payments;
+		this.paymentDataSource = new MatTableDataSource(this.payments);
 	}
-
+	async changePaymentStatus(payment: RawPayment, status: string) : Promise<void> {
+		await this.http.post<RawPayment>('finance/modify', {
+			userId : payment.user.id, 
+            paymentId : payment.id, 
+            trainingId: this.data.id,
+            rawPaymentData : {
+                status : status,
+                time : Date(),
+            }});
+	}
+	// **TODO** ok and cancel buttons
+	// **
 
 }

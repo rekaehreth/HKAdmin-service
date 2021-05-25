@@ -22,6 +22,7 @@ import { MatSelectModule } from '@angular/material/select'
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatChipsModule } from '@angular/material/chips';
 
 import { AppComponent } from './app.component';
 import { LocationComponent } from './location/location.component';
@@ -91,6 +92,7 @@ import { ManageTrainingFinancesDialogComponent } from './training/training-card/
         MatTableModule,
         MatSortModule,
         MatTooltipModule,
+        MatChipsModule,
         
     ],
     providers: [
