@@ -7,6 +7,7 @@ import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { Payment } from 'src/finance/payment.entity';
+import { addApplicationToTraining, Application, removeApplicationFromTraining } from 'src/utils';
 
 @Injectable()
 export class UserService {
@@ -120,7 +121,7 @@ export class UserService {
             return { success: false, error: error.toString() };
         }
     }
-    public async addToTraining(userId: number, trainingId: number, forceTrainee: boolean = false): Promise<{ success: boolean, error?: any }> {
+    public async addToTraining(userId: number, trainingId: number, groupId: number, forceTrainee: boolean = false): Promise<{ success: boolean, error?: any }> {
         try {
             const trainingToAddTo = await this.trainingRepository.findOne(trainingId, { relations: ["attendees", "coaches"] });
             const userToBeAdded = await this.userRepository.findOne(userId, { relations: ["trainings"] });
@@ -129,11 +130,15 @@ export class UserService {
                 trainingToAddTo.coaches.push(coachToBeAdded);
                 coachToBeAdded.trainings.push(trainingToAddTo);
                 await this.coachRepository.save(coachToBeAdded);
+                const applicationToBeAdded: Application = { userId, groupId, role: "coach"};
+                trainingToAddTo.applications = addApplicationToTraining(applicationToBeAdded, trainingToAddTo.applications);
             }
             else {
                 trainingToAddTo.attendees.push(userToBeAdded);
                 userToBeAdded.trainings.push(trainingToAddTo);
                 this.userRepository.save(userToBeAdded);
+                const applicationToBeAdded: Application = { userId, groupId, role: "trainee"};
+                trainingToAddTo.applications = addApplicationToTraining(applicationToBeAdded, trainingToAddTo.applications);
             }
             await this.trainingRepository.save(trainingToAddTo);
             return { success: true };
@@ -142,7 +147,7 @@ export class UserService {
             return { success: false, error: error.toString() };
         }
     }
-    public async removeFromTraining(userId: number, trainingId: number, forceTrainee: boolean = false): Promise<{ success: boolean, error?: any }> {
+    public async removeFromTraining(userId: number, trainingId: number, groupId: number, forceTrainee: boolean = false): Promise<{ success: boolean, error?: any }> {
         try {
             const trainingToRemoveFrom = await this.trainingRepository.findOne(trainingId, { relations: ["coaches", "attendees"] });
             const userToRemove = await this.userRepository.findOne(userId); // , { relations: ["groups"] }
@@ -154,6 +159,8 @@ export class UserService {
                 coachToRemove.trainings.splice(trainingIndex, 1);
                 await this.coachRepository.save(coachToRemove);
                 trainingToRemoveFrom.coaches.splice(coachIndex, 1);
+                const applicationToBeRemoved: Application = { userId, groupId, role: "coach"};
+                trainingToRemoveFrom.applications = removeApplicationFromTraining(applicationToBeRemoved, trainingToRemoveFrom.applications);
             }
             else {
                 let userIndex = trainingToRemoveFrom.attendees.indexOf(userToRemove);
@@ -161,6 +168,8 @@ export class UserService {
                 let trainingIndex = userToRemove.trainings.indexOf(trainingToRemoveFrom);
                 userToRemove.groups.splice(trainingIndex, 1);
                 await this.userRepository.save(userToRemove);
+                const applicationToBeRemoved: Application = { userId, groupId, role: "trainee"};
+                trainingToRemoveFrom.applications = removeApplicationFromTraining(applicationToBeRemoved, trainingToRemoveFrom.applications);
             }
             await this.trainingRepository.save(trainingToRemoveFrom);
             return { success: true };

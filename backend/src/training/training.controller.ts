@@ -1,4 +1,5 @@
 import { Get, Param, Controller, Post, Body, Delete } from '@nestjs/common';
+import { Application, parseTrainingApplications } from 'src/utils';
 import { DeleteResult } from 'typeorm';
 import { Training } from './training.entity';
 import { TrainingService } from './training.service';
@@ -19,6 +20,13 @@ export class TrainingController
     @Get('/:id')
     async getById( @Param('id') id : number ) : Promise<Training> {
         return await this.service.getById(id);
+    }
+
+    @Get('getApplications/:id')
+    async getApplications( @Param('id') id:number ): Promise<Application[]> {
+        const training = await this.service.getById(id);
+        const applications = parseTrainingApplications(training.applications);
+        return applications;
     }
 
     @Post('/new')

@@ -146,11 +146,12 @@ export class UserController
         @Body()
         requestBody : {
             userId : number, 
-            trainingId : number, 
+            trainingId : number,
+            groupId: number,  
         }
     ) : Promise<{success : boolean, error ?: any}>
     {
-        return await this.service.addToTraining( requestBody.userId, requestBody.trainingId );
+        return await this.service.addToTraining( requestBody.userId, requestBody.trainingId, requestBody.groupId );
     }
 
     @Post('/addTraineeToTraining')
@@ -159,10 +160,11 @@ export class UserController
         requestBody : {
             userId : number, 
             trainingId : number,
+            groupId: number,  
         }
     ) : Promise<{success : boolean, error ?: any}>
     {
-        return await this.service.addToTraining( requestBody.userId, requestBody.trainingId, true );
+        return await this.service.addToTraining( requestBody.userId, requestBody.trainingId, requestBody.groupId, true );
     }
 
     @Post('/removeCoachFromTraining')
@@ -171,10 +173,11 @@ export class UserController
         requestBody : {
             userId : number, 
             trainingId : number, 
+            groupId: number,  
         }
     ) : Promise<{success : boolean, error ?: any}>
     {
-        return await this.service.removeFromTraining( requestBody.userId, requestBody.trainingId );
+        return await this.service.removeFromTraining( requestBody.userId, requestBody.trainingId, requestBody.groupId);
     }
 
     @Post('/removeTraineeFromTraining')
@@ -183,10 +186,11 @@ export class UserController
         requestBody : {
             userId : number, 
             trainingId : number,
+            groupId: number,  
         }
     ) : Promise<{success : boolean, error ?: any}>
     {
-        return await this.service.removeFromTraining( requestBody.userId, requestBody.trainingId, true );
+        return await this.service.removeFromTraining( requestBody.userId, requestBody.trainingId, requestBody.groupId, true );
     }
 
     @Get('listAvailableTrainings/:id')

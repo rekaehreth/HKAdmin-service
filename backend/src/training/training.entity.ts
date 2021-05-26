@@ -31,4 +31,6 @@ export class Training
     status : string; // Planned | Fixed | Past
     @Column()
     type: string; // Száraz | Jeges | Balett 
+    @Column()
+    applications: string; 
 }
