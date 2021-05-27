@@ -6,7 +6,7 @@ export function parseTrainingApplications( applications: string ): Application[]
 }
 
 export function stringifyTrainingApplications( applications: Application[] ): string {
-    return applications.map( application => { Object.values(application).join(' '); }).join(';');
+    return applications.map( application => {return Object.values(application).join(' '); }).join(';');
 }
 
 export function addApplicationToTraining( applicationToAdd: Application, applicationsString: string ): string {

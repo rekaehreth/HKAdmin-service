@@ -150,7 +150,7 @@ export class UserService {
     public async removeFromTraining(userId: number, trainingId: number, groupId: number, forceTrainee: boolean = false): Promise<{ success: boolean, error?: any }> {
         try {
             const trainingToRemoveFrom = await this.trainingRepository.findOne(trainingId, { relations: ["coaches", "attendees"] });
-            const userToRemove = await this.userRepository.findOne(userId); // , { relations: ["groups"] }
+            const userToRemove = await this.userRepository.findOne(userId, { relations: ["trainings"] }); // , { relations: ["groups"] }
             if (userToRemove.roles.match(/.*coach.*/) && !forceTrainee) {
                 let coachToRemove = await this.coachRepository.findOne({ user: userToRemove }, { relations: ["trainings"] });
                 let coachIndex = trainingToRemoveFrom.coaches.indexOf(coachToRemove);
@@ -166,7 +166,7 @@ export class UserService {
                 let userIndex = trainingToRemoveFrom.attendees.indexOf(userToRemove);
                 trainingToRemoveFrom.attendees.splice(userIndex, 1);
                 let trainingIndex = userToRemove.trainings.indexOf(trainingToRemoveFrom);
-                userToRemove.groups.splice(trainingIndex, 1);
+                userToRemove.trainings.splice(trainingIndex, 1);
                 await this.userRepository.save(userToRemove);
                 const applicationToBeRemoved: Application = { userId, groupId, role: "trainee"};
                 trainingToRemoveFrom.applications = removeApplicationFromTraining(applicationToBeRemoved, trainingToRemoveFrom.applications);
