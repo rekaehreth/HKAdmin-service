@@ -23,6 +23,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { AppComponent } from './app.component';
 import { LocationComponent } from './location/location.component';
@@ -42,9 +43,8 @@ import { AuthService } from './auth.service';
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { RoleGuardService } from './role-guard.service';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
-import { RegistrationRoleDialogComponent } from './training/training-card/registration-role-dialog/registration-role-dialog.component';
-import { RegisterGuestDialogComponent } from './training/training-card/register-guest-dialog/register-guest-dialog.component';
-import { ManageTrainingFinancesDialogComponent } from './training/training-card/manage-training-finances-dialog/manage-training-finances-dialog.component';
+import { RegisterGuestDialogComponent } from './training/training-details-dialog/register-guest-dialog/register-guest-dialog.component';
+import { ManageTrainingFinancesDialogComponent } from './training/training-details-dialog/manage-training-finances-dialog/manage-training-finances-dialog.component';
 import { TrainingDetailsDialogComponent } from './training/training-details-dialog/training-details-dialog.component';
 
 @NgModule({
@@ -64,7 +64,6 @@ import { TrainingDetailsDialogComponent } from './training/training-details-dial
         EditUserComponent,
         NewTrainingComponent,
         ConfirmDialogComponent,
-        RegistrationRoleDialogComponent,
         RegisterGuestDialogComponent,
         ManageTrainingFinancesDialogComponent,
         TrainingDetailsDialogComponent,
@@ -95,6 +94,7 @@ import { TrainingDetailsDialogComponent } from './training/training-details-dial
         MatSortModule,
         MatTooltipModule,
         MatChipsModule,
+        MatSnackBarModule,
         
     ],
     providers: [

@@ -1,6 +1,10 @@
 .trainingCard {
     background-color: #1B3B5E ;
 }
+.trainingCard:hover {
+    background-color: #2e5b8b ;
+    cursor: pointer;
+}
 .modifierButtons {
     padding-top: 2%;
 }

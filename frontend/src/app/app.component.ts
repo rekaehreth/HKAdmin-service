@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
 import { RegistrationComponent } from './registration/registration.component';
@@ -14,7 +15,8 @@ export class AppComponent implements OnInit {
     constructor(
         public dialog: MatDialog,
         private authService: AuthService,
-        private router: Router
+        private router: Router,
+        private snackBar: MatSnackBar,
     ) {
     }
     ngOnInit() {
@@ -36,7 +38,7 @@ export class AppComponent implements OnInit {
         return this.authService.isLoggedIn();
     }
     alertForcedLogout() {
-        window.alert("Session expired. Please log in again")
+        this.snackBar.open("Session expired. Please log in again", "OK", { duration: 3000});
     }
     logOut() {
         this.authService.logOutUser();

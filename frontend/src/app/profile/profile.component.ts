@@ -1,6 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from '../auth.service';
 import { HttpService } from '../httpService';
 import { RawUser } from '../types';
@@ -29,6 +30,7 @@ export class ProfileComponent implements OnInit {
     constructor(
         private http: HttpService,
         private authService: AuthService,
+        private snackBar: MatSnackBar,
     ) { }
     ngOnInit(): void {
         this.getUser();
@@ -94,7 +96,7 @@ export class ProfileComponent implements OnInit {
             this.passwordVerified = true;
         }
         else {
-            window.alert("Password incorrect. ");
+            this.snackBar.open("Password incorrect. ", "OK", { duration: 3000});
         }
     }
     async saveNewPassword(): Promise<void> {
@@ -105,15 +107,15 @@ export class ProfileComponent implements OnInit {
                     password: this.newPasswordControl.value
             }});
             if( result.success ) {
-                window.alert("Password changed");
+                this.snackBar.open("Password changed", "OK", { duration: 3000});
                 this.passwordVerified = false;
                 this.changePassword = false;
             } 
             else {
-                window.alert("Password change failed");
+                this.snackBar.open("Password change failed", "OK", { duration: 3000});
             }
         }else{
-            window.alert("Passwords don't match");
+            this.snackBar.open("Passwords don't match", "OK", { duration: 3000});
         }
     }
 }

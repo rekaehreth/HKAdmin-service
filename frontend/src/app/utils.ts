@@ -1,5 +1,6 @@
 import { AbstractControl, ValidatorFn } from "@angular/forms";
 import { format, parse } from 'date-fns';
+import { Application } from "./types";
 
 export const formatFullDate = (date: Date): string => {
     // let dateString: string = "";
@@ -17,4 +18,14 @@ export function nameValidator(): ValidatorFn {
         const correct = nameRegEx.test(control.value);
         return correct ? null : { nameRegEx: { value: control.value } };
     };
+}
+
+export function findUserInApplications(userId: number, applications: Application[]): number {
+    let idx = -1;
+    applications.map( (value, index) => {
+        if ( value.userId === userId){ 
+            idx = index;
+        }
+    })
+    return idx;
 }

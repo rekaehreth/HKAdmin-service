@@ -1,15 +1,21 @@
 export type RawTraining = {
-    id: number,
-    location: any,
-    attendees: any[],
-    coaches: any[],
-    groups: any[],
-    startTime: Date,
-    endTime: Date,
-    status: string, // Planned | Fixed | Past
+    id: number;
+    location: any;
+    attendees: any[];
+    coaches: any[];
+    groups: any[];
+    startTime: Date;
+    endTime: Date;
+    status: string; // Planned | Fixed | Past
     payments: RawPayment[];
     type: string;
 }
+
+export type Application = {
+    userId: number;
+    groupId: number;
+    role: string
+};
 
 export type RawUser = {
     id : number;
@@ -26,10 +32,10 @@ export type RawUser = {
 }
 
 export type RawCoach = {
-    id: number, 
-    user: RawUser,
-    groups: RawGroup[],
-    trainings: RawTraining[],
+    id: number; 
+    user: RawUser;
+    groups: RawGroup[];
+    trainings: RawTraining[];
     wage: number
 }
 

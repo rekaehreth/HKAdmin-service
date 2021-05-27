@@ -10,14 +10,16 @@
 #contentRowContainer {
     height: 90%;
 }
-.bordered {
-    border: 2px;
-    border-style: solid;
-    border-color:maroon;
-}
+// .bordered {
+//     border: 2px;
+//     border-style: solid;
+//     border-color:maroon;
+// }
 #socialMediaContainer {
+    padding-top: 2%;
     background: #0a1e33;
     color: #a6e2fc;
+    text-align: center;
 }
 
 .loginButton {
