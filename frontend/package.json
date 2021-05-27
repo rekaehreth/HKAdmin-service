@@ -28,6 +28,7 @@
     "date-fns-timezone": "^0.1.4",
     "mapbox-gl": "^2.2.0",
     "material-dashboard": "^2.1.0",
+    "open-location-code": "^1.0.3",
     "open-location-code-typescript": "^1.5.0",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
