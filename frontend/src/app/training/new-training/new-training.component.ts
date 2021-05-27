@@ -82,6 +82,7 @@ export class NewTrainingComponent implements OnInit {
                 startTime: formatFullDate(this.dateControl.value) + " " + this.startTimeControl.value,
                 endTime: formatFullDate(this.dateControl.value) + " " + this.endTimeControl.value,
                 type: this.selectedType,
+                applications: "",
             }
         });
         for (const groupId of this.selectedGroups) {
