@@ -15,7 +15,6 @@ export class Coach
     @JoinTable()
     groups : Group[];
     @ManyToMany( () => Training, training => training.coaches )
-    @JoinTable({name: "coach_trainings_training"})
     trainings : Training[];
     @Column()
     wage : number;
