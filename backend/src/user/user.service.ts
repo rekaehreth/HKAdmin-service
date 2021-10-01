@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { Coach } from 'src/coach/coach.entity';
-import { Group } from 'src/group/group.entity';
-import { Training } from 'src/training/training.entity';
+import { Coach } from '../coach/coach.entity';
+import { Group } from '../group/group.entity';
+import { Training } from '../training/training.entity';
 import { Connection, DeleteResult, Like, Repository } from 'typeorm';
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { Payment } from 'src/finance/payment.entity';
-import { addApplicationToTraining, Application, removeApplicationFromTraining } from 'src/utils';
+import { Payment } from '../finance/payment.entity';
+import { addApplicationToTraining, Application, removeApplicationFromTraining } from '../utils';
 
 @Injectable()
 export class UserService {

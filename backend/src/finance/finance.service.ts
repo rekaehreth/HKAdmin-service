@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Connection, DeleteResult, Repository } from 'typeorm';
-import { User } from 'src/user/user.entity';
+import { User } from '../user/user.entity';
 import { Payment } from './payment.entity';
-import { Location } from 'src/location/location.entity';
-import { Training } from 'src/training/training.entity';
+import { Location } from '../location/location.entity';
+import { Training } from '../training/training.entity';
 
 @Injectable()
 export class FinanceService {

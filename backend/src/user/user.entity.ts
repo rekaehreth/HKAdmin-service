@@ -1,6 +1,6 @@
-import { Payment } from "src/finance/payment.entity";
-import { Group } from "src/group/group.entity";
-import { Training } from "src/training/training.entity";
+import { Payment } from "../finance/payment.entity";
+import { Group } from "../group/group.entity";
+import { Training } from "../training/training.entity";
 import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 

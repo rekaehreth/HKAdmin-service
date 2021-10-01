@@ -1,11 +1,11 @@
 import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { Training } from 'src/training/training.entity';
+import { Training } from '../training/training.entity';
 import { DeleteResult } from 'typeorm';
 import { User } from './user.entity';
 import { UserService } from './user.service';
 import { omit } from 'lodash';
 import { AdminAuthGuard } from './auth/jwt-auth.guard';
-import { Coach } from 'src/coach/coach.entity';
+import { Coach } from '../coach/coach.entity';
 
 @Controller('user')
 export class UserController 

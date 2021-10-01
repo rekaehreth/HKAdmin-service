@@ -1,6 +1,6 @@
-import { Group } from "src/group/group.entity";
-import { Training } from "src/training/training.entity";
-import { User } from "src/user/user.entity";
+import { Group } from "../group/group.entity";
+import { Training } from "../training/training.entity";
+import { User } from "../user/user.entity";
 import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()

@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { Group } from 'src/group/group.entity';
-import { Location } from 'src/location/location.entity';
+import { Group } from '../group/group.entity';
+import { Location } from '../location/location.entity';
 import { Connection, DeleteResult, Repository } from 'typeorm';
 import { Training } from './training.entity';
-import { parse, stringify } from 'flatted';
 
 @Injectable()
 export class TrainingService {

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Connection, DeleteResult, Repository } from 'typeorm';
-import { Training } from 'src/training/training.entity';
+import { Training } from '../training/training.entity';
 import { Group } from './group.entity';
-import { Location } from 'src/location/location.entity';
+import { Location } from '../location/location.entity';
 
 @Injectable()
 export class GroupService 

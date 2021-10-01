@@ -1,4 +1,4 @@
-import { Training } from "src/training/training.entity";
+import { Training } from "../training/training.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()

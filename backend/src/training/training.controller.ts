@@ -1,5 +1,5 @@
 import { Get, Param, Controller, Post, Body, Delete } from '@nestjs/common';
-import { Application, parseTrainingApplications } from 'src/utils';
+import { Application, parseTrainingApplications } from '../utils';
 import { DeleteResult } from 'typeorm';
 import { Training } from './training.entity';
 import { TrainingService } from './training.service';

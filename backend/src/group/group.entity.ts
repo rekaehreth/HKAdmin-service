@@ -1,6 +1,6 @@
-import { Coach } from "src/coach/coach.entity";
-import { User } from "src/user/user.entity";
-import { Training } from "src/training/training.entity";
+import { Coach } from "../coach/coach.entity";
+import { User } from "../user/user.entity";
+import { Training } from "../training/training.entity";
 import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()

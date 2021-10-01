@@ -1,5 +1,5 @@
-import { Training } from "src/training/training.entity";
-import { User } from "src/user/user.entity";
+import { Training } from "../training/training.entity";
+import { User } from "../user/user.entity";
 import { Column, Entity, JoinColumn, JoinTable, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()

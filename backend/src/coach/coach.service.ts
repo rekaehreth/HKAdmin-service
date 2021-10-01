@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Connection, DeleteResult, getRepository, Repository } from 'typeorm';
-import { User } from 'src/user/user.entity';
+import { User } from '../user/user.entity';
 import { Coach } from './coach.entity';
-import { Location } from 'src/location/location.entity';
+import { Location } from '../location/location.entity';
 
 @Injectable()
 export class CoachService 
