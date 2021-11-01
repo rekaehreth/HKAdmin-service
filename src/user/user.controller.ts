@@ -10,22 +10,19 @@ import { Coach } from '../coach/coach.entity';
 @Controller('user')
 export class UserController 
 {
-    constructor
-    (
+    constructor (
         private readonly service : UserService
     ){}
     
     @UseGuards( AdminAuthGuard )
     @Get()
     async getAll() : Promise<User[]> {
-        const allUsers = await this.service.getAll();
-        return allUsers.map( user => omit(user, "password"));
+        return (await this.service.getAll()).map( user => omit(user, "password"));
     }
 
     @Get('/:id')
     async getById( @Param('id') id : number ) : Promise<User> {
-        const user = await this.service.getById(id);
-        return omit(user, "password");
+        return omit (await this.service.getById(id), "password");
     }
     @Get('/getByEmail/:email')
     async getByEmail( @Param('email') email: string ) : Promise<{success: boolean, user: User}> {
@@ -57,8 +54,7 @@ export class UserController
     }
 
     @Delete('/:id')
-    async delete ( @Param('id') id : number ) : Promise<DeleteResult>
-    {
+    async delete ( @Param('id') id : number ) : Promise<DeleteResult> {
         return await this.service.delete(id);
     }
 
@@ -75,8 +71,7 @@ export class UserController
                 birth_date : Date,
             }
         }
-    ) : Promise<{success: boolean, user: User }>
-    {
+    ) : Promise<{success: boolean, user: User }> {
         const modUser = await this.service.modify(requestBody.userId, requestBody.rawUserData);
         return { success: modUser.success, user: omit(modUser.user, "password")};
     }
@@ -88,8 +83,7 @@ export class UserController
             email : string, 
             password : string,
         }
-    ) : Promise<{ success : boolean, token ?: string, userId?: number, userRoles?: string}>
-    {
+    ) : Promise<{ success : boolean, token ?: string, userId?: number, userRoles?: string}> {
         return this.service.login( requestBody.email, requestBody.password );
     }
 
@@ -100,8 +94,7 @@ export class UserController
             userId : number, 
             groupId : number, 
         }
-    ) : Promise<{success : boolean, error ?: any}>
-    {
+    ) : Promise<{success : boolean, error ?: any}> {
         return await this.service.addToGroup( requestBody.userId, requestBody.groupId );
     }
 
@@ -112,8 +105,7 @@ export class UserController
             userId : number, 
             groupId : number,
         }
-    ) : Promise<{success : boolean, error ?: any}>
-    {
+    ) : Promise<{success : boolean, error ?: any}> {
         return await this.service.addToGroup( requestBody.userId, requestBody.groupId, true );
     }
 
@@ -124,8 +116,7 @@ export class UserController
             userId : number, 
             groupId : number, 
         }
-    ) : Promise<{success : boolean, error ?: any}>
-    {
+    ) : Promise<{success : boolean, error ?: any}> {
         return await this.service.removeFromGroup( requestBody.userId, requestBody.groupId );
     }
 
@@ -136,8 +127,7 @@ export class UserController
             userId : number, 
             groupId : number,
         }
-    ) : Promise<{success : boolean, error ?: any}>
-    {
+    ) : Promise<{success : boolean, error ?: any}> {
         return await this.service.removeFromGroup( requestBody.userId, requestBody.groupId, true );
     }
 
@@ -149,8 +139,7 @@ export class UserController
             trainingId : number,
             groupId: number,  
         }
-    ) : Promise<{success : boolean, error ?: any}>
-    {
+    ) : Promise<{success : boolean, error ?: any}> {
         return await this.service.addToTraining( requestBody.userId, requestBody.trainingId, requestBody.groupId );
     }
 
@@ -162,8 +151,7 @@ export class UserController
             trainingId : number,
             groupId: number,  
         }
-    ) : Promise<{success : boolean, error ?: any}>
-    {
+    ) : Promise<{success : boolean, error ?: any}> {
         return await this.service.addToTraining( requestBody.userId, requestBody.trainingId, requestBody.groupId, true );
     }
 
@@ -175,8 +163,7 @@ export class UserController
             trainingId : number, 
             groupId: number,  
         }
-    ) : Promise<{success : boolean, error ?: any}>
-    {
+    ) : Promise<{success : boolean, error ?: any}> {
         return await this.service.removeFromTraining( requestBody.userId, requestBody.trainingId, requestBody.groupId);
     }
 
@@ -188,8 +175,7 @@ export class UserController
             trainingId : number,
             groupId: number,  
         }
-    ) : Promise<{success : boolean, error ?: any}>
-    {
+    ) : Promise<{success : boolean, error ?: any}> {
         return await this.service.removeFromTraining( requestBody.userId, requestBody.trainingId, requestBody.groupId, true );
     }
 
@@ -200,8 +186,7 @@ export class UserController
 
     @Get('getCoachId/:id')
     async getCoachIdLinkedToUser( @Param('id') id: number ) : Promise<number> {
-        const coach = await this.service.getCoach( id );
-        return coach.id;
+        return (await this.service.getCoach(id)).id;
     }
     @Get('getCoach/:id')
     async getCoachLinkedToUser( @Param('id') id: number ) : Promise<Coach> {

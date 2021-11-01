@@ -6,7 +6,6 @@ import { Connection, DeleteResult, Like, Repository } from 'typeorm';
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { Payment } from '../finance/payment.entity';
 import { addApplicationToTraining, Application, removeApplicationFromTraining } from '../utils';
 
 @Injectable()
@@ -44,11 +43,13 @@ export class UserService {
         password: string,
         birth_date: Date,
     }): Promise<{ success: boolean, user: User }> {
-        if (!await this.userRepository.findOne(rawUserData.email)) {
+        if (!await this.getByEmail(rawUserData.email)) {
             const newUser = new User();
             Object.keys(rawUserData).forEach((key) => { newUser[key] = (key === "password") ? bcrypt.hashSync(rawUserData[key], 10) : rawUserData[key]; });
             newUser.roles = rawUserData.roles;
-            newUser.roles += "trainee ";
+            if( newUser.roles === '') {
+                newUser.roles += "trainee ";
+            }
             return { success: true, user: await this.userRepository.save(newUser) };
         }
         return { success: false, user: undefined };
@@ -65,7 +66,8 @@ export class UserService {
         birth_date: Date,
     }): Promise<{ success: boolean, user: User }> {
         const modifiedUser = await this.userRepository.findOne(userId);
-        if (modifiedUser && !(await this.getByEmail(rawUserData.email))) {
+        let userWithSameEmail = await this.getByEmail(rawUserData.email);
+        if (modifiedUser && (userWithSameEmail === undefined || userWithSameEmail?.id === userId)) {
             Object.keys(rawUserData).forEach((key) => { modifiedUser[key] = (key === "password") ? bcrypt.hashSync(rawUserData[key], 10) : rawUserData[key]; });
             return { success: true, user: await this.userRepository.save(modifiedUser) };
         }
