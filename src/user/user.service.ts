@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Coach } from '../coach/coach.entity';
 import { Group } from '../group/group.entity';
 import { Training } from '../training/training.entity';
-import { Connection, DeleteResult, Like, Repository } from 'typeorm';
+import { Connection, DeleteResult, Like, Repository, SimpleConsoleLogger } from 'typeorm';
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -76,10 +76,19 @@ export class UserService {
     }
     public async addToGroup(userId: number, groupId: number, forceTrainee: boolean = false): Promise<{ success: boolean, error?: any }> {
         try {
-            const groupToAddTo = await this.groupRepository.findOne(groupId, { relations: ["members", "coaches"] });
             const userToBeAdded = await this.userRepository.findOne(userId, { relations: ["groups"] });
-            if (userToBeAdded.roles.match(/.*coach.*/) && !forceTrainee) {
+            if( userToBeAdded === undefined ) {
+                return { success: false, error: 'There is no user in db with the given id' };
+            }
+            const groupToAddTo = await this.groupRepository.findOne(groupId, { relations: ["members", "coaches"] });
+            if( groupToAddTo === undefined ) {
+                return { success: false, error: 'There is no group in db with the given id' };
+            }
+            if (userToBeAdded.roles.includes('coach') && !forceTrainee) {
                 const coachToBeAdded = await this.coachRepository.findOne({ user: userToBeAdded }, { relations: ["groups"] });
+                if( coachToBeAdded === undefined ) {
+                    return { success: false, error: 'There is no coach in db with the given id' };
+                }
                 groupToAddTo.coaches.push(coachToBeAdded);
                 coachToBeAdded.groups.push(groupToAddTo);
                 await this.coachRepository.save(coachToBeAdded);
@@ -92,7 +101,7 @@ export class UserService {
             await this.groupRepository.save(groupToAddTo);
             return { success: true };
         }
-        catch (error) {
+        catch(error) {
             return { success: false, error: error.toString() };
         }
     }
