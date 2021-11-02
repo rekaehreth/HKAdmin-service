@@ -3,6 +3,9 @@
 
 name: Node.js CI
 
+env: 
+  TEST_DB_CONFIG: ${{ secrets.TEST_DB_CONFIG }}
+
 on:
   push:
     branches: [ master ]
