@@ -75,88 +75,92 @@ export class UserService {
 
     }
     public async addToGroup(userId: number, groupId: number, forceTrainee: boolean = false): Promise<{ success: boolean, error?: any }> {
-        try {
-            const userToBeAdded = await this.userRepository.findOne(userId, { relations: ["groups"] });
-            if( userToBeAdded === undefined ) {
-                return { success: false, error: 'There is no user in db with the given id' };
-            }
-            const groupToAddTo = await this.groupRepository.findOne(groupId, { relations: ["members", "coaches"] });
-            if( groupToAddTo === undefined ) {
-                return { success: false, error: 'There is no group in db with the given id' };
-            }
-            if (userToBeAdded.roles.includes('coach') && !forceTrainee) {
-                const coachToBeAdded = await this.coachRepository.findOne({ user: userToBeAdded }, { relations: ["groups"] });
-                if( coachToBeAdded === undefined ) {
-                    return { success: false, error: 'There is no coach in db with the given id' };
-                }
-                groupToAddTo.coaches.push(coachToBeAdded);
-                coachToBeAdded.groups.push(groupToAddTo);
-                await this.coachRepository.save(coachToBeAdded);
-            }
-            else {
-                groupToAddTo.members.push(userToBeAdded);
-                userToBeAdded.groups.push(groupToAddTo);
-                await this.userRepository.save(userToBeAdded);
-            }
-            await this.groupRepository.save(groupToAddTo);
-            return { success: true };
+        const userToBeAdded = await this.userRepository.findOne(userId, { relations: ["groups"] });
+        if( userToBeAdded === undefined ) {
+            return { success: false, error: 'There is no user in db with the given id' };
         }
-        catch(error) {
-            return { success: false, error: error.toString() };
+        const groupToAddTo = await this.groupRepository.findOne(groupId, { relations: ["members", "coaches"] });
+        if( groupToAddTo === undefined ) {
+            return { success: false, error: 'There is no group in db with the given id' };
         }
+        if (userToBeAdded.roles.includes('coach') && !forceTrainee) {
+            const coachToBeAdded = await this.coachRepository.findOne({ user: userToBeAdded }, { relations: ["groups"] });
+            if( coachToBeAdded === undefined ) {
+                return { success: false, error: 'There is no coach in db with the given id' };
+            }
+            groupToAddTo.coaches.push(coachToBeAdded);
+            coachToBeAdded.groups.push(groupToAddTo);
+            await this.coachRepository.save(coachToBeAdded);
+        }
+        else {
+            groupToAddTo.members.push(userToBeAdded);
+            userToBeAdded.groups.push(groupToAddTo);
+            await this.userRepository.save(userToBeAdded);
+        }
+        await this.groupRepository.save(groupToAddTo);
+        return { success: true };
     }
     public async removeFromGroup(userId: number, groupId: number, forceTrainee: boolean = false): Promise<{ success: boolean, error?: any }> {
-        try {
-            const groupToRemoveFrom = await this.groupRepository.findOne(groupId, { relations: ["trainings", "members", "coaches"] });
-            const userToRemove = await this.userRepository.findOne(userId, { relations: ["groups"] });
-            if (userToRemove.roles.match(/.*coach.*/) && !forceTrainee) {
-                let coachToRemove = await this.coachRepository.findOne({ user: userToRemove }, { relations: ["groups"] });
-                let coachIndex = groupToRemoveFrom.coaches.indexOf(coachToRemove);
-                groupToRemoveFrom.coaches.splice(coachIndex, 1);
-                let groupIndex = coachToRemove.groups.indexOf(groupToRemoveFrom);
-                coachToRemove.groups.splice(groupIndex, 1);
-                await this.coachRepository.save(coachToRemove);
-            }
-            else {
-                let userIndex = groupToRemoveFrom.members.indexOf(userToRemove);
-                groupToRemoveFrom.members.splice(userIndex, 1);
-                let groupIndex = userToRemove.groups.indexOf(groupToRemoveFrom);
-                userToRemove.groups.splice(groupIndex, 1);
-                await this.userRepository.save(userToRemove);
-
-            }
-            await this.groupRepository.save(groupToRemoveFrom);
-            return { success: true };
+        const userToRemove = await this.userRepository.findOne(userId, { relations: ["groups"] });
+        if( userToRemove === undefined ) {
+            return { success: false, error: 'There is no user in db with the given id' };
         }
-        catch (error) {
-            return { success: false, error: error.toString() };
+        const groupToRemoveFrom = await this.groupRepository.findOne(groupId, { relations: ["trainings", "members", "coaches"] });
+        if( groupToRemoveFrom === undefined ) {
+            return { success: false, error: 'There is no group in db with the given id' };
         }
+        if (userToRemove.roles.includes('coach') && !forceTrainee) {
+            let coachToRemove = await this.coachRepository.findOne({ user: userToRemove }, { relations: ["groups"] });
+            if( coachToRemove === undefined ) {
+                return { success: false, error: 'There is no coach in db with the given id' };
+            }
+            let coachIndex = groupToRemoveFrom.coaches.indexOf(coachToRemove);
+            groupToRemoveFrom.coaches.splice(coachIndex, 1);
+            let groupIndex = coachToRemove.groups.indexOf(groupToRemoveFrom);
+            coachToRemove.groups.splice(groupIndex, 1);
+            await this.coachRepository.save(coachToRemove);
+        } 
+        else { 
+            let userIndex = groupToRemoveFrom.members.indexOf(userToRemove);
+            groupToRemoveFrom.members.splice(userIndex, 1);
+            let groupIndex = userToRemove.groups.indexOf(groupToRemoveFrom);
+            userToRemove.groups.splice(groupIndex, 1);
+            await this.userRepository.save(userToRemove);
+        }
+        await this.groupRepository.save(groupToRemoveFrom);
+        return { success: true }; 
     }
     public async addToTraining(userId: number, trainingId: number, groupId: number, forceTrainee: boolean = false): Promise<{ success: boolean, error?: any }> {
-        try {
-            const trainingToAddTo = await this.trainingRepository.findOne(trainingId, { relations: ["attendees", "coaches"] });
-            const userToBeAdded = await this.userRepository.findOne(userId, { relations: ["trainings"] });
-            if (userToBeAdded.roles.match(/.*coach.*/) && !forceTrainee) {
-                const coachToBeAdded = await this.coachRepository.findOne({ user: userToBeAdded }, { relations: ["trainings"] });
-                trainingToAddTo.coaches.push(coachToBeAdded);
-                coachToBeAdded.trainings.push(trainingToAddTo);
-                await this.coachRepository.save(coachToBeAdded);
-                const applicationToBeAdded: Application = { userId, groupId, role: "coach"};
-                trainingToAddTo.applications = addApplicationToTraining(applicationToBeAdded, trainingToAddTo.applications);
-            }
-            else {
-                trainingToAddTo.attendees.push(userToBeAdded);
-                userToBeAdded.trainings.push(trainingToAddTo);
-                this.userRepository.save(userToBeAdded);
-                const applicationToBeAdded: Application = { userId, groupId, role: "trainee"};
-                trainingToAddTo.applications = addApplicationToTraining(applicationToBeAdded, trainingToAddTo.applications);
-            }
-            await this.trainingRepository.save(trainingToAddTo);
-            return { success: true };
-        }
-        catch (error) {
-            return { success: false, error: error.toString() };
-        }
+        
+        
+        // const trainingToAddTo = await this.trainingRepository.findOne(trainingId, { relations: ["attendees", "coaches"] });
+        // if( userToBeAdded === undefined ) {
+        //     return { success: false, error: 'There is no training in db with the given id' };
+        // }
+        // const userToBeAdded = await this.userRepository.findOne(userId, { relations: ["trainings"] });
+        // if( userToBeAdded === undefined ) {
+        //     return { success: false, error: 'There is no user in db with the given id' };
+        // }
+        // if (userToRemove.roles.includes('coach') && !forceTrainee) {
+        //     const coachToBeAdded = await this.coachRepository.findOne({ user: userToBeAdded }, { relations: ["trainings"] });
+        //     if( coachToBeAdded === undefined ) {
+        //         return { success: false, error: 'There is no coach in db with the given id' };
+        //     }     
+        //     trainingToAddTo.coaches.push(coachToBeAdded);
+        //     coachToBeAdded.trainings.push(trainingToAddTo);
+        //     await this.coachRepository.save(coachToBeAdded);
+        //     const applicationToBeAdded: Application = { userId, groupId, role: "coach"};
+        //     trainingToAddTo.applications = addApplicationToTraining(applicationToBeAdded, trainingToAddTo.applications);
+        // }
+        // else {
+        //     trainingToAddTo.attendees.push(userToBeAdded);
+        //     userToBeAdded.trainings.push(trainingToAddTo);
+        //     this.userRepository.save(userToBeAdded);
+        //     const applicationToBeAdded: Application = { userId, groupId, role: "trainee"};
+        //     trainingToAddTo.applications = addApplicationToTraining(applicationToBeAdded, trainingToAddTo.applications);
+        // }
+        // await this.trainingRepository.save(trainingToAddTo);
+        return { success: true };
     }
     public async removeFromTraining(userId: number, trainingId: number, groupId: number, forceTrainee: boolean = false): Promise<{ success: boolean, error?: any }> {
         try {
