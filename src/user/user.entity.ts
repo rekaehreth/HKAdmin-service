@@ -9,7 +9,7 @@ export class User
 {
     @PrimaryGeneratedColumn()
     id : number;
-    @ManyToMany( () => Training, training => training.attendees )
+    @ManyToMany( () => Training, training => training.attendees)
     trainings : Training[];
     @Column()
     name : string;

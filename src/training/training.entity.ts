@@ -10,12 +10,12 @@ export class Training
 {
     @PrimaryGeneratedColumn()
     id : number;
-    @ManyToOne( () => Location, site => site.trainings, { onDelete: 'CASCADE' } )
+    @ManyToOne( () => Location, site => site.trainings, { onDelete: 'CASCADE' })
     location : Location;
-    @ManyToMany( () => User, user => user.trainings )
+    @ManyToMany( () => User, user => user.trainings, { cascade: true, onDelete: "CASCADE" })
     @JoinTable()
     attendees : User[];
-    @ManyToMany( () => Coach, coach => coach.trainings)
+    @ManyToMany( () => Coach, coach => coach.trainings, { cascade: true, onDelete: "CASCADE" })
     @JoinTable({name: "coach_trainings_training"})
     coaches : Coach[];
     @ManyToMany( () => Group, group => group.trainings)

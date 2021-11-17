@@ -10,10 +10,10 @@ export class Group
     id : number;
     @Column()
     name : string;
-    @ManyToMany( () => User, user => user.groups )
+    @ManyToMany( () => User, user => user.groups, { cascade: true, onDelete: "CASCADE" })
     members : User[];
-    @ManyToMany( () => Coach, coach => coach.groups )
+    @ManyToMany( () => Coach, coach => coach.groups, { cascade: true, onDelete: "CASCADE" })
     coaches : Coach[];
-    @ManyToMany( () => Training, training => training.groups )
+    @ManyToMany( () => Training, training => training.groups, { cascade: true, onDelete: "CASCADE" })
     trainings : Training[];
 }

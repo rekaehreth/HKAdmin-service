@@ -31,7 +31,6 @@ export class LocationController
             plus_code: string,
         }
     ): Promise<Location> {
-        // console.log(JSON.stringify(rawData));
         return await this.service.create(rawData);
     }
 

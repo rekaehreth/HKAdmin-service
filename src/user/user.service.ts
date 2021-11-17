@@ -131,35 +131,37 @@ export class UserService {
         return { success: true }; 
     }
     public async addToTraining(userId: number, trainingId: number, groupId: number, forceTrainee: boolean = false): Promise<{ success: boolean, error?: any }> {
-        
-        
-        // const trainingToAddTo = await this.trainingRepository.findOne(trainingId, { relations: ["attendees", "coaches"] });
-        // if( userToBeAdded === undefined ) {
-        //     return { success: false, error: 'There is no training in db with the given id' };
-        // }
-        // const userToBeAdded = await this.userRepository.findOne(userId, { relations: ["trainings"] });
-        // if( userToBeAdded === undefined ) {
-        //     return { success: false, error: 'There is no user in db with the given id' };
-        // }
-        // if (userToRemove.roles.includes('coach') && !forceTrainee) {
-        //     const coachToBeAdded = await this.coachRepository.findOne({ user: userToBeAdded }, { relations: ["trainings"] });
-        //     if( coachToBeAdded === undefined ) {
-        //         return { success: false, error: 'There is no coach in db with the given id' };
-        //     }     
-        //     trainingToAddTo.coaches.push(coachToBeAdded);
-        //     coachToBeAdded.trainings.push(trainingToAddTo);
-        //     await this.coachRepository.save(coachToBeAdded);
-        //     const applicationToBeAdded: Application = { userId, groupId, role: "coach"};
-        //     trainingToAddTo.applications = addApplicationToTraining(applicationToBeAdded, trainingToAddTo.applications);
-        // }
-        // else {
-        //     trainingToAddTo.attendees.push(userToBeAdded);
-        //     userToBeAdded.trainings.push(trainingToAddTo);
-        //     this.userRepository.save(userToBeAdded);
-        //     const applicationToBeAdded: Application = { userId, groupId, role: "trainee"};
-        //     trainingToAddTo.applications = addApplicationToTraining(applicationToBeAdded, trainingToAddTo.applications);
-        // }
-        // await this.trainingRepository.save(trainingToAddTo);
+        const userToBeAdded = await this.userRepository.findOne(userId, { relations: ["trainings"] });
+        if( userToBeAdded === undefined ) {
+            return { success: false, error: 'There is no user in db with the given id' };
+        }
+        const trainingToAddTo = await this.trainingRepository.findOne(trainingId, { relations: ["attendees", "coaches"] });
+        if( trainingToAddTo === undefined ) {
+            return { success: false, error: 'There is no training in db with the given id' };
+        }
+        const groupOfUser = await this.groupRepository.findOne(groupId, { relations: ["members", "coaches", "trainings"] });
+        if( groupOfUser === undefined ) {
+            return { success: false, error: 'There is no group in db with the given id' };
+        }
+        if (userToBeAdded.roles.includes('coach') && !forceTrainee) {
+            const coachToBeAdded = await this.coachRepository.findOne({ user: userToBeAdded }, { relations: ["trainings"] });
+            if( coachToBeAdded === undefined ) {
+                return { success: false, error: 'There is no coach in db with the given id' };
+            }     
+            trainingToAddTo.coaches.push(coachToBeAdded);
+            coachToBeAdded.trainings.push(trainingToAddTo);
+            await this.coachRepository.save(coachToBeAdded);
+            const applicationToBeAdded: Application = { userId, groupId, role: "coach"};
+            trainingToAddTo.applications = addApplicationToTraining(applicationToBeAdded, trainingToAddTo.applications);
+        }
+        else {
+            trainingToAddTo.attendees.push(userToBeAdded);
+            userToBeAdded.trainings.push(trainingToAddTo);
+            this.userRepository.save(userToBeAdded);
+            const applicationToBeAdded: Application = { userId, groupId, role: "trainee"};
+            trainingToAddTo.applications = addApplicationToTraining(applicationToBeAdded, trainingToAddTo.applications);
+        }
+        await this.trainingRepository.save(trainingToAddTo);
         return { success: true };
     }
     public async removeFromTraining(userId: number, trainingId: number, groupId: number, forceTrainee: boolean = false): Promise<{ success: boolean, error?: any }> {
