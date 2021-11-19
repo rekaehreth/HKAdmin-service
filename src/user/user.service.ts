@@ -27,15 +27,19 @@ export class UserService {
     public async getAll(): Promise<User[]> {
         return await this.userRepository.find({ relations: ["trainings", "groups"] });
     }
+
     public async getById(id: number): Promise<User> {
         return await this.userRepository.findOne(id, { relations: ["trainings", "groups"] });
     }
+
     public async getByEmail(email: string): Promise<User> {
         return await this.userRepository.findOne({ relations: ["trainings", "groups"], where: {email: email} });
     }
+
     public async getByRole(role: string): Promise<User[]> {
         return await this.userRepository.find({ relations: ["trainings", "groups"], where: { roles: Like(`%${role}%`) } });
     }
+
     public async create(rawUserData: {
         name: string,
         roles: string,
@@ -55,9 +59,11 @@ export class UserService {
         return { success: false, user: undefined };
 
     }
+
     public async delete(id: number): Promise<DeleteResult> {
         return await this.userRepository.delete(id);
     }
+
     public async modify(userId: number, rawUserData: {
         name: string,
         roles: string,
@@ -66,7 +72,7 @@ export class UserService {
         birth_date: Date,
     }): Promise<{ success: boolean, user: User }> {
         const modifiedUser = await this.userRepository.findOne(userId);
-        let userWithSameEmail = await this.getByEmail(rawUserData.email);
+        const userWithSameEmail = await this.getByEmail(rawUserData.email);
         if (modifiedUser && (userWithSameEmail === undefined || userWithSameEmail?.id === userId)) {
             Object.keys(rawUserData).forEach((key) => { modifiedUser[key] = (key === "password") ? bcrypt.hashSync(rawUserData[key], 10) : rawUserData[key]; });
             return { success: true, user: await this.userRepository.save(modifiedUser) };
@@ -74,7 +80,8 @@ export class UserService {
         return { success: false, user: undefined };
 
     }
-    public async addToGroup(userId: number, groupId: number, forceTrainee: boolean = false): Promise<{ success: boolean, error?: any }> {
+
+    public async addToGroup(userId: number, groupId: number, forceTrainee = false): Promise<{ success: boolean, error?: any }> {
         const userToBeAdded = await this.userRepository.findOne(userId, { relations: ["groups"] });
         if( userToBeAdded === undefined ) {
             return { success: false, error: 'There is no user in db with the given id' };
@@ -100,7 +107,8 @@ export class UserService {
         await this.groupRepository.save(groupToAddTo);
         return { success: true };
     }
-    public async removeFromGroup(userId: number, groupId: number, forceTrainee: boolean = false): Promise<{ success: boolean, error?: any }> {
+
+    public async removeFromGroup(userId: number, groupId: number, forceTrainee = false): Promise<{ success: boolean, error?: any }> {
         const userToRemove = await this.userRepository.findOne(userId, { relations: ["groups"] });
         if( userToRemove === undefined ) {
             return { success: false, error: 'There is no user in db with the given id' };
@@ -110,27 +118,28 @@ export class UserService {
             return { success: false, error: 'There is no group in db with the given id' };
         }
         if (userToRemove.roles.includes('coach') && !forceTrainee) {
-            let coachToRemove = await this.coachRepository.findOne({ user: userToRemove }, { relations: ["groups"] });
+            const coachToRemove = await this.coachRepository.findOne({ user: userToRemove }, { relations: ["groups"] });
             if( coachToRemove === undefined ) {
                 return { success: false, error: 'There is no coach in db with the given id' };
             }
-            let coachIndex = groupToRemoveFrom.coaches.indexOf(coachToRemove);
+            const coachIndex = groupToRemoveFrom.coaches.indexOf(coachToRemove);
+            const groupIndex = coachToRemove.groups.indexOf(groupToRemoveFrom);
             groupToRemoveFrom.coaches.splice(coachIndex, 1);
-            let groupIndex = coachToRemove.groups.indexOf(groupToRemoveFrom);
             coachToRemove.groups.splice(groupIndex, 1);
             await this.coachRepository.save(coachToRemove);
-        } 
-        else { 
-            let userIndex = groupToRemoveFrom.members.indexOf(userToRemove);
+        }
+        else {
+            const userIndex = groupToRemoveFrom.members.indexOf(userToRemove);
+            const groupIndex = userToRemove.groups.indexOf(groupToRemoveFrom);
             groupToRemoveFrom.members.splice(userIndex, 1);
-            let groupIndex = userToRemove.groups.indexOf(groupToRemoveFrom);
             userToRemove.groups.splice(groupIndex, 1);
             await this.userRepository.save(userToRemove);
         }
         await this.groupRepository.save(groupToRemoveFrom);
-        return { success: true }; 
+        return { success: true };
     }
-    public async addToTraining(userId: number, trainingId: number, groupId: number, forceTrainee: boolean = false): Promise<{ success: boolean, error?: any }> {
+
+    public async addToTraining(userId: number, trainingId: number, groupId: number, forceTrainee = false): Promise<{ success: boolean, error?: any }> {
         const userToBeAdded = await this.userRepository.findOne(userId, { relations: ["trainings"] });
         if( userToBeAdded === undefined ) {
             return { success: false, error: 'There is no user in db with the given id' };
@@ -147,60 +156,68 @@ export class UserService {
             const coachToBeAdded = await this.coachRepository.findOne({ user: userToBeAdded }, { relations: ["trainings"] });
             if( coachToBeAdded === undefined ) {
                 return { success: false, error: 'There is no coach in db with the given id' };
-            }     
+            }
+            const applicationToBeAdded: Application = { userId, groupId, role: "coach"};
             trainingToAddTo.coaches.push(coachToBeAdded);
             coachToBeAdded.trainings.push(trainingToAddTo);
-            await this.coachRepository.save(coachToBeAdded);
-            const applicationToBeAdded: Application = { userId, groupId, role: "coach"};
             trainingToAddTo.applications = addApplicationToTraining(applicationToBeAdded, trainingToAddTo.applications);
+            await this.coachRepository.save(coachToBeAdded);
         }
         else {
+            const applicationToBeAdded: Application = { userId, groupId, role: "trainee"};
             trainingToAddTo.attendees.push(userToBeAdded);
             userToBeAdded.trainings.push(trainingToAddTo);
-            this.userRepository.save(userToBeAdded);
-            const applicationToBeAdded: Application = { userId, groupId, role: "trainee"};
             trainingToAddTo.applications = addApplicationToTraining(applicationToBeAdded, trainingToAddTo.applications);
+            this.userRepository.save(userToBeAdded);
         }
         await this.trainingRepository.save(trainingToAddTo);
         return { success: true };
     }
-    public async removeFromTraining(userId: number, trainingId: number, groupId: number, forceTrainee: boolean = false): Promise<{ success: boolean, error?: any }> {
-        try {
-            const trainingToRemoveFrom = await this.trainingRepository.findOne(trainingId, { relations: ["coaches", "attendees"] });
-            const userToRemove = await this.userRepository.findOne(userId, { relations: ["trainings"] }); // , { relations: ["groups"] }
-            if (userToRemove.roles.match(/.*coach.*/) && !forceTrainee) {
-                let coachToRemove = await this.coachRepository.findOne({ user: userToRemove }, { relations: ["trainings"] });
-                let coachIndex = trainingToRemoveFrom.coaches.indexOf(coachToRemove);
-                trainingToRemoveFrom.coaches.splice(coachIndex, 1);
-                let trainingIndex = coachToRemove.trainings.indexOf(trainingToRemoveFrom);
-                coachToRemove.trainings.splice(trainingIndex, 1);
-                await this.coachRepository.save(coachToRemove);
-                trainingToRemoveFrom.coaches.splice(coachIndex, 1);
-                const applicationToBeRemoved: Application = { userId, groupId, role: "coach"};
-                trainingToRemoveFrom.applications = removeApplicationFromTraining(applicationToBeRemoved, trainingToRemoveFrom.applications);
-            }
-            else {
-                let userIndex = trainingToRemoveFrom.attendees.indexOf(userToRemove);
-                trainingToRemoveFrom.attendees.splice(userIndex, 1);
-                let trainingIndex = userToRemove.trainings.indexOf(trainingToRemoveFrom);
-                userToRemove.trainings.splice(trainingIndex, 1);
-                await this.userRepository.save(userToRemove);
-                const applicationToBeRemoved: Application = { userId, groupId, role: "trainee"};
-                trainingToRemoveFrom.applications = removeApplicationFromTraining(applicationToBeRemoved, trainingToRemoveFrom.applications);
-            }
-            await this.trainingRepository.save(trainingToRemoveFrom);
-            return { success: true };
+
+    public async removeFromTraining(userId: number, trainingId: number, groupId: number, forceTrainee = false): Promise<{ success: boolean, error?: any }> {
+        const userToRemove = await this.userRepository.findOne(userId, { relations: ["trainings"] });
+        if( userToRemove === undefined ) {
+            return { success: false, error: 'There is no user in db with the given id' };
         }
-        catch (error) {
-            return { success: false, error: error.toString() };
+        const trainingToRemoveFrom = await this.trainingRepository.findOne(trainingId, { relations: ["coaches", "attendees"] });
+        if( trainingToRemoveFrom === undefined ) {
+            return { success: false, error: 'There is no training in db with the given id' };
         }
+        const groupToRemove = await this.groupRepository.findOne(groupId, { relations: ["trainings", "members", "coaches"] });
+        if( groupToRemove === undefined ) {
+            return { success: false, error: 'There is no group in db with the given id' };
+        }
+        if (userToRemove.roles.match(/.*coach.*/) && !forceTrainee) {
+            const coachToRemove = await this.coachRepository.findOne({ user: userToRemove }, { relations: ["trainings"] });
+            const coachIndex = trainingToRemoveFrom.coaches.findIndex( coach => coach.id === coachToRemove.id);
+            const trainingIndex = coachToRemove.trainings.findIndex( training => training.id === trainingToRemoveFrom.id);
+            const applicationToBeRemoved: Application = { userId, groupId, role: "coach"};
+
+            coachToRemove.trainings.splice(trainingIndex, 1);
+            trainingToRemoveFrom.coaches.splice(coachIndex, 1);
+            trainingToRemoveFrom.applications = removeApplicationFromTraining(applicationToBeRemoved, trainingToRemoveFrom.applications);
+
+            await this.coachRepository.save(coachToRemove);
+        } else {
+            const userIndex = trainingToRemoveFrom.attendees.findIndex( attendee => attendee.id === userToRemove.id);
+            const trainingIndex = userToRemove.trainings.findIndex( training => training.id === trainingToRemoveFrom.id);
+            const applicationToBeRemoved: Application = { userId, groupId, role: "trainee"};
+
+            trainingToRemoveFrom.attendees.splice(userIndex, 1);
+            userToRemove.trainings.splice(trainingIndex, 1);
+            trainingToRemoveFrom.applications = removeApplicationFromTraining(applicationToBeRemoved, trainingToRemoveFrom.applications);
+
+            await this.userRepository.save(userToRemove);
+        }
+        await this.trainingRepository.save(trainingToRemoveFrom);
+        return { success: true };
     }
     public async listAvailableTrainings(userId: number): Promise<[Training, boolean][]> {
         const availableTrainings: [Training, boolean][] = []; // boolean is true if user has already signed up for that training
-        let user = await this.userRepository.findOne(userId, { relations: ["groups", "trainings"] });
+        const user = await this.userRepository.findOne(userId, { relations: ["groups", "trainings"] });
 
         for (const userGroup of user.groups) {
-            let group = await this.groupRepository.findOne(userGroup.id, { relations: ["trainings"] });
+            const group = await this.groupRepository.findOne(userGroup.id, { relations: ["trainings"] });
             group.trainings.forEach(training => {
                 if (user.trainings.includes(training)) { availableTrainings.push([training, false]) }
                 else { availableTrainings.push([training, true]) }
@@ -209,8 +226,8 @@ export class UserService {
         return availableTrainings;
     }
     public async login(email: string, rawpassword: string): Promise<{ success: boolean, token?: string, userId?: number, userRoles?: string }> {
-        let failResult = { success: false };
-        let user = await this.userRepository.findOne({ email });
+        const failResult = { success: false };
+        const user = await this.userRepository.findOne({ email });
         if (!user) {
             return failResult;
         }
