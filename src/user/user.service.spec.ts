@@ -39,6 +39,7 @@ describe('UserService', () => {
             database: process.env.TEST_DB_DATABASE,
             entities: ['../**/*.entity.ts'],
             synchronize: true,
+            multipleStatements: true
         });
         await connection.synchronize();
         service = new UserService(connection, {} as JwtService);
@@ -58,20 +59,15 @@ describe('UserService', () => {
     });
     describe('create', () => {
         it("does not create a new user when there's already a user in the db with the given email", async () => {
-            await repository.save(
-                createTestUser({ email: 'testEmail@example.com' }),
-            );
-            const result = await service.create(
-                createPartialTestUser({ email: 'testEmail@example.com' }),
-            );
+            await repository.save(createTestUser({ email: 'testEmail@example.com' }));
+
+            const result = await service.create(createPartialTestUser({ email: 'testEmail@example.com' }));
 
             expect(result.success).toEqual(false);
             expect(result.user).toEqual(undefined);
         });
         it("creates a new user when there's no user in the db with the given email", async () => {
-            const result = await service.create(
-                createPartialTestUser({ email: 'testEmail@example.com' }),
-            );
+            const result = await service.create(createPartialTestUser({ email: 'testEmail@example.com' }));
 
             expect(result.success).toEqual(true);
             expect(result.user.name).toEqual('test_name');
@@ -84,9 +80,7 @@ describe('UserService', () => {
             expect(result.user.roles).toEqual('trainee ');
         });
         it('does not append trainee to roles if there were none given', async () => {
-            const result = await service.create(
-                createPartialTestUser({ roles: 'coach ' }),
-            );
+            const result = await service.create(createPartialTestUser({ roles: 'coach ' }));
 
             expect(result.success).toEqual(true);
             expect(result.user.roles).toEqual('coach ');
@@ -95,9 +89,7 @@ describe('UserService', () => {
             const mockBcryptHashSynnc = jest.fn((pwd: string) => 'not' + pwd);
             (bcrypt.hashSync as jest.Mock) = mockBcryptHashSynnc;
 
-            const result = await service.create(
-                createPartialTestUser({ password: 'testpassword' }),
-            );
+            const result = await service.create(createPartialTestUser({ password: 'testpassword' }));
 
             expect(result.success).toEqual(true);
             expect(mockBcryptHashSynnc).toBeCalledTimes(1);
@@ -106,10 +98,7 @@ describe('UserService', () => {
     });
     describe('modify', () => {
         it('does not modify if the given userId is not in the db', async () => {
-            const result = await service.modify(
-                1,
-                createPartialTestUser({ name: 'Test User' }),
-            );
+            const result = await service.modify(1, createPartialTestUser({ name: 'Test User' }));
 
             expect(result.success).toEqual(false);
             expect(result.user).toEqual(undefined);
@@ -117,47 +106,32 @@ describe('UserService', () => {
         it('modifies if the given userId is in the db', async () => {
             await repository.save(createTestUser({ name: 'Test User' }));
 
-            const result = await service.modify(
-                1,
-                createPartialTestUser({ name: 'John Doe' }),
-            );
+            const result = await service.modify(1, createPartialTestUser({ name: 'John Doe' }));
 
             expect(result.success).toEqual(true);
             expect(result.user.name).toEqual('John Doe');
         });
         it('does not modify if the given email is already the db', async () => {
-            await repository.save(
-                createTestUser({
-                    name: 'Test User',
-                    email: 'testEmail@example.com',
-                }),
-            );
-            await repository.save(
-                createTestUser({
-                    name: 'Test User',
-                    email: 'test@example.com',
-                }),
-            );
+            await repository.save(createTestUser({
+                name: 'Test User',
+                email: 'testEmail@example.com',
+            }));
+            await repository.save(createTestUser({
+                name: 'Test User',
+                email: 'test@example.com',
+            }));
 
-            const result = await service.modify(
-                1,
-                createPartialTestUser({ email: 'test@example.com' }),
-            );
+            const result = await service.modify(1, createPartialTestUser({ email: 'test@example.com' }));
 
             expect(result.success).toEqual(false);
             expect(result.user).toEqual(undefined);
         });
         it('encrypts the given password', async () => {
             await repository.save(createTestUser({ password: 'testpassword' }));
-            const mockBcryptHashSynnc = jest.fn(
-                (pwd: string) => 'modified' + pwd,
-            );
+            const mockBcryptHashSynnc = jest.fn((pwd: string) => 'modified' + pwd);
             (bcrypt.hashSync as jest.Mock) = mockBcryptHashSynnc;
 
-            const result = await service.modify(
-                1,
-                createPartialTestUser({ password: 'originalpassword' }),
-            );
+            const result = await service.modify(1, createPartialTestUser({ password: 'originalpassword' }));
 
             expect(result.success).toEqual(true);
             expect(mockBcryptHashSynnc).toBeCalledTimes(1);
@@ -171,9 +145,7 @@ describe('UserService', () => {
             const result = await service.addToGroup(1, 1, false);
 
             expect(result.success).toEqual(false);
-            expect(result.error).toEqual(
-                'There is no user in db with the given id',
-            );
+            expect(result.error).toEqual('There is no user in db with the given id');
         });
         it('returns success: false for non-existent groupId', async () => {
             await repository.save(createTestUser());
@@ -181,9 +153,7 @@ describe('UserService', () => {
             const result = await service.addToGroup(1, 1, false);
 
             expect(result.success).toEqual(false);
-            expect(result.error).toEqual(
-                'There is no group in db with the given id',
-            );
+            expect(result.error).toEqual('There is no group in db with the given id');
         });
         it('adds the user to the group', async () => {
             await repository.save(createTestUser());
@@ -191,15 +161,8 @@ describe('UserService', () => {
 
             const result = await service.addToGroup(1, 1, false);
 
-            const user = await repository.find({
-                relations: ['groups'],
-                where: { id: 1 },
-            });
-            const group = await groupRepository.find({
-                relations: ['members'],
-                where: { id: 1 },
-            });
-
+            const user = await repository.find({relations: ['groups'], where: { id: 1 }});
+            const group = await groupRepository.find({ relations: ['members'], where: { id: 1 }});
             expect(result.success).toEqual(true);
             expect(user.length).toEqual(1);
             expect(group.length).toEqual(1);
@@ -209,27 +172,15 @@ describe('UserService', () => {
             expect(group[0].members[0].id).toEqual(1);
         });
         it('adds a user with coach role to the group as a coach', async () => {
-            const createdUser = await repository.save(
-                createTestUser({ roles: 'coach ' }),
-            );
+            const createdUser = await repository.save(createTestUser({ roles: 'coach ' }));
             await groupRepository.save(createTestGroup());
             await coachRepository.save(createTestCoach({ user: createdUser }));
 
             const result = await service.addToGroup(1, 1, false);
 
-            const user = await repository.find({
-                relations: ['groups'],
-                where: { id: 1 },
-            });
-            const group = await groupRepository.find({
-                relations: ['members', 'coaches'],
-                where: { id: 1 },
-            });
-            const coach = await coachRepository.find({
-                relations: ['groups'],
-                where: { user: createdUser },
-            });
-
+            const user = await repository.find({relations: ['groups'], where: { id: 1 }});
+            const group = await groupRepository.find({relations: ['members', 'coaches'], where: { id: 1 }});
+            const coach = await coachRepository.find({relations: ['groups'], where: { user: createdUser }});
             expect(result.success).toEqual(true);
             expect(user.length).toEqual(1);
             expect(group.length).toEqual(1);
@@ -242,27 +193,15 @@ describe('UserService', () => {
             expect(coach[0].groups[0].id).toEqual(1);
         });
         it('adds a user with coach role to the group as a member when forceTrainee is true', async () => {
-            const createdUser = await repository.save(
-                createTestUser({ roles: 'coach ' }),
-            );
+            const createdUser = await repository.save(createTestUser({ roles: 'coach ' }));
             await groupRepository.save(createTestGroup());
             await coachRepository.save(createTestCoach({ user: createdUser }));
 
             const result = await service.addToGroup(1, 1, true);
 
-            const user = await repository.find({
-                relations: ['groups'],
-                where: { id: 1 },
-            });
-            const group = await groupRepository.find({
-                relations: ['members', 'coaches'],
-                where: { id: 1 },
-            });
-            const coach = await coachRepository.find({
-                relations: ['groups'],
-                where: { user: createdUser },
-            });
-
+            const user = await repository.find({relations: ['groups'], where: { id: 1 }});
+            const group = await groupRepository.find({relations: ['members', 'coaches'], where: { id: 1 }});
+            const coach = await coachRepository.find({relations: ['groups'], where: { user: createdUser }});
             expect(result.success).toEqual(true);
             expect(user.length).toEqual(1);
             expect(group.length).toEqual(1);
@@ -275,17 +214,13 @@ describe('UserService', () => {
             expect(coach[0].groups.length).toEqual(0);
         });
         it('returns success: false when trying to add a user with coach role, but there is no matching coach in the db', async () => {
-            const createdUser = await repository.save(
-                createTestUser({ roles: 'coach ' }),
-            );
+            const createdUser = await repository.save(createTestUser({ roles: 'coach ' }));
             await groupRepository.save(createTestGroup());
 
             const result = await service.addToGroup(1, 1, false);
 
             expect(result.success).toEqual(false);
-            expect(result.error).toEqual(
-                'There is no coach in db with the given id',
-            );
+            expect(result.error).toEqual('There is no coach in db with the given id');
         });
     });
     describe('removeFromGroup', () => {
@@ -295,9 +230,7 @@ describe('UserService', () => {
             const result = await service.removeFromGroup(1, 1, false);
 
             expect(result.success).toEqual(false);
-            expect(result.error).toEqual(
-                'There is no user in db with the given id',
-            );
+            expect(result.error).toEqual('There is no user in db with the given id');
         });
         it('returns success: false for non-existent groupId', async () => {
             await repository.save(createTestUser());
@@ -305,27 +238,17 @@ describe('UserService', () => {
             const result = await service.removeFromGroup(1, 1, false);
 
             expect(result.success).toEqual(false);
-            expect(result.error).toEqual(
-                'There is no group in db with the given id',
-            );
+            expect(result.error).toEqual('There is no group in db with the given id');
         });
         it('removes the user from the group', async () => {
             await repository.save(createTestUser());
             await groupRepository.save(createTestGroup());
-            // !!!!!!!!
             await service.addToGroup(1, 1, false);
-            // !!!!!!!!
+
             const result = await service.removeFromGroup(1, 1, false);
 
-            const user = await repository.find({
-                relations: ['groups'],
-                where: { id: 1 },
-            });
-            const group = await groupRepository.find({
-                relations: ['members'],
-                where: { id: 1 },
-            });
-
+            const user = await repository.find({relations: ['groups'], where: { id: 1 }});
+            const group = await groupRepository.find({relations: ['members'], where: { id: 1 }});
             expect(result.success).toEqual(true);
             expect(user.length).toEqual(1);
             expect(group.length).toEqual(1);
@@ -333,31 +256,17 @@ describe('UserService', () => {
             expect(group[0].members.length).toEqual(0);
         });
         it('removes a user with coach role from the group as a coach, but not as a member', async () => {
-            const createdUser = await repository.save(
-                createTestUser({ roles: 'coach ' }),
-            );
+            const createdUser = await repository.save(createTestUser({ roles: 'coach ' }));
             await groupRepository.save(createTestGroup());
             await coachRepository.save(createTestCoach({ user: createdUser }));
-            // !!!!!!!!
             await service.addToGroup(1, 1, false);
             await service.addToGroup(1, 1, true);
-            // !!!!!!!!
 
             const result = await service.removeFromGroup(1, 1, false);
 
-            const user = await repository.find({
-                relations: ['groups'],
-                where: { id: 1 },
-            });
-            const group = await groupRepository.find({
-                relations: ['members', 'coaches'],
-                where: { id: 1 },
-            });
-            const coach = await coachRepository.find({
-                relations: ['groups'],
-                where: { user: createdUser },
-            });
-
+            const user = await repository.find({relations: ['groups'], where: { id: 1 }});
+            const group = await groupRepository.find({relations: ['members', 'coaches'], where: { id: 1 }});
+            const coach = await coachRepository.find({relations: ['groups'], where: { user: createdUser }});
             expect(result.success).toEqual(true);
             expect(user.length).toEqual(1);
             expect(group.length).toEqual(1);
@@ -370,32 +279,17 @@ describe('UserService', () => {
             expect(coach[0].groups.length).toEqual(0);
         });
         it('removes a user with coach role from the group as a member, but not as a coach when forceTrainee is true', async () => {
-            const createdUser = await repository.save(
-                createTestUser({ roles: 'coach ' }),
-            );
+            const createdUser = await repository.save(createTestUser({ roles: 'coach ' }));
             await groupRepository.save(createTestGroup());
             await coachRepository.save(createTestCoach({ user: createdUser }));
-
-            // !!!!!!!!
             await service.addToGroup(1, 1, false);
             await service.addToGroup(1, 1, true);
-            // !!!!!!!!
 
             const result = await service.removeFromGroup(1, 1, true);
 
-            const user = await repository.find({
-                relations: ['groups'],
-                where: { id: 1 },
-            });
-            const group = await groupRepository.find({
-                relations: ['members', 'coaches'],
-                where: { id: 1 },
-            });
-            const coach = await coachRepository.find({
-                relations: ['groups'],
-                where: { user: createdUser },
-            });
-
+            const user = await repository.find({relations: ['groups'], where: { id: 1 }});
+            const group = await groupRepository.find({relations: ['members', 'coaches'], where: { id: 1 }});
+            const coach = await coachRepository.find({relations: ['groups'], where: { user: createdUser }});
             expect(result.success).toEqual(true);
             expect(user.length).toEqual(1);
             expect(group.length).toEqual(1);
@@ -408,23 +302,16 @@ describe('UserService', () => {
             expect(user[0].groups.length).toEqual(0);
         });
         it('returns success: false when trying to remove a user with coach role, but there is no matching coach in the db', async () => {
-            const createdUser = await repository.save(
-                createTestUser({ roles: 'coach ' }),
-            );
+            const createdUser = await repository.save(createTestUser({ roles: 'coach ' }));
             await groupRepository.save(createTestGroup());
             await coachRepository.save(createTestCoach({ user: createdUser }));
-
-            // !!!!!!!!
             await service.addToGroup(1, 1, false);
-            // !!!!!!!!
             await coachRepository.delete(1);
 
             const result = await service.removeFromGroup(1, 1, false);
 
             expect(result.success).toEqual(false);
-            expect(result.error).toEqual(
-                'There is no coach in db with the given id',
-            );
+            expect(result.error).toEqual('There is no coach in db with the given id');
         });
     });
     describe('addToTraining', () => {
@@ -435,9 +322,7 @@ describe('UserService', () => {
             const result = await service.addToTraining(1, 1, 1, false);
 
             expect(result.success).toEqual(false);
-            expect(result.error).toEqual(
-                'There is no user in db with the given id',
-            );
+            expect(result.error).toEqual('There is no user in db with the given id');
         });
         it('returns success: false for non-existent trainingId', async () => {
             await repository.save(createTestUser());
@@ -446,9 +331,7 @@ describe('UserService', () => {
             const result = await service.addToTraining(1, 1, 1, false);
 
             expect(result.success).toEqual(false);
-            expect(result.error).toEqual(
-                'There is no training in db with the given id',
-            );
+            expect(result.error).toEqual('There is no training in db with the given id');
         });
         it('returns success: false for non-existent groupId', async () => {
             await trainingRepository.save(createTestTraining());
@@ -457,9 +340,7 @@ describe('UserService', () => {
             const result = await service.addToTraining(1, 1, 1, false);
 
             expect(result.success).toEqual(false);
-            expect(result.error).toEqual(
-                'There is no group in db with the given id',
-            );
+            expect(result.error).toEqual('There is no group in db with the given id');
         });
         it('returns success: false for non-existent groupId', async () => {
             await repository.save(createTestUser());
@@ -467,24 +348,16 @@ describe('UserService', () => {
             const result = await service.addToGroup(1, 1, false);
 
             expect(result.success).toEqual(false);
-            expect(result.error).toEqual(
-                'There is no group in db with the given id',
-            );
+            expect(result.error).toEqual('There is no group in db with the given id');
         });
         it('adds the user to the group', async () => {
             await repository.save(createTestUser());
             await groupRepository.save(createTestGroup());
 
             const result = await service.addToGroup(1, 1, false);
-            const user = await repository.find({
-                relations: ['groups'],
-                where: { id: 1 },
-            });
-            const group = await groupRepository.find({
-                relations: ['members'],
-                where: { id: 1 },
-            });
 
+            const user = await repository.find({relations: ['groups'],  where: { id: 1 }});
+            const group = await groupRepository.find({relations: ['members'], where: { id: 1 }});
             expect(result.success).toEqual(true);
             expect(user.length).toEqual(1);
             expect(group.length).toEqual(1);
@@ -494,26 +367,15 @@ describe('UserService', () => {
             expect(group[0].members[0].id).toEqual(1);
         });
         it('adds a user with coach role to the group as a coach', async () => {
-            const createdUser = await repository.save(
-                createTestUser({ roles: 'coach ' }),
-            );
+            const createdUser = await repository.save(createTestUser({ roles: 'coach ' }));
             await groupRepository.save(createTestGroup());
             await coachRepository.save(createTestCoach({ user: createdUser }));
 
             const result = await service.addToGroup(1, 1, false);
-            const user = await repository.find({
-                relations: ['groups'],
-                where: { id: 1 },
-            });
-            const group = await groupRepository.find({
-                relations: ['members', 'coaches'],
-                where: { id: 1 },
-            });
-            const coach = await coachRepository.find({
-                relations: ['groups'],
-                where: { user: createdUser },
-            });
 
+            const user = await repository.find({relations: ['groups'], where: { id: 1 }});
+            const group = await groupRepository.find({relations: ['members', 'coaches'], where: { id: 1 }});
+            const coach = await coachRepository.find({relations: ['groups'], where: { user: createdUser }});
             expect(result.success).toEqual(true);
             expect(user.length).toEqual(1);
             expect(group.length).toEqual(1);
@@ -526,26 +388,15 @@ describe('UserService', () => {
             expect(coach[0].groups[0].id).toEqual(1);
         });
         it('adds a user with coach role to the group as a member when forceTrainee is true', async () => {
-            const createdUser = await repository.save(
-                createTestUser({ roles: 'coach ' }),
-            );
+            const createdUser = await repository.save(createTestUser({ roles: 'coach ' }));
             await groupRepository.save(createTestGroup());
             await coachRepository.save(createTestCoach({ user: createdUser }));
 
             const result = await service.addToGroup(1, 1, true);
-            const user = await repository.find({
-                relations: ['groups'],
-                where: { id: 1 },
-            });
-            const group = await groupRepository.find({
-                relations: ['members', 'coaches'],
-                where: { id: 1 },
-            });
-            const coach = await coachRepository.find({
-                relations: ['groups'],
-                where: { user: createdUser },
-            });
 
+            const user = await repository.find({relations: ['groups'], where: { id: 1 }});
+            const group = await groupRepository.find({relations: ['members', 'coaches'], where: { id: 1 }});
+            const coach = await coachRepository.find({relations: ['groups'], where: { user: createdUser }});
             expect(result.success).toEqual(true);
             expect(user.length).toEqual(1);
             expect(group.length).toEqual(1);
@@ -558,17 +409,13 @@ describe('UserService', () => {
             expect(coach[0].groups.length).toEqual(0);
         });
         it('returns success: false when trying to add a user with coach role, but there is no matching coach in the db', async () => {
-            const createdUser = await repository.save(
-                createTestUser({ roles: 'coach ' }),
-            );
+            await repository.save(createTestUser({ roles: 'coach ' }));
             await groupRepository.save(createTestGroup());
 
             const result = await service.addToGroup(1, 1, false);
 
             expect(result.success).toEqual(false);
-            expect(result.error).toEqual(
-                'There is no coach in db with the given id',
-            );
+            expect(result.error).toEqual('There is no coach in db with the given id');
         });
     });
     describe('removeFromTraining', () => {
@@ -603,20 +450,12 @@ describe('UserService', () => {
             await repository.save(createTestUser());
             await groupRepository.save(createTestGroup());
             await trainingRepository.save(createTestTraining());
-            // !!!!!!!!
             await service.addToTraining(1, 1, 1, false);
-            // !!!!!!!!
+
             const result = await service.removeFromTraining(1, 1, 1, false);
 
-            const user = await repository.find({
-                relations: ['trainings'],
-                where: { id: 1 },
-            });
-            const training = await trainingRepository.find({
-                relations: ['attendees'],
-                where: { id: 1 },
-            });
-
+            const user = await repository.find({relations: ['trainings'], where: { id: 1 }});
+            const training = await trainingRepository.find({relations: ['attendees'], where: { id: 1 }});
             expect(result.success).toEqual(true);
             expect(user.length).toEqual(1);
             expect(user[0].trainings.length).toEqual(0);
@@ -624,31 +463,18 @@ describe('UserService', () => {
             expect(training[0].attendees.length).toEqual(0)
         });
         it('removes a user with coach role from the training as a coach, but not as an attendee', async () => {
-            const createdUser = await repository.save(
-                createTestUser({ roles: 'coach ' }),
-            );
+            const createdUser = await repository.save(createTestUser({ roles: 'coach ' }));
             await groupRepository.save(createTestGroup());
             await trainingRepository.save(createTestTraining());
             await coachRepository.save(createTestCoach({ user: createdUser }));
-            // !!!!!!!!
             await service.addToTraining(1, 1, 1, false);
             await service.addToTraining(1, 1, 1, true);
-            // !!!!!!!!
 
             const result = await service.removeFromTraining(1, 1, 1, false);
 
-            const user = await repository.find({
-                relations: ['trainings'],
-                where: { id: 1 },
-            });
-            const training = await trainingRepository.find({
-                relations: ['attendees', 'coaches'],
-                where: { id: 1 },
-            });
-            const coach = await coachRepository.find({
-                relations: ['trainings'],
-                where: { user: createdUser },
-            });
+            const user = await repository.find({relations: ['trainings'], where: { id: 1 }});
+            const training = await trainingRepository.find({relations: ['attendees', 'coaches'], where: { id: 1 }});
+            const coach = await coachRepository.find({relations: ['trainings'], where: { user: createdUser }});
             expect(result.success).toEqual(true);
             expect(user.length).toEqual(1);
             expect(user[0].trainings.length).toEqual(1);
@@ -661,32 +487,18 @@ describe('UserService', () => {
             expect(coach[0].trainings.length).toEqual(0);
         });
         it.skip('removes a user with coach role from the training as an attendee, but not as a coach when forceTrainee is true', async () => {
-            const createdUser = await repository.save(
-                createTestUser({ roles: 'coach ' }),
-            );
+            const createdUser = await repository.save(createTestUser({ roles: 'coach ' }));
+            await groupRepository.save(createTestGroup());
             await trainingRepository.save(createTestTraining());
             await coachRepository.save(createTestCoach({ user: createdUser }));
-
-            // !!!!!!!!
             await service.addToTraining(1, 1, 1, false);
             await service.addToTraining(1, 1, 1, true);
-            // !!!!!!!!
 
             const result = await service.removeFromTraining(1, 1, 1, true);
 
-            const user = await repository.find({
-                relations: ['trainings'],
-                where: { id: 1 },
-            });
-            const group = await groupRepository.find({
-                relations: ['members', 'coaches'],
-                where: { id: 1 },
-            });
-            const coach = await coachRepository.find({
-                relations: ['groups'],
-                where: { user: createdUser },
-            });
-
+            const user = await repository.find({relations: ['trainings'], where: { id: 1 }});
+            const group = await groupRepository.find({relations: ['members', 'coaches'], where: { id: 1 }});
+            const coach = await coachRepository.find({relations: ['groups'], where: { user: createdUser }});
             expect(result.success).toEqual(true);
             expect(user.length).toEqual(1);
             expect(group.length).toEqual(1);
@@ -698,24 +510,17 @@ describe('UserService', () => {
             expect(group[0].members.length).toEqual(0);
             expect(user[0].groups.length).toEqual(0);
         });
-        it.skip('returns success: false when trying to remove a user with coach role, but there is no matching coach in the db', async () => {
-            const createdUser = await repository.save(
-                createTestUser({ roles: 'coach ' }),
-            );
+        it('returns success: false when trying to remove a user with coach role, but there is no matching coach in the db', async () => {
+            const createdUser = await repository.save(createTestUser({ roles: 'coach ' }));
             await groupRepository.save(createTestGroup());
             await coachRepository.save(createTestCoach({ user: createdUser }));
-
-            // !!!!!!!!
             await service.addToGroup(1, 1, false);
-            // !!!!!!!!
             await coachRepository.delete(1);
 
             const result = await service.removeFromGroup(1, 1, false);
 
             expect(result.success).toEqual(false);
-            expect(result.error).toEqual(
-                'There is no coach in db with the given id',
-            );
+            expect(result.error).toEqual('There is no coach in db with the given id');
         });
     });
     describe.skip('listAvailableTrainings', () => {

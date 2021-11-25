@@ -57,7 +57,6 @@ export class UserService {
             return { success: true, user: await this.userRepository.save(newUser) };
         }
         return { success: false, user: undefined };
-
     }
 
     public async delete(id: number): Promise<DeleteResult> {
@@ -96,13 +95,13 @@ export class UserService {
                 return { success: false, error: 'There is no coach in db with the given id' };
             }
             groupToAddTo.coaches.push(coachToBeAdded);
-            coachToBeAdded.groups.push(groupToAddTo);
-            await this.coachRepository.save(coachToBeAdded);
+            // coachToBeAdded.groups.push(groupToAddTo);
+            // await this.coachRepository.save(coachToBeAdded);
         }
         else {
             groupToAddTo.members.push(userToBeAdded);
-            userToBeAdded.groups.push(groupToAddTo);
-            await this.userRepository.save(userToBeAdded);
+            // userToBeAdded.groups.push(groupToAddTo);
+            // await this.userRepository.save(userToBeAdded);
         }
         await this.groupRepository.save(groupToAddTo);
         return { success: true };
@@ -123,17 +122,17 @@ export class UserService {
                 return { success: false, error: 'There is no coach in db with the given id' };
             }
             const coachIndex = groupToRemoveFrom.coaches.indexOf(coachToRemove);
-            const groupIndex = coachToRemove.groups.indexOf(groupToRemoveFrom);
+            // const groupIndex = coachToRemove.groups.indexOf(groupToRemoveFrom);
             groupToRemoveFrom.coaches.splice(coachIndex, 1);
-            coachToRemove.groups.splice(groupIndex, 1);
-            await this.coachRepository.save(coachToRemove);
+            // coachToRemove.groups.splice(groupIndex, 1);
+            // await this.coachRepository.save(coachToRemove);
         }
         else {
             const userIndex = groupToRemoveFrom.members.indexOf(userToRemove);
-            const groupIndex = userToRemove.groups.indexOf(groupToRemoveFrom);
+            // const groupIndex = userToRemove.groups.indexOf(groupToRemoveFrom);
             groupToRemoveFrom.members.splice(userIndex, 1);
-            userToRemove.groups.splice(groupIndex, 1);
-            await this.userRepository.save(userToRemove);
+            // userToRemove.groups.splice(groupIndex, 1);
+            // await this.userRepository.save(userToRemove);
         }
         await this.groupRepository.save(groupToRemoveFrom);
         return { success: true };
@@ -159,16 +158,12 @@ export class UserService {
             }
             const applicationToBeAdded: Application = { userId, groupId, role: "coach"};
             trainingToAddTo.coaches.push(coachToBeAdded);
-            coachToBeAdded.trainings.push(trainingToAddTo);
             trainingToAddTo.applications = addApplicationToTraining(applicationToBeAdded, trainingToAddTo.applications);
-            await this.coachRepository.save(coachToBeAdded);
         }
         else {
             const applicationToBeAdded: Application = { userId, groupId, role: "trainee"};
             trainingToAddTo.attendees.push(userToBeAdded);
-            userToBeAdded.trainings.push(trainingToAddTo);
             trainingToAddTo.applications = addApplicationToTraining(applicationToBeAdded, trainingToAddTo.applications);
-            this.userRepository.save(userToBeAdded);
         }
         await this.trainingRepository.save(trainingToAddTo);
         return { success: true };
@@ -190,28 +185,21 @@ export class UserService {
         if (userToRemove.roles.match(/.*coach.*/) && !forceTrainee) {
             const coachToRemove = await this.coachRepository.findOne({ user: userToRemove }, { relations: ["trainings"] });
             const coachIndex = trainingToRemoveFrom.coaches.findIndex( coach => coach.id === coachToRemove.id);
-            const trainingIndex = coachToRemove.trainings.findIndex( training => training.id === trainingToRemoveFrom.id);
             const applicationToBeRemoved: Application = { userId, groupId, role: "coach"};
 
-            coachToRemove.trainings.splice(trainingIndex, 1);
             trainingToRemoveFrom.coaches.splice(coachIndex, 1);
             trainingToRemoveFrom.applications = removeApplicationFromTraining(applicationToBeRemoved, trainingToRemoveFrom.applications);
-
-            await this.coachRepository.save(coachToRemove);
         } else {
             const userIndex = trainingToRemoveFrom.attendees.findIndex( attendee => attendee.id === userToRemove.id);
-            const trainingIndex = userToRemove.trainings.findIndex( training => training.id === trainingToRemoveFrom.id);
             const applicationToBeRemoved: Application = { userId, groupId, role: "trainee"};
 
             trainingToRemoveFrom.attendees.splice(userIndex, 1);
-            userToRemove.trainings.splice(trainingIndex, 1);
             trainingToRemoveFrom.applications = removeApplicationFromTraining(applicationToBeRemoved, trainingToRemoveFrom.applications);
-
-            await this.userRepository.save(userToRemove);
         }
         await this.trainingRepository.save(trainingToRemoveFrom);
         return { success: true };
     }
+
     public async listAvailableTrainings(userId: number): Promise<[Training, boolean][]> {
         const availableTrainings: [Training, boolean][] = []; // boolean is true if user has already signed up for that training
         const user = await this.userRepository.findOne(userId, { relations: ["groups", "trainings"] });
