@@ -95,13 +95,10 @@ export class UserService {
                 return { success: false, error: 'There is no coach in db with the given id' };
             }
             groupToAddTo.coaches.push(coachToBeAdded);
-            // coachToBeAdded.groups.push(groupToAddTo);
-            // await this.coachRepository.save(coachToBeAdded);
+
         }
         else {
             groupToAddTo.members.push(userToBeAdded);
-            // userToBeAdded.groups.push(groupToAddTo);
-            // await this.userRepository.save(userToBeAdded);
         }
         await this.groupRepository.save(groupToAddTo);
         return { success: true };
@@ -122,17 +119,11 @@ export class UserService {
                 return { success: false, error: 'There is no coach in db with the given id' };
             }
             const coachIndex = groupToRemoveFrom.coaches.indexOf(coachToRemove);
-            // const groupIndex = coachToRemove.groups.indexOf(groupToRemoveFrom);
             groupToRemoveFrom.coaches.splice(coachIndex, 1);
-            // coachToRemove.groups.splice(groupIndex, 1);
-            // await this.coachRepository.save(coachToRemove);
         }
         else {
             const userIndex = groupToRemoveFrom.members.indexOf(userToRemove);
-            // const groupIndex = userToRemove.groups.indexOf(groupToRemoveFrom);
             groupToRemoveFrom.members.splice(userIndex, 1);
-            // userToRemove.groups.splice(groupIndex, 1);
-            // await this.userRepository.save(userToRemove);
         }
         await this.groupRepository.save(groupToRemoveFrom);
         return { success: true };
@@ -165,7 +156,12 @@ export class UserService {
             trainingToAddTo.attendees.push(userToBeAdded);
             trainingToAddTo.applications = addApplicationToTraining(applicationToBeAdded, trainingToAddTo.applications);
         }
-        await this.trainingRepository.save(trainingToAddTo);
+        try {
+            await this.trainingRepository.save(trainingToAddTo);
+        } catch (error) {
+            console.log(error);
+        }
+
         return { success: true };
     }
 
@@ -196,23 +192,34 @@ export class UserService {
             trainingToRemoveFrom.attendees.splice(userIndex, 1);
             trainingToRemoveFrom.applications = removeApplicationFromTraining(applicationToBeRemoved, trainingToRemoveFrom.applications);
         }
-        await this.trainingRepository.save(trainingToRemoveFrom);
+        try {
+            await this.trainingRepository.save(trainingToRemoveFrom);
+        } catch (error) {
+            console.log(error);
+        }
         return { success: true };
     }
 
-    public async listAvailableTrainings(userId: number): Promise<[Training, boolean][]> {
-        const availableTrainings: [Training, boolean][] = []; // boolean is true if user has already signed up for that training
-        const user = await this.userRepository.findOne(userId, { relations: ["groups", "trainings"] });
-
+    public async listAvailableTrainings(userId: number): Promise<{training: Training, subscribedForTraining: boolean}[]> {
+        const availableTrainings: {training: Training, subscribedForTraining: boolean}[] = [];
+        const user = await this.userRepository.findOne(userId, { relations: ['groups', 'trainings'] });
+        if (user === undefined) {
+            throw new Error('There is no user with the given id');
+        }
         for (const userGroup of user.groups) {
-            const group = await this.groupRepository.findOne(userGroup.id, { relations: ["trainings"] });
-            group.trainings.forEach(training => {
-                if (user.trainings.includes(training)) { availableTrainings.push([training, false]) }
-                else { availableTrainings.push([training, true]) }
-            });
+            const group = await this.groupRepository.findOne(userGroup.id, { relations: ['trainings'] });
+            for(const training of group.trainings ) {
+                if (user.trainings.find(userTraining => userTraining.id === training.id) === undefined) {
+                    availableTrainings.push({ training, subscribedForTraining: false });
+                }
+                else {
+                    availableTrainings.push({ training, subscribedForTraining: true });
+                }
+            }
         }
         return availableTrainings;
     }
+
     public async login(email: string, rawpassword: string): Promise<{ success: boolean, token?: string, userId?: number, userRoles?: string }> {
         const failResult = { success: false };
         const user = await this.userRepository.findOne({ email });

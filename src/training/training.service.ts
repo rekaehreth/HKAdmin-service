@@ -62,7 +62,7 @@ export class TrainingService {
         const groupToAdd = await this.groupRepository.findOne(groupId);
         const trainingToAddTo = await this.trainingRepository.findOne(trainingId, { relations: ["groups"] });
         trainingToAddTo.groups.push(groupToAdd);
-        this.trainingRepository.save(trainingToAddTo);
+        await this.trainingRepository.save(trainingToAddTo);
         return trainingToAddTo;
     }
     public async removeGroupFromTraining(groupId, trainingId): Promise<Training> {

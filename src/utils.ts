@@ -1,7 +1,10 @@
 export function parseTrainingApplications( applications: string ): Application[] {
+    if(applications.length === 0) {
+        return [];
+    }
     return applications.split(";").map(record => {
         const splitRecord = record.split(" ");
-        return { userId: parseInt(splitRecord[0]), groupId: parseInt(splitRecord[1]), role: splitRecord[2] } 
+        return { userId: parseInt(splitRecord[0]), groupId: parseInt(splitRecord[1]), role: splitRecord[2] }
     });
 }
 
@@ -30,7 +33,7 @@ export function removeApplicationFromTraining( applicationToRemove: Application,
 function findUserInApplications(userId: number, applications: Application[]): number {
     let idx = -1;
     applications.map( (value, index) => {
-        if ( value.userId === userId){ 
+        if ( value.userId === userId){
             idx = index;
         }
     })

@@ -9,10 +9,7 @@ import { Group } from '../../src/group/group.entity';
 import { Coach } from '../../src/coach/coach.entity';
 import { Training } from '../../src/training/training.entity';
 
-import {
-    createTestUser,
-    createPartialTestUser,
-} from '../../test/unit-helpers/user_helper';
+import {createTestUser, createPartialTestUser } from '../../test/unit-helpers/user_helper';
 import { createTestGroup } from '../../test/unit-helpers/group_helper';
 import { createTestCoach } from '../../test/unit-helpers/coach_helper';
 import { createTestTraining } from '../../test/unit-helpers/training_helper';
@@ -486,7 +483,7 @@ describe('UserService', () => {
             expect(coach.length).toEqual(1);
             expect(coach[0].trainings.length).toEqual(0);
         });
-        it.skip('removes a user with coach role from the training as an attendee, but not as a coach when forceTrainee is true', async () => {
+        it('removes a user with coach role from the training as an attendee, but not as a coach when forceTrainee is true', async () => {
             const createdUser = await repository.save(createTestUser({ roles: 'coach ' }));
             await groupRepository.save(createTestGroup());
             await trainingRepository.save(createTestTraining());
@@ -497,18 +494,19 @@ describe('UserService', () => {
             const result = await service.removeFromTraining(1, 1, 1, true);
 
             const user = await repository.find({relations: ['trainings'], where: { id: 1 }});
-            const group = await groupRepository.find({relations: ['members', 'coaches'], where: { id: 1 }});
-            const coach = await coachRepository.find({relations: ['groups'], where: { user: createdUser }});
+            const training = await trainingRepository.find({relations: ['attendees', 'coaches'], where: { id: 1 }});
+            const coach = await coachRepository.find({relations: ['trainings'], where: { user: createdUser }});
+
             expect(result.success).toEqual(true);
             expect(user.length).toEqual(1);
-            expect(group.length).toEqual(1);
+            expect(training.length).toEqual(1);
             expect(coach.length).toEqual(1);
-            expect(coach[0].groups.length).toEqual(1);
-            expect(coach[0].groups[0].id).toEqual(1);
-            expect(group[0].coaches.length).toEqual(1);
-            expect(group[0].coaches[0].id).toEqual(1);
-            expect(group[0].members.length).toEqual(0);
-            expect(user[0].groups.length).toEqual(0);
+            expect(coach[0].trainings.length).toEqual(1);
+            expect(coach[0].trainings[0].id).toEqual(1);
+            expect(training[0].coaches.length).toEqual(1);
+            expect(training[0].coaches[0].id).toEqual(1);
+            expect(training[0].attendees.length).toEqual(0);
+            expect(user[0].trainings.length).toEqual(0);
         });
         it('returns success: false when trying to remove a user with coach role, but there is no matching coach in the db', async () => {
             const createdUser = await repository.save(createTestUser({ roles: 'coach ' }));
@@ -523,8 +521,71 @@ describe('UserService', () => {
             expect(result.error).toEqual('There is no coach in db with the given id');
         });
     });
-    describe.skip('listAvailableTrainings', () => {
-        it('', async () => {});
+    describe('listAvailableTrainings', () => {
+        it('returns empty array for no training', async () => {
+            await repository.save(createTestUser());
+            await groupRepository.save(createTestGroup());
+            await service.addToGroup(1, 1);
+
+            const availableTrainings = await service.listAvailableTrainings(1);
+
+            expect(availableTrainings).toEqual([]);
+        });
+        it('returns empty array when user has no group', async () => {
+            await repository.save(createTestUser());
+            await groupRepository.save(createTestGroup());
+
+            const availableTrainings = await service.listAvailableTrainings(1);
+
+            expect(availableTrainings).toEqual([]);
+        });
+        it('returns empty array when the users group is not linked to any trainings', async () => {
+            await repository.save(createTestUser());
+            await trainingRepository.save(createTestTraining());
+            await service.addToGroup(1, 1);
+
+            const availableTrainings = await service.listAvailableTrainings(1);
+
+            expect(availableTrainings).toEqual([]);
+        });
+        it('throws error when there is no user in the database with the given id', async () => {
+            let errorMessage = '';
+
+            try{
+                await service.listAvailableTrainings(1);
+            } catch(error) {
+                errorMessage = error.message;
+            }
+            expect(errorMessage).toEqual('There is no user with the given id');
+        });
+        it('returns the training and false for a training the user is not subscribed for', async () => {
+            await repository.save(createTestUser());
+            const group = await groupRepository.save(createTestGroup());
+            await trainingRepository.save(createTestTraining({groups: [group]}));
+            await service.addToGroup(1, 1);
+
+            const availableTrainings = await service.listAvailableTrainings(1);
+
+            expect(availableTrainings.length).toEqual(1);
+            expect(availableTrainings[0].training.id).toEqual(1);
+            expect(availableTrainings[0].subscribedForTraining).toEqual(false);
+        });
+        it('returns the training and true for a training the user is subscribed for', async () => {
+            const user = await repository.save(createTestUser());
+            const group = await groupRepository.save(createTestGroup());
+            const training = await trainingRepository.save(createTestTraining({attendees: [user]}));
+            group.trainings.push(training);
+            await groupRepository.save(group);
+            user.groups.push(group);
+            user.trainings.push(training);
+            await repository.save(user);
+
+            const availableTrainings = await service.listAvailableTrainings(1);
+
+            expect(availableTrainings.length).toEqual(1);
+            expect(availableTrainings[0].training.id).toEqual(1);
+            expect(availableTrainings[0].subscribedForTraining).toEqual(true);
+        });
     });
     describe.skip('login', () => {
         it('', async () => {});
