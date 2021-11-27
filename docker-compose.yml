@@ -4,6 +4,7 @@ services:
     restart: always
     volumes:
       - hkadmin-db:/var/lib/mysql
+      - ./script/:/script
     ports:
       - 3306:3306
     environment:

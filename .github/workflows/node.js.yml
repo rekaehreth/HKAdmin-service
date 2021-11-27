@@ -36,4 +36,5 @@ jobs:
     - run: npm ci
     - run: npm run build --if-present
     - run: docker-compose up -d
+    - run: docker-compose run --rm db /script/wait-for-it.sh db:3306
     - run: npm test
