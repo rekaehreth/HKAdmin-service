@@ -5,7 +5,7 @@ import { Coach } from './coach.entity';
 import { Location } from '../location/location.entity';
 
 @Injectable()
-export class CoachService 
+export class CoachService
 {
     userRepository: Repository<User>;
     coachRepository: Repository<Coach>;
@@ -29,22 +29,34 @@ export class CoachService
     public async create( userId: number, rawCoachData: {
         wage: number,
     }): Promise <Coach> {
+        const user = await this.userRepository.findOne( userId );
+        if(user === undefined) {
+            throw new Error ('There is no user in the database with the given id');
+        }
         const newCoach = new Coach();
         Object.keys(rawCoachData).forEach( ( key ) => { newCoach[key] = rawCoachData[key] });
-        const user = await this.userRepository.findOne( userId );
-        user.roles += "coach "; 
+        user.roles += "coach ";
+        await this.userRepository.save(user);
         newCoach.user = user;
         return await this.coachRepository.save( newCoach );
     }
     public async delete ( id: number ): Promise<DeleteResult> {
         const coach = await this.coachRepository.findOne( id, {relations: ["user"] } );
-        coach.user.roles.replace('coach ', '');
+        if( coach === undefined ) {
+            throw new Error('There is no coach in the database with the given id');
+        }
+        const user = await this.userRepository.findOne(coach.user);
+        user.roles = user.roles.replace('coach ', '');
+        await this.userRepository.save(user);
         return await this.coachRepository.delete( coach );
     }
     public async modify ( coachId: number, rawCoachData: {
         wage: number,
     }): Promise<Coach> {
         const modifiedCoach = await this.coachRepository.findOne( coachId, { relations: ["user"] } );
+        if(modifiedCoach === undefined) {
+            throw new Error('There is no coach in the database with the given id')
+        }
         Object.keys( rawCoachData ).forEach( (key) => { modifiedCoach[key] = rawCoachData[key] });
         return await this.coachRepository.save( modifiedCoach );
     }

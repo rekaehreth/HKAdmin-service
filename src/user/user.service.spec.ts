@@ -14,9 +14,9 @@ import { createTestGroup } from '../../test/unit-helpers/group_helper';
 import { createTestCoach } from '../../test/unit-helpers/coach_helper';
 import { createTestTraining } from '../../test/unit-helpers/training_helper';
 import { clearDatabase } from '../../test/unit/database_helper';
-import { tryCatch } from 'rxjs/internal-compatibility';
 
-require('dotenv').config();
+import { config } from 'dotenv';
+config();
 
 describe('UserService', () => {
     let service: UserService;
@@ -26,7 +26,6 @@ describe('UserService', () => {
     let coachRepository;
     let trainingRepository;
 
-    jest.setTimeout(100000);
     beforeAll(async () => {
         connection = await createConnection({
             type: 'mysql',
@@ -550,14 +549,9 @@ describe('UserService', () => {
             expect(availableTrainings).toEqual([]);
         });
         it('throws error when there is no user in the database with the given id', async () => {
-            let errorMessage = '';
-
-            try{
-                await service.listAvailableTrainings(1);
-            } catch(error) {
-                errorMessage = error.message;
-            }
-            expect(errorMessage).toEqual('There is no user with the given id');
+            await expect(async () => { await service.listAvailableTrainings(1) })
+                .rejects
+                .toThrow('There is no user with the given id')
         });
         it('returns the training and false for a training the user is not subscribed for', async () => {
             await repository.save(createTestUser());
@@ -627,14 +621,9 @@ describe('UserService', () => {
     });
     describe('getCoach', () => {
         it('throws error when there is no user in the db with the given id', async () => {
-            let errorMessage = '';
-            try{
-                await service.getCoach(1);
-            } catch (error) {
-                errorMessage = error.message;
-            }
-
-            expect(errorMessage).toEqual('There is no user in the database with the given id');
+            await expect(async () => { await service.getCoach(1) })
+                .rejects
+                .toThrow('There is no user in the database with the given id')
         });
         it('returns undefined when there is no coach in the db that is linked to the given user', async () => {
             await repository.save(createTestUser());
