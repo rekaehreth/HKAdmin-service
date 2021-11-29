@@ -239,6 +239,9 @@ export class UserService {
 
     public async getCoach(userId: number): Promise<Coach> {
         const user = await this.userRepository.findOne(userId);
+        if(user === undefined) {
+            throw new Error('There is no user in the database with the given id');
+        }
         return await this.coachRepository.findOne({ user: user }, { relations: ["user", "groups", "trainings"] });
     }
 }

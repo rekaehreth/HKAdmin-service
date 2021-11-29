@@ -14,6 +14,7 @@ import { createTestGroup } from '../../test/unit-helpers/group_helper';
 import { createTestCoach } from '../../test/unit-helpers/coach_helper';
 import { createTestTraining } from '../../test/unit-helpers/training_helper';
 import { clearDatabase } from '../../test/unit/database_helper';
+import { tryCatch } from 'rxjs/internal-compatibility';
 
 require('dotenv').config();
 
@@ -624,7 +625,35 @@ describe('UserService', () => {
             expect(result.token).toEqual('signedToken1testRole');
         });
     });
-    describe.skip('getCoach', () => {
-        it('', async () => {});
+    describe('getCoach', () => {
+        it('throws error when there is no user in the db with the given id', async () => {
+            let errorMessage = '';
+            try{
+                await service.getCoach(1);
+            } catch (error) {
+                errorMessage = error.message;
+            }
+
+            expect(errorMessage).toEqual('There is no user in the database with the given id');
+        });
+        it('returns undefined when there is no coach in the db that is linked to the given user', async () => {
+            await repository.save(createTestUser());
+
+            const result = await service.getCoach(1);
+
+            expect(result).toEqual(undefined);
+        });
+        it('returns coach object when there is a coach in the db linked to the given user', async () => {
+            const user = await repository.save(createTestUser());
+            await coachRepository.save(createTestCoach({ user }));
+
+            const result = await service.getCoach(1);
+
+            expect(result.id).toEqual(1);
+            expect(result.user.id).toEqual(1);
+            expect(result.groups).toEqual([]);
+            expect(result.trainings).toEqual([]);
+            expect(result.wage).toEqual(0);
+        });
     });
 });
