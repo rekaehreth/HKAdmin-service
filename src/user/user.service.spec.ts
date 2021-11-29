@@ -1,6 +1,7 @@
 import { JwtService } from '@nestjs/jwt';
 import { Connection, createConnection, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 
 import { UserService } from './user.service';
 
@@ -9,7 +10,7 @@ import { Group } from '../../src/group/group.entity';
 import { Coach } from '../../src/coach/coach.entity';
 import { Training } from '../../src/training/training.entity';
 
-import {createTestUser, createPartialTestUser } from '../../test/unit-helpers/user_helper';
+import { createTestUser, createPartialTestUser } from '../../test/unit-helpers/user_helper';
 import { createTestGroup } from '../../test/unit-helpers/group_helper';
 import { createTestCoach } from '../../test/unit-helpers/coach_helper';
 import { createTestTraining } from '../../test/unit-helpers/training_helper';
@@ -522,7 +523,7 @@ describe('UserService', () => {
         });
     });
     describe('listAvailableTrainings', () => {
-        it('returns empty array for no training', async () => {
+        it('returns empty array when there is no training with the given id in the database', async () => {
             await repository.save(createTestUser());
             await groupRepository.save(createTestGroup());
             await service.addToGroup(1, 1);
@@ -531,7 +532,7 @@ describe('UserService', () => {
 
             expect(availableTrainings).toEqual([]);
         });
-        it('returns empty array when user has no group', async () => {
+        it('returns empty array when the user has no group', async () => {
             await repository.save(createTestUser());
             await groupRepository.save(createTestGroup());
 
@@ -587,8 +588,40 @@ describe('UserService', () => {
             expect(availableTrainings[0].subscribedForTraining).toEqual(true);
         });
     });
-    describe.skip('login', () => {
-        it('', async () => {});
+    describe('login', () => {
+        it('returns success false when there is no user with the given email in the database', async () => {
+            await repository.save(createTestUser({email: 'testemail@test.com'}));
+
+            const result = await service.login('test@test.com', '');
+
+            expect(result.success).toEqual(false);
+        });
+        it('returns success false when the given password does not match the one in the database', async () => {
+            await repository.save(createTestUser({email: 'testemail@test.com'}));
+
+            const result = await service.login('testemail@test.com', 'notGoodPassword');
+
+            expect(result.success).toEqual(false);
+        });
+        it('returns success true when the given password matches the one in the database', async () => {
+            const mockBcryptHashSynnc = jest.fn((pwd: string) => 'not' + pwd);
+            const mockCompareSync = jest.fn((rawPassword, savedPassword) => true );
+            const mockJwtSign = jest.fn( ({ id, roles }) => 'signedToken'+id+roles );
+            (bcrypt.hashSync as jest.Mock) = mockBcryptHashSynnc;
+            (bcrypt.compareSync as jest.Mock) = mockCompareSync;
+
+            const jwtServiceMock = new JwtService({});
+            jwtServiceMock.sign = mockJwtSign;
+            service = new UserService(connection, jwtServiceMock);
+            await service.create(createTestUser({email: 'testemail@test.com', password: 'goodPassword', roles: 'testRole'}));
+
+            const result = await service.login('testemail@test.com', 'goodPassword');
+
+            expect(result.success).toEqual(true);
+            expect(result.userId).toEqual(1);
+            expect(result.userRoles).toEqual('testRole');
+            expect(result.token).toEqual('signedToken1testRole');
+        });
     });
     describe.skip('getCoach', () => {
         it('', async () => {});
