@@ -570,15 +570,16 @@ describe('UserService', () => {
             expect(availableTrainings[0].training.id).toEqual(1);
             expect(availableTrainings[0].subscribedForTraining).toEqual(false);
         });
-        it.skip('returns the training and true for a training the user is subscribed for', async () => {
-            const user = await repository.save(createTestUser());
-            const group = await groupRepository.save(createTestGroup());
-            const training = await trainingRepository.save(createTestTraining({attendees: [user]}));
+        it('returns the training and true for a training the user is subscribed for', async () => {
+            const user = createTestUser();
+            const group = createTestGroup();
+            const training = createTestTraining();
+            training.attendees.push(user);
+            await trainingRepository.save(training);
+            await repository.save(user);
+            group.members.push(user);
             group.trainings.push(training);
             await groupRepository.save(group);
-            user.groups.push(group);
-            user.trainings.push(training);
-            await repository.save(user);
 
             const availableTrainings = await service.listAvailableTrainings(1);
 
@@ -589,7 +590,8 @@ describe('UserService', () => {
     });
     describe('login', () => {
         it('returns success false when there is no user with the given email in the database', async () => {
-            await repository.save(createTestUser({email: 'testemail@test.com'}));
+            const user = createTestUser({email: 'testemail@test.com'});
+            await repository.save(user);
 
             const result = await service.login('test@test.com', '');
 

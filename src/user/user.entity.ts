@@ -5,7 +5,7 @@ import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColum
 
 
 @Entity()
-export class User 
+export class User
 {
     @PrimaryGeneratedColumn()
     id : number;
@@ -20,7 +20,6 @@ export class User
     @Column( { nullable : true } )
     password : string;
     @ManyToMany( () => Group, group => group.members)
-    @JoinTable()
     groups : Group[];
     @Column( { nullable : true } )
     birth_date : Date;

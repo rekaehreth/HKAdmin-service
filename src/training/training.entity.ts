@@ -6,7 +6,7 @@ import { Group } from "../group/group.entity";
 import { Payment } from "../finance/payment.entity";
 
 @Entity()
-export class Training 
+export class Training
 {
     @PrimaryGeneratedColumn()
     id : number;
@@ -19,7 +19,6 @@ export class Training
     @JoinTable({name: "coach_trainings_training"})
     coaches : Coach[];
     @ManyToMany( () => Group, group => group.trainings)
-    @JoinTable()
     groups : Group[];
     @OneToMany( () => Payment, payment => payment.training)
     payments: Payment[];
@@ -30,7 +29,7 @@ export class Training
     @Column()
     status : string; // Planned | Fixed | Past
     @Column()
-    type: string; // Száraz | Jeges | Balett 
+    type: string; // Száraz | Jeges | Balett
     @Column()
-    applications: string; 
+    applications: string;
 }
