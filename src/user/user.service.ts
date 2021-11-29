@@ -221,10 +221,9 @@ export class UserService {
     }
 
     public async login(email: string, rawpassword: string): Promise<{ success: boolean, token?: string, userId?: number, userRoles?: string }> {
-        const failResult = { success: false };
         const user = await this.userRepository.findOne({ email });
         if (!user) {
-            return failResult;
+            return { success: false };
         }
         const pwdCorrect = bcrypt.compareSync(rawpassword, user.password);
         if (pwdCorrect) {
@@ -235,8 +234,9 @@ export class UserService {
                 userRoles: user.roles
             }
         }
-        return failResult;
+        return { success: false };
     }
+
     public async getCoach(userId: number): Promise<Coach> {
         const user = await this.userRepository.findOne(userId);
         return await this.coachRepository.findOne({ user: user }, { relations: ["user", "groups", "trainings"] });
