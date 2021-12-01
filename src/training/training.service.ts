@@ -15,6 +15,7 @@ export class TrainingService {
         this.locationRepository = connection.getRepository(Location);
         this.groupRepository = connection.getRepository(Group);
     }
+
     public async getAll(): Promise<Training[]> {
         return await this.trainingRepository.find({ relations: ["location", "attendees", "coaches", "groups", "payments"] });
     }
@@ -30,12 +31,14 @@ export class TrainingService {
         type: string, // Száraz | Jeges | Balett
     }): Promise<Training> {
         const newTraining = new Training();
-        Object.keys(rawTrainingData).forEach((key) => { newTraining[key] = rawTrainingData[key] });
-        if (locationId != 0) {
-            const site = await this.locationRepository.findOne(locationId);
-            newTraining.location = site;
+        const site = await this.locationRepository.findOne(locationId, {relations: ["trainings"]});
+        if( site === undefined ) {
+            throw new Error('There is no location in the database with the given id');
         }
+        Object.keys(rawTrainingData).forEach((key) => { newTraining[key] = rawTrainingData[key] });
+        newTraining.location = site;
         newTraining.status = "planned";
+        newTraining.applications = "";
         return await this.trainingRepository.save(newTraining);
     }
 
@@ -43,34 +46,50 @@ export class TrainingService {
         return await this.trainingRepository.delete(id);
     }
 
-    public async modify(locationId: number, rawTrainingData: {
-        id: number,
+    public async modify(locationId: number, trainingId: number, rawTrainingData: {
         startTime: Date,
         endTime: Date,
         status: string, // Planned | Fixed | Past
         type: string, // Száraz || Jeges | Balett
     }): Promise<Training> {
-        const modifiedTraining = await this.trainingRepository.findOne(rawTrainingData.id);
-        Object.keys(rawTrainingData).forEach((key) => { modifiedTraining[key] = rawTrainingData[key] });
-        if (locationId != 0) {
-            const site = await this.locationRepository.findOne(locationId);
-            modifiedTraining.location = site;
+        const site = await this.locationRepository.findOne(locationId);
+        if( site === undefined ) {
+            throw new Error('There is no location in the database with the given id');
         }
+        const modifiedTraining = await this.trainingRepository.findOne(trainingId);
+        if( modifiedTraining === undefined ) {
+            throw new Error('There is no training in the database with the given id');
+        }
+        Object.keys(rawTrainingData).forEach((key) => { modifiedTraining[key] = rawTrainingData[key] });
+        modifiedTraining.location = site;
         return await this.trainingRepository.save(modifiedTraining);
     }
+
     public async addGroupToTraining(groupId, trainingId): Promise<Training> {
-        const groupToAdd = await this.groupRepository.findOne(groupId);
         const trainingToAddTo = await this.trainingRepository.findOne(trainingId, { relations: ["groups"] });
+        if( trainingToAddTo === undefined ) {
+            throw new Error('There is no training in the database with the given id');
+        }
+        const groupToAdd = await this.groupRepository.findOne(groupId);
+        if( groupToAdd === undefined ) {
+            throw new Error('There is no group in the database with the given id');
+        }
         trainingToAddTo.groups.push(groupToAdd);
-        await this.trainingRepository.save(trainingToAddTo);
-        return trainingToAddTo;
+        return await this.trainingRepository.save(trainingToAddTo);
     }
+
     public async removeGroupFromTraining(groupId, trainingId): Promise<Training> {
         const groupToRemove = await this.groupRepository.findOne(groupId);
+        if(groupToRemove === undefined) {
+            throw new Error('There is no group in the database with the given id');
+        }
         const trainingToRemoveFrom = await this.trainingRepository.findOne(trainingId, { relations: ["groups"] });
-        const groupIndex = trainingToRemoveFrom.groups.indexOf(groupToRemove);
+        if(trainingToRemoveFrom === undefined) {
+            throw new Error('There is no training in the database with the given id');
+        }
+
+        const groupIndex = trainingToRemoveFrom.groups.map((group) => group.id).indexOf(groupId);
         trainingToRemoveFrom.groups.splice(groupIndex, 1);
-        this.trainingRepository.save(trainingToRemoveFrom);
-        return trainingToRemoveFrom;
+        return await this.trainingRepository.save(trainingToRemoveFrom);
     }
 }

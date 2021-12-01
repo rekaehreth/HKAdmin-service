@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, DeleteResult, EntityManager, getManager, getRepository, Repository } from 'typeorm';
 import { Location } from './location.entity';
 
@@ -14,7 +13,6 @@ export class LocationService
 
     public async getAll(): Promise<Location[]>
     {
-        // return await this.LocationRepo.find(); // SELECT * FROM trainig_site WHERE ( 1=1 // find param )
         return await this.locationRepository.find( { relations: ["trainings"] } );
     }
 
@@ -24,9 +22,9 @@ export class LocationService
     }
 
     public async create( rawSiteData: {
-        name: string, 
-        capacity: number, 
-        min_attendees: number, 
+        name: string,
+        capacity: number,
+        min_attendees: number,
         price: number,
         plus_code: string,
     } ): Promise<Location>
@@ -43,15 +41,15 @@ export class LocationService
 
     public async modify ( rawSiteData: {
         id: number,
-        name: string, 
-        capacity: number, 
-        min_attendees: number, 
+        name: string,
+        capacity: number,
+        min_attendees: number,
         price: number,
         plus_code: string,
     } ): Promise<Location>
     {
         const modifiedSite = await this.locationRepository.findOne( rawSiteData.id );
         Object.keys(rawSiteData).forEach( (key) => { modifiedSite[key] = rawSiteData[key] });
-        return await this.locationRepository.save(modifiedSite); 
+        return await this.locationRepository.save(modifiedSite);
     }
 }
