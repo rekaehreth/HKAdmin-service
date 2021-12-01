@@ -19,7 +19,6 @@ describe('CoachService', () => {
     let userRepository;
     let trainingRepository;
 
-    jest.setTimeout(100000);
     beforeAll(async () => {
         connection = await createConnection({
             type: 'mysql',
