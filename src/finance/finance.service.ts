@@ -29,21 +29,31 @@ export class FinanceService {
 
     public async getByUser( userId: number ) : Promise<Payment[]> {
         const user = await this.userRepository.findOne(userId);
-        return  await this.paymentRepository.find( { relations: ["user", "training"], where: {user: user} } );
+        if( user === undefined) {
+            throw new Error('There is no user in the database with the given id');
+        }
+        return  await this.paymentRepository.find( { relations: ["user", "training"], where: {user} } );
     }
 
     public async create( userId : number, trainingId: number, rawPaymentData : {
         amount : number,
         time : Date,
-        status : string, 
-        description : string, 
+        status : string,
+        description : string,
         notes : string
     } ) : Promise<Payment> {
+        const user = await this.userRepository.findOne(userId, {relations: ["payments"]});
+        if( user === undefined) {
+            throw new Error('There is no user in the database with the given id');
+        }
+        const training = await this.trainingRepository.findOne(trainingId);
+        if( training === undefined) {
+            throw new Error('There is no training in the database with the given id');
+        }
         const newPayment = new Payment();
         Object.keys(rawPaymentData).forEach( (key) => { newPayment[key] = rawPaymentData[key] });
-        const user = await this.userRepository.findOne(userId);
+
         newPayment.user = user;
-        const training = await this.trainingRepository.findOne(trainingId);
         newPayment.training = training;
         return await this.paymentRepository.save(newPayment);
     }
@@ -55,21 +65,26 @@ export class FinanceService {
     public async modify ( userId : number = -1, paymentId : number, trainingId: number = -1, rawPaymentData : {
         amount : number,
         time : Date,
-        status : string, 
-        description : string, 
+        status : string,
+        description : string,
         notes : string
     } ) : Promise<Payment> {
+        const user = await this.userRepository.findOne(userId);
+        if (user === undefined ) {
+            throw new Error('There is no user in the database with the given id');
+        }
+        const training = await this.trainingRepository.findOne(trainingId);
+        if (training === undefined ) {
+            throw new Error('There is no training in the database with the given id');
+        }
         const modifiedPayment = await this.paymentRepository.findOne( paymentId, { relations: ["user", "training"] } );
+        if (modifiedPayment === undefined ) {
+            throw new Error('There is no payment in the database with the given id');
+        }
         Object.keys(rawPaymentData).forEach( (key) => { modifiedPayment[key] = rawPaymentData[key] });
-        if ( userId > 0 ){
-            const user = await this.userRepository.findOne(userId);
-            modifiedPayment.user = user;
-        }
-        if( trainingId > 0 ) {
-            const training = await this.trainingRepository.findOne(trainingId);
-            modifiedPayment.training = training;
-        }
-        return await this.paymentRepository.save(modifiedPayment); 
+        modifiedPayment.user = user;
+        modifiedPayment.training = training;
+        return await this.paymentRepository.save(modifiedPayment);
     }
 }
 

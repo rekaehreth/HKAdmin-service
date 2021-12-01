@@ -1,6 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { CoachService } from './coach.service';
-import { UserService } from '../user/user.service';
 import { Connection, createConnection, Repository } from 'typeorm';
 import { User } from '../user/user.entity';
 import { Group } from '../group/group.entity';
@@ -21,6 +19,7 @@ describe('CoachService', () => {
     let userRepository;
     let trainingRepository;
 
+    jest.setTimeout(100000);
     beforeAll(async () => {
         connection = await createConnection({
             type: 'mysql',
