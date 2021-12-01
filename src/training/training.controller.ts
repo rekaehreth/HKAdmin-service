@@ -5,7 +5,7 @@ import { Training } from './training.entity';
 import { TrainingService } from './training.service';
 
 @Controller('training')
-export class TrainingController 
+export class TrainingController
 {
     constructor
     (
@@ -31,15 +31,15 @@ export class TrainingController
 
     @Post('/new')
     async create(
-        @Body() 
-        requestBody : {
-            locationId : number, 
+        @Body()
+            requestBody : {
+            locationId : number,
             rawTrainingData : {
                 startTime : Date,
                 endTime : Date,
                 status : string, // Planned | Fixed | Past
                 type: string, // Száraz || Jeges | Balett
-            } 
+            }
         }
     ) : Promise<Training>
     {
@@ -54,26 +54,26 @@ export class TrainingController
 
     @Post('/modify')
     async modify(
-        @Body() 
-        requestBody : {
-            locationId : number, 
+        @Body()
+            requestBody : {
+            locationId : number,
             rawTrainingData : {
                 id: number,
                 startTime : Date,
                 endTime : Date,
                 status : string, // Planned | Fixed | Past
                 type: string, // Száraz || Jeges | Balett
-            } 
+            }
         }
     ) : Promise<Training>
     {
-        return await this.service.modify(requestBody.locationId, requestBody.rawTrainingData);
+        return await this.service.modify(requestBody.locationId, requestBody.rawTrainingData.id, requestBody.rawTrainingData);
     }
 
     @Post('/addGroup')
     async addGroupToTraining(
         @Body()
-        requestBody : {
+            requestBody : {
             groupId : number,
             trainingId : number,
         }
@@ -85,7 +85,7 @@ export class TrainingController
     @Post('/removeGroup')
     async removeGroupFromTraining(
         @Body()
-        requestBody : {
+            requestBody : {
             groupId : number,
             trainingId : number,
         }
