@@ -8,7 +8,7 @@ export function parseTrainingApplications( applications: string ): Application[]
     });
 }
 
-export function stringifyTrainingApplications( applications: Application[] ): string {
+function stringifyTrainingApplications( applications: Application[] ): string {
     return applications.map( application => {return Object.values(application).join(' '); }).join(';');
 }
 
@@ -22,6 +22,9 @@ export function addApplicationToTraining( applicationToAdd: Application, applica
 }
 
 export function removeApplicationFromTraining( applicationToRemove: Application, applicationsString: string ): string {
+    if(applicationsString.length === 0) {
+        throw new Error ('Cannot remove application because there are no applications saved');
+    }
     const applications = parseTrainingApplications(applicationsString);
     const index = findUserInApplications( applicationToRemove.userId, applications );
     if( index >= 0 ) {
