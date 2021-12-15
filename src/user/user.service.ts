@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Coach } from '../coach/coach.entity';
 import { Group } from '../group/group.entity';
 import { Training } from '../training/training.entity';
-import { Connection, DeleteResult, Like, Repository, SimpleConsoleLogger } from 'typeorm';
+import { Connection, DeleteResult, Like, Repository } from 'typeorm';
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -10,6 +10,7 @@ import { addApplicationToTraining, Application, removeApplicationFromTraining } 
 
 @Injectable()
 export class UserService {
+    private logger = new Logger('User Service');
     userRepository: Repository<User>;
     groupRepository: Repository<Group>;
     coachRepository: Repository<Coach>;

@@ -5,10 +5,8 @@ import { Training } from './training.entity';
 import { TrainingService } from './training.service';
 
 @Controller('training')
-export class TrainingController
-{
-    constructor
-    (
+export class TrainingController {
+    constructor (
         private readonly service : TrainingService
     ){}
 

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post, UseGuards } from '@nestjs/common';
 import { Training } from '../training/training.entity';
 import { DeleteResult } from 'typeorm';
 import { User } from './user.entity';
@@ -40,7 +40,7 @@ export class UserController
     @Post('/new')
     async create(
         @Body()
-        rawUserData : {
+            rawUserData : {
             name : string,
             roles : string,
             email : string,
@@ -61,7 +61,7 @@ export class UserController
     @Post('/modify')
     async modify(
         @Body()
-        requestBody : {
+            requestBody : {
             userId : number,
             rawUserData : {
                 name : string,
@@ -79,7 +79,7 @@ export class UserController
     @Post('/login')
     async login(
         @Body()
-        requestBody : {
+            requestBody : {
             email : string,
             password : string,
         }
@@ -90,7 +90,7 @@ export class UserController
     @Post('/addCoachToGroup')
     async addCoachToGroup (
         @Body()
-        requestBody : {
+            requestBody : {
             userId : number,
             groupId : number,
         }
@@ -101,7 +101,7 @@ export class UserController
     @Post('/addTraineeToGroup')
     async addTraineeToGroup(
         @Body()
-        requestBody : {
+            requestBody : {
             userId : number,
             groupId : number,
         }
@@ -112,7 +112,7 @@ export class UserController
     @Post('/removeCoachFromGroup')
     async removeCoachFromGroup(
         @Body()
-        requestBody : {
+            requestBody : {
             userId : number,
             groupId : number,
         }
@@ -123,7 +123,7 @@ export class UserController
     @Post('/removeTraineeFromGroup')
     async removeTraineeFromGroup(
         @Body()
-        requestBody : {
+            requestBody : {
             userId : number,
             groupId : number,
         }
@@ -134,7 +134,7 @@ export class UserController
     @Post('/addCoachToTraining')
     async addCoachToTraining(
         @Body()
-        requestBody : {
+            requestBody : {
             userId : number,
             trainingId : number,
             groupId: number,
@@ -146,7 +146,7 @@ export class UserController
     @Post('/addTraineeToTraining')
     async addTraineeToTraining(
         @Body()
-        requestBody : {
+            requestBody : {
             userId : number,
             trainingId : number,
             groupId: number,
@@ -158,7 +158,7 @@ export class UserController
     @Post('/removeCoachFromTraining')
     async removeCoachFromTraining(
         @Body()
-        requestBody : {
+            requestBody : {
             userId : number,
             trainingId : number,
             groupId: number,
@@ -170,7 +170,7 @@ export class UserController
     @Post('/removeTraineeFromTraining')
     async removeTraineeFromTraining(
         @Body()
-        requestBody : {
+            requestBody : {
             userId : number,
             trainingId : number,
             groupId: number,
