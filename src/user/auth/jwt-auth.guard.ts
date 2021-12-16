@@ -2,11 +2,7 @@ import { ExecutionContext, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { AuthGuard } from "@nestjs/passport";
 
-@Injectable() 
-export class LoggedInAuthGuard extends AuthGuard( "jwt" ) {
-    // be vagy-e log-olva
-}
-@Injectable() 
+@Injectable()
 export class AdminAuthGuard extends AuthGuard( "jwt" ) {
     constructor( private jwtService: JwtService ){
         super();
@@ -16,10 +12,9 @@ export class AdminAuthGuard extends AuthGuard( "jwt" ) {
         const { headers } = request; // kiszedi a requestből a headers-t
         const token = headers.authorization.split(" ")[1];
         const tokenData = this.jwtService.decode(token);
-        console.log( tokenData );
         if( tokenData["roles"].includes( "admin") ) {
             return super.canActivate( context );
         }
         return false;
-    } 
+    }
 }
