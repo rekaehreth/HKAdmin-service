@@ -1,4 +1,18 @@
 services:
+  app:
+    build: .
+    environment:
+      TYPEORM_CONNECTION: mysql
+      TYPEORM_HOST: host.docker.internal
+      TYPEORM_USERNAME: hkadmin
+      TYPEORM_PASSWORD: supersecret
+      TYPEORM_DATABASE: hkadmin
+      TYPEORM_PORT: 3306
+      TYPEORM_SYNCHRONIZE: 'true'
+      TYPEORM_LOGGING: 'true'
+      TYPEORM_ENTITIES: dist/**/*.entity.js
+    ports:
+      - 3000:3000
   db:
     image: mysql:5
     restart: always
@@ -12,5 +26,17 @@ services:
       MYSQL_USER: hkadmin
       MYSQL_PASSWORD: supersecret
       MYSQL_DATABASE: hkadmin
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+     - 8888:80
+    environment:
+      PMA_HOST: host.docker.internal
+      PMA_PORT: 3306
+      PMA_USER: hkadmin
+      PMA_PASSWORD: supersecret
+
 volumes:
   hkadmin-db:

@@ -1,0 +1,16 @@
+services:
+  db:
+    image: mysql:5
+    restart: always
+    volumes:
+      - hkadmin-db:/var/lib/mysql
+      - ./script/:/script
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: supersecret
+      MYSQL_USER: hkadmin
+      MYSQL_PASSWORD: supersecret
+      MYSQL_DATABASE: hkadmin
+volumes:
+  hkadmin-test-db:
