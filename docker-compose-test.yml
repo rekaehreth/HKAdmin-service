@@ -3,7 +3,7 @@ services:
     image: mysql:5
     restart: always
     volumes:
-      - hkadmin-db:/var/lib/mysql
+      - hkadmin-test-db:/var/lib/mysql
       - ./script/:/script
     ports:
       - 3306:3306
