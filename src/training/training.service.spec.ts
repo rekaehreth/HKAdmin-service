@@ -52,7 +52,8 @@ describe('GroupService', () => {
                 startTime: new Date('2021.11.01 13:00'),
                 endTime: new Date('2021.11.01 13:50'),
                 status: '',
-                type: 'off ice'
+                type: 'off ice',
+                isPublic: false
             }))
                 .rejects
                 .toThrow('There is no location in the database with the given id');
@@ -64,7 +65,8 @@ describe('GroupService', () => {
                 startTime: new Date('2021.11.01 13:00'),
                 endTime: new Date('2021.11.01 13:50'),
                 status: 'testStatus',
-                type: 'testType'
+                type: 'testType',
+                isPublic: false
             });
 
             const training = await repository.find();
@@ -81,7 +83,8 @@ describe('GroupService', () => {
                 startTime: new Date('2021.11.01 13:00'),
                 endTime: new Date('2021.11.01 13:50'),
                 status: 'testStatus',
-                type: 'testType'
+                type: 'testType',
+                isPublic: false
             });
 
             const location = await locationRepository.find({relations: ["trainings"]});
@@ -97,7 +100,8 @@ describe('GroupService', () => {
                 startTime: new Date('2021.11.01 13:00'),
                 endTime: new Date('2021.11.01 13:50'),
                 status: '',
-                type: 'off ice'
+                type: 'off ice',
+                isPublic: false
             }))
                 .rejects
                 .toThrow('There is no location in the database with the given id');
@@ -108,7 +112,8 @@ describe('GroupService', () => {
                 startTime: new Date('2021.11.01 13:00'),
                 endTime: new Date('2021.11.01 13:50'),
                 status: '',
-                type: 'off ice'
+                type: 'off ice',
+                isPublic: false
             }))
                 .rejects
                 .toThrow('There is no training in the database with the given id');
@@ -121,7 +126,8 @@ describe('GroupService', () => {
                 startTime: new Date('2021.11.01 13:00'),
                 endTime: new Date('2021.11.01 13:50'),
                 status: 'newTestStatus',
-                type: 'newTestType'
+                type: 'newTestType',
+                isPublic: false
             });
 
             const training = await repository.find();
@@ -140,7 +146,8 @@ describe('GroupService', () => {
                 startTime: new Date('2021.11.01 13:00'),
                 endTime: new Date('2021.11.01 13:50'),
                 status: 'something',
-                type: 'something else'
+                type: 'something else',
+                isPublic: false
             });
 
             const locationWithoutTraining = await locationRepository.find({relations: ["trainings"], where: {id: 1}});
