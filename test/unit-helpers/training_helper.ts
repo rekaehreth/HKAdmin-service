@@ -3,14 +3,14 @@ import { createTestLocation } from "./location_helper";
 
 export const createTestTraining = ( partialTraining: Partial<Training> = {} ) => {
     return {
-        ...defaultTraining, 
+        ...defaultTraining,
         ...partialTraining
     }
 };
 
 const defaultTraining: Training = {
-    id: null, 
-    location: createTestLocation(), 
+    id: null,
+    location: createTestLocation(),
     attendees : [],
     coaches : [],
     groups : [],
@@ -18,6 +18,7 @@ const defaultTraining: Training = {
     startTime : new Date('2021.11.01 13:00'), // fucking timezones
     endTime : new Date('2021.11.01 13:50'), // fucking timezones
     status : 'test_status', // Planned | Fixed | Past
-    type: 'test_type', // Száraz | Jeges | Balett 
+    type: 'test_type', // Száraz | Jeges | Balett
+    isPublic: false,
     applications: ''
 };
