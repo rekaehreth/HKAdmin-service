@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Group } from '../group/group.entity';
 import { Location } from '../location/location.entity';
 import { Connection, DeleteResult, Repository } from 'typeorm';
@@ -9,6 +9,7 @@ export class TrainingService {
     trainingRepository: Repository<Training>;
     locationRepository: Repository<Location>;
     groupRepository: Repository<Group>;
+    private logger = new Logger('Training Service');
 
     constructor(connection: Connection) {
         this.trainingRepository = connection.getRepository(Training);
@@ -17,6 +18,7 @@ export class TrainingService {
     }
 
     public async getAll(): Promise<Training[]> {
+        this.logger.log('get all was called');
         return await this.trainingRepository.find({ relations: ["location", "attendees", "coaches", "groups", "payments"] });
     }
 
@@ -29,6 +31,7 @@ export class TrainingService {
         endTime: Date,
         status: string, // Planned | Fixed | Past
         type: string, // Száraz | Jeges | Balett
+        isPublic: boolean,
     }): Promise<Training> {
         const newTraining = new Training();
         const site = await this.locationRepository.findOne(locationId, {relations: ["trainings"]});
@@ -51,6 +54,7 @@ export class TrainingService {
         endTime: Date,
         status: string, // Planned | Fixed | Past
         type: string, // Száraz || Jeges | Balett
+        isPublic: boolean,
     }): Promise<Training> {
         const site = await this.locationRepository.findOne(locationId);
         if( site === undefined ) {
@@ -91,5 +95,13 @@ export class TrainingService {
         const groupIndex = trainingToRemoveFrom.groups.map((group) => group.id).indexOf(groupId);
         trainingToRemoveFrom.groups.splice(groupIndex, 1);
         return await this.trainingRepository.save(trainingToRemoveFrom);
+    }
+
+    public async listPublicTrainings(): Promise<Training[]>{
+        const publicTrainings = await this.trainingRepository.find({
+            where:{ isPublic: true },
+            relations: ['location', 'groups']
+        });
+        return publicTrainings;
     }
 }

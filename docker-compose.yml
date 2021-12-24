@@ -9,7 +9,7 @@ services:
       TYPEORM_DATABASE: hkadmin
       TYPEORM_PORT: 3306
       TYPEORM_SYNCHRONIZE: 'true'
-      TYPEORM_LOGGING: 'true'
+      TYPEORM_LOGGING: 'false'
       TYPEORM_ENTITIES: dist/**/*.entity.js
     ports:
       - 3000:3000

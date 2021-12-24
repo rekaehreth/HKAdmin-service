@@ -5,7 +5,7 @@ import { Group } from './group.entity';
 import { Location } from '../location/location.entity';
 
 @Injectable()
-export class GroupService 
+export class GroupService
 {
     groupRepository: Repository<Group>;
     locationRepository: Repository<Location>;
@@ -24,20 +24,24 @@ export class GroupService
     {
         return await this.groupRepository.findOne(id, { relations: ["members", "coaches", "trainings"] } );
     }
+    public async getByName( name : string ) : Promise<Group>
+    {
+        return await this.groupRepository.findOne( { relations: ["members", "coaches", "trainings"], where: { name } } );
+    }
     public async create( rawGroupData : {
-        name : string, 
+        name : string,
     }) : Promise<Group>
     {
         const newGroup = new Group();
         Object.keys(rawGroupData).forEach( ( key ) => { newGroup[key] = rawGroupData[key] });
         return await this.groupRepository.save( newGroup );
-    }   
+    }
     public async delete ( id : number ) : Promise<DeleteResult>
     {
         return await this.groupRepository.delete( id );
     }
     public async modify ( groupId : number, rawGroupData : {
-        name : string, 
+        name : string,
     }) : Promise<Group>
     {
         const modifiedGroup = await this.groupRepository.findOne( groupId );

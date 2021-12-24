@@ -8,7 +8,7 @@ export class Group
 {
     @PrimaryGeneratedColumn()
     id : number;
-    @Column()
+    @Column({unique: true})
     name : string;
     @ManyToMany( () => User, user => user.groups, { cascade: true, onDelete: "CASCADE" })
     @JoinTable()

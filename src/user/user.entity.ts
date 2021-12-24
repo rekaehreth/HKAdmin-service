@@ -1,7 +1,7 @@
 import { Payment } from "../finance/payment.entity";
 import { Group } from "../group/group.entity";
 import { Training } from "../training/training.entity";
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 
 @Entity()
@@ -13,7 +13,7 @@ export class User
     trainings : Training[];
     @Column()
     name : string;
-    @Column( { nullable : true } )
+    @Column( { nullable : true, default: "trainee" } )
     roles : string; // trainee | coach | guardian | guest | admin
     @Column()
     email : string;

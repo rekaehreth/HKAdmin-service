@@ -24,7 +24,7 @@ export class CoachService
     }
     public async getByUserId( userId: number): Promise<Coach> {
         const user = await this.userRepository.findOne(userId);
-        return await this.coachRepository.findOne( { relations: ["user"], where: { user: user } } );
+        return await this.coachRepository.findOne( { relations: ["user", "groups"], where: { user: user } } );
     }
     public async create( userId: number, rawCoachData: {
         wage: number,

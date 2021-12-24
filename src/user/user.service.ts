@@ -49,12 +49,14 @@ export class UserService {
         birth_date: Date,
     }): Promise<{ success: boolean, user: User }> {
         if (!await this.getByEmail(rawUserData.email)) {
+            this.logger.log(`raw roles: ${rawUserData.roles}`);
+            if(!rawUserData.roles) {
+                rawUserData.roles = "trainee ";
+            }
             const newUser = new User();
             Object.keys(rawUserData).forEach((key) => { newUser[key] = (key === "password") ? bcrypt.hashSync(rawUserData[key], 10) : rawUserData[key]; });
             newUser.roles = rawUserData.roles;
-            if( newUser.roles === '') {
-                newUser.roles += "trainee ";
-            }
+            this.logger.log(`roles: ${newUser.roles}`);
             return { success: true, user: await this.userRepository.save(newUser) };
         }
         return { success: false, user: undefined };
@@ -208,18 +210,32 @@ export class UserService {
             throw new Error('There is no user with the given id');
         }
         for (const userGroup of user.groups) {
-            const group = await this.groupRepository.findOne(userGroup.id, { relations: ['trainings'] });
+            const group = await this.groupRepository.findOne(userGroup.id, {
+                relations: [
+                    'trainings',
+                    'trainings.location',
+                    'trainings.attendees',
+                    'trainings.coaches',
+                    'trainings.groups',
+                    'trainings.payments'
+                ]
+            });
             for(const training of group.trainings ) {
                 if (user.trainings.find(userTraining => userTraining.id === training.id) === undefined) {
-                    availableTrainings.push({ training, subscribedForTraining: false });
+                    if(availableTrainings.find(availableTraining => availableTraining.training.id === training.id) === undefined){
+                        availableTrainings.push({ training, subscribedForTraining: false });
+                    }
                 }
                 else {
-                    availableTrainings.push({ training, subscribedForTraining: true });
+                    if(availableTrainings.find(availableTraining => availableTraining.training.id === training.id) === undefined){
+                        availableTrainings.push({ training, subscribedForTraining: true });
+                    }
                 }
             }
         }
         return availableTrainings;
     }
+
 
     public async login(email: string, rawpassword: string): Promise<{ success: boolean, token?: string, userId?: number, userRoles?: string }> {
         const user = await this.userRepository.findOne({ email });

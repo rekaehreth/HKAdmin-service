@@ -1,4 +1,4 @@
-import { ExecutionContext, Injectable } from "@nestjs/common";
+import { ExecutionContext, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from "@nestjs/jwt";
 import { AuthGuard } from "@nestjs/passport";
 
@@ -10,6 +10,9 @@ export class AdminAuthGuard extends AuthGuard( "jwt" ) {
     canActivate( context: ExecutionContext ) {
         const request = context.switchToHttp().getRequest();
         const { headers } = request; // kiszedi a requestből a headers-t
+        if(headers.authorization === undefined){
+            return false;
+        }
         const token = headers.authorization.split(" ")[1];
         const tokenData = this.jwtService.decode(token);
         if( tokenData["roles"].includes( "admin") ) {

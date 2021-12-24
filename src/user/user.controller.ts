@@ -8,8 +8,7 @@ import { AdminAuthGuard } from './auth/jwt-auth.guard';
 import { Coach } from '../coach/coach.entity';
 
 @Controller('user')
-export class UserController
-{
+export class UserController {
     constructor (
         private readonly service : UserService
     ){}

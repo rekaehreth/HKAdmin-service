@@ -1,4 +1,4 @@
-import { Get, Param, Controller, Post, Body, Delete } from '@nestjs/common';
+import { Get, Param, Controller, Post, Body, Delete, Logger } from '@nestjs/common';
 import { Application, parseTrainingApplications } from '../utils';
 import { DeleteResult } from 'typeorm';
 import { Training } from './training.entity';
@@ -6,6 +6,8 @@ import { TrainingService } from './training.service';
 
 @Controller('training')
 export class TrainingController {
+
+    private logger = new Logger('Training controller');
     constructor (
         private readonly service : TrainingService
     ){}
@@ -15,12 +17,17 @@ export class TrainingController {
         return await this.service.getAll();
     }
 
+    @Get('/listPublic')
+    async listPublic() : Promise<Training[]> {
+        return await this.service.listPublicTrainings();
+    }
+
     @Get('/:id')
     async getById( @Param('id') id : number ) : Promise<Training> {
         return await this.service.getById(id);
     }
 
-    @Get('getApplications/:id')
+    @Get('/getApplications/:id')
     async getApplications( @Param('id') id:number ): Promise<Application[]> {
         const training = await this.service.getById(id);
         const applications = parseTrainingApplications(training.applications);
@@ -37,6 +44,7 @@ export class TrainingController {
                 endTime : Date,
                 status : string, // Planned | Fixed | Past
                 type: string, // Száraz || Jeges | Balett
+                isPublic: boolean,
             }
         }
     ) : Promise<Training>
@@ -61,6 +69,7 @@ export class TrainingController {
                 endTime : Date,
                 status : string, // Planned | Fixed | Past
                 type: string, // Száraz || Jeges | Balett
+                isPublic: boolean,
             }
         }
     ) : Promise<Training>

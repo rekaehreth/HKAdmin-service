@@ -4,9 +4,9 @@ import { Group } from './group.entity';
 import { GroupService } from './group.service';
 
 @Controller('group')
-export class GroupController 
+export class GroupController
 {
-    constructor 
+    constructor
     (
         private readonly service : GroupService
     ){}
@@ -16,17 +16,22 @@ export class GroupController
         return await this.service.getAll();
     }
     @Get('/:id')
-    async getById( @Param('id') id : number ) : Promise<Group> 
+    async getById( @Param('id') id : number ) : Promise<Group>
     {
         return await this. service.getById(id);
     }
+    @Get('/findByName/:name')
+    async getByName( @Param('name') name : string ) : Promise<Group>
+    {
+        return await this. service.getByName(name);
+    }
     @Post('/new')
     async create
-    ( 
-        @Body() 
-        rawGroupData : { 
-            name : string, 
-    }) : Promise<Group> 
+    (
+        @Body()
+        rawGroupData : {
+            name : string,
+    }) : Promise<Group>
     {
         return await this.service.create(rawGroupData);
     }
@@ -40,7 +45,7 @@ export class GroupController
         @Body()
         requestBody : {
             groupId : number,
-            rawGroupData : { 
+            rawGroupData : {
                 name : string,
             }
         }

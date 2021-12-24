@@ -5,9 +5,9 @@ import { CoachService } from './coach.service';
 import { omit } from 'lodash';
 
 @Controller('coach')
-export class CoachController 
+export class CoachController
 {
-    constructor 
+    constructor
     (
         private readonly service : CoachService
     ){}
@@ -23,14 +23,14 @@ export class CoachController
     @Get('/getByUserId/:userId')
     async getByUserId( @Param('userId') userId: number ): Promise<Coach> {
         const coach = await this.service.getByUserId(userId);
-        return ({...coach, user: omit(coach.user, "password")});
+        return coach === undefined ? coach : ({...coach, user: omit(coach.user, "password")});
     }
     @Post('/new')
-    async create ( 
-        @Body() 
-        requestBody : {
+    async create (
+        @Body()
+            requestBody : {
             userId : number,
-            rawCoachData : { 
+            rawCoachData : {
                 wage : number
             }
         }
@@ -44,9 +44,9 @@ export class CoachController
     @Post('/modify')
     async modify (
         @Body()
-        requestBody : {
+            requestBody : {
             coachId : number,
-            rawCoachData : { 
+            rawCoachData : {
                 wage : number
             }
         }
