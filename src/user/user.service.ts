@@ -209,7 +209,14 @@ export class UserService {
         if (user === undefined) {
             throw new Error('There is no user with the given id');
         }
-        for (const userGroup of user.groups) {
+        const coach = await this.coachRepository.findOne({relations: ['groups', 'trainings'], where: {user}});
+        const groupsToCheck = [...user.groups];
+        const trainingsToCheck = [...user.trainings];
+        if(coach){
+            groupsToCheck.push(...coach.groups);
+            trainingsToCheck.push(...coach.trainings);
+        }
+        for (const userGroup of groupsToCheck) {
             const group = await this.groupRepository.findOne(userGroup.id, {
                 relations: [
                     'trainings',
@@ -221,7 +228,7 @@ export class UserService {
                 ]
             });
             for(const training of group.trainings ) {
-                if (user.trainings.find(userTraining => userTraining.id === training.id) === undefined) {
+                if (trainingsToCheck.find(userTraining => userTraining.id === training.id) === undefined) {
                     if(availableTrainings.find(availableTraining => availableTraining.training.id === training.id) === undefined){
                         availableTrainings.push({ training, subscribedForTraining: false });
                     }
