@@ -1,6 +1,7 @@
 services:
   app:
     build: .
+    image: hkadmin-service_app
     environment:
       TYPEORM_CONNECTION: mysql
       TYPEORM_HOST: host.docker.internal
@@ -26,7 +27,6 @@ services:
       MYSQL_USER: hkadmin
       MYSQL_PASSWORD: supersecret
       MYSQL_DATABASE: hkadmin
-
   phpmyadmin:
     image: phpmyadmin
     restart: always
@@ -37,6 +37,5 @@ services:
       PMA_PORT: 3306
       PMA_USER: hkadmin
       PMA_PASSWORD: supersecret
-
 volumes:
   hkadmin-db:
