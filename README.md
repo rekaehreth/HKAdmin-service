@@ -7,31 +7,19 @@
 $ npm install
 ```
 
-## Running the app
+## Starting the app
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+# start the application in docker
+$ docker-compose up -d --build
 ```
 
 ## Test
 
 ```bash
 # start test db
-$ docker-compose up
+$ docker-compose -f docker-compose-test.yml up -d 
 
 # unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+$ npm run test:local
 ```
