@@ -37,5 +37,5 @@ jobs:
     - run: npm ci
     - run: npm run build --if-present
     - run: docker-compose -f docker-compose-test.yml up -d
-    - run: docker-compose run --rm db /script/wait-for-it.sh db:TEST_DB_PORT
+    - run: docker-compose run --rm db /script/wait-for-it.sh db:${{ secrets.TEST_DB_PORT }}
     - run: npm test
