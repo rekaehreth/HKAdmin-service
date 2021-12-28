@@ -240,6 +240,14 @@ export class UserService {
                 }
             }
         }
+        if(user.roles.includes('admin')){
+            const allTrainings = await this.trainingRepository.find({relations : ['location', 'attendees', 'coaches', 'groups', 'payments']});
+            for(const training of allTrainings){
+                if(availableTrainings.find(availableTraining => availableTraining.training.id === training.id) === undefined){
+                    availableTrainings.push({ training, subscribedForTraining: false});
+                }
+            }
+        }
         return availableTrainings;
     }
 
@@ -265,6 +273,9 @@ export class UserService {
         if(user === undefined) {
             throw new Error('There is no user in the database with the given id');
         }
-        return await this.coachRepository.findOne({ user: user }, { relations: ["user", "groups", "trainings"] });
+        return await this.coachRepository.findOne(
+            { user: user },
+            { relations: ["user", "groups", "groups.members", "groups.coaches", "trainings"]
+            });
     }
 }
