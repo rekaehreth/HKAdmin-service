@@ -19,6 +19,7 @@ describe('FinanceService', () => {
     let userRepository;
     let trainingRepository;
 
+    jest.setTimeout(parseInt(process.env.TEST_TIMEOUT));
     beforeAll(async () => {
         connection = await createConnection({
             type: 'mysql',

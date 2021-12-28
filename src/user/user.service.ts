@@ -243,7 +243,6 @@ export class UserService {
         return availableTrainings;
     }
 
-
     public async login(email: string, rawpassword: string): Promise<{ success: boolean, token?: string, userId?: number, userRoles?: string }> {
         const user = await this.userRepository.findOne({ email });
         if (!user) {
